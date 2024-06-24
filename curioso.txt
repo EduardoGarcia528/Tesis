@@ -1,0 +1,16 @@
+Bartok Serie_1
+El valor de autocorrelación más alto fue con el retraso  2376
+La j más baja fue con un tau de  2370 Con valor de 0.39166793969960156 
+
+Bartok Serie_2
+El valor de autocorrelación más alto fue con el retraso  2069
+La j más baja fue con un tau de  2057 Con valor de 0.27888005737130994 
+
+Bartok Serie_3
+El valor de autocorrelación más alto fue con el retraso  677
+La j más baja fue con un tau de  673 Con valor de 0.08498592706563612 
+
+Bartok Serie_4
+El valor de autocorrelación más alto fue con el retraso  1440
+La j más baja fue con un tau de  1437 Con valor de 0.028290878133741426 
+

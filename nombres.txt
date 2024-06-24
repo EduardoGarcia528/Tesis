@@ -1,0 +1,76 @@
+Guillaume Dufay
+Cristobal Morales
+Josquin Desprez
+Orlando di Lasso
+William Byrd
+Tomas Luis de Victoria
+Andrea Gabrielis
+John Dowland
+Carlo Gesualdo
+Claudio Monteverdi
+Girolamo Frescobaldi
+Samuel Scheidt
+Johann Jakob Froberger
+Jean-Henri d'Anglebert
+Jean-Baptiste Lully
+Dietrich Buxtehude
+Johann Pachelbel
+Francois Couperin
+Tomaso Albinoni
+Antonio Vivaldi
+Georg Philipp Telemann
+Jean-Francois Dandrieu
+Jean-Philippe Rameau
+George Frideric Handel
+Domenico Scarlatti
+Domenico Zipoli
+Johann Sebastian Bach
+Joseph Haydn
+Johann Georg Albrechtsberger
+Muzio Clementi
+Wolfgang Amadeus Mozart
+Ludwig van Beethoven
+Johann Baptist Cramer
+Niccolo Paganini
+Franz Schubert
+Hector Berlioz
+Felix Mendelssohn
+Frederic Chopin
+Robert Schumann
+Franz Liszt
+Charles-Valentin Alkan
+Cesar Franck
+Anton Bruckner
+Louis Moreau Gottschalk
+Johannes Brahms
+Camille Saint-Saens
+Alexandre Guilmant
+Georges Bizet
+Modest Mussorgsky
+Pyotr Ilyich Tchaikovsky
+Antonin Dvorak
+Edvard Grieg
+Gabriel Faure
+Leos Janacek
+Isaac Albeniz
+Gustav Mahler
+Claude Debussy
+Ferruccio Busoni
+Erik Satie
+Scott Joplin
+Leopold Godowsky
+Alexander Scriabin
+Sergei Rachmaninov
+Max Reger
+Arnold Schoenberg
+Maurice Ravel
+Sigfrid Karg-Elert
+Ottorino Respighi
+Nikolai Medtner
+Belá Bartók
+Igor Stravinsky
+Sergei Prokofiev
+Paul Hindemith
+George Gershwin
+Dmitri Shostakovich
+Olivier Messiaen
