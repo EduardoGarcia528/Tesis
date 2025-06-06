@@ -144,7 +144,7 @@ def calcular_gamma_opt(data, gamma_index, MS):
 # ==== PARÁMETROS CONFIGURABLES ====
 usar_archivos_guardados = False
 method = 'lineal'
-size = 2
+size = 0
 MS = 1.0
 indice_gamma = 1
 
