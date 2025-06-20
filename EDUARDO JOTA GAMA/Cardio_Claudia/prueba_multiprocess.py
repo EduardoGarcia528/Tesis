@@ -26,13 +26,12 @@ from scipy.stats import pearsonr
 # === FUNCIONES DE CÁLCULO =====================================================
 # -----------------------------------------------------------------------------
 
-def J_univariante(X: np.ndarray, tau: int = 1) -> float:
-    """Índice J univariante basado en las fases de Fourier."""
+def J_univariante(X, tau=1, corte=False):
     def distancia(p1, p2):
         return np.linalg.norm(np.array(p2) - np.array(p1))
-
-    X = np.asarray(X, dtype=float)
-    x1, y1 = X[tau:], X[:-tau]
+    X = np.array(X)
+    x1 = X[tau:]
+    y1 = X[:-tau]
     ff1 = np.angle(np.fft.rfft(x1))
     ff2 = np.angle(np.fft.rfft(y1))
 
@@ -40,52 +39,67 @@ def J_univariante(X: np.ndarray, tau: int = 1) -> float:
     for i in range(len(ff1) - 1):
         p1 = [ff1[i], ff2[i]]
         p2 = [ff1[i + 1], ff2[i + 1]]
-        cuadrante = [[p2[0] - p1[0], p2[1] - p1[1]],
-                     [p2[0] - p1[0], p2[1] + 2*np.pi - p1[1]],
-                     [p2[0] + 2*np.pi - p1[0], p2[1] + 2*np.pi - p1[1]],
-                     [p2[0] + 2*np.pi - p1[0], p2[1] - p1[1]],
-                     [p2[0] + 2*np.pi - p1[0], p2[1] - 2*np.pi - p1[1]],
-                     [p2[0] - p1[0], p2[1] - 2*np.pi - p1[1]],
-                     [p2[0] - 2*np.pi - p1[0], p2[1] - 2*np.pi - p1[1]],
-                     [p2[0] - 2*np.pi - p1[0], p2[1] - p1[1]],
-                     [p2[0] - 2*np.pi - p1[0], p2[1] + 2*np.pi - p1[1]]]
-        p2 = cuadrante[np.argmin([distancia(p1, c) for c in cuadrante])]
-        vectores.append([p2[0]-p1[0], p2[1]-p1[1]])
+        cuadrante = [
+            [p2[0] - p1[0], p2[1] - p1[1]],
+            [p2[0] - p1[0], p2[1] + 2 * np.pi - p1[1]],
+            [p2[0] + 2 * np.pi - p1[0], p2[1] + 2 * np.pi - p1[1]],
+            [p2[0] + 2 * np.pi - p1[0], p2[1] - p1[1]],
+            [p2[0] + 2 * np.pi - p1[0], p2[1] - 2 * np.pi - p1[1]],
+            [p2[0] - p1[0], p2[1] - 2 * np.pi - p1[1]],
+            [p2[0] - 2 * np.pi - p1[0], p2[1] - 2 * np.pi - p1[1]],
+            [p2[0] - 2 * np.pi - p1[0], p2[1] - p1[1]],
+            [p2[0] - 2 * np.pi - p1[0], p2[1] + 2 * np.pi - p1[1]],
+        ]
+        distancias = np.array([distancia(p1, c) for c in cuadrante])
+        p2 = cuadrante[np.argmin(distancias)]
+        vectores.append([p2[0] - p1[0], p2[1] - p1[1]])
 
     vectores = np.array(vectores)
-    v_norm = np.where((n:=np.linalg.norm(vectores, axis=1, keepdims=True)) == 0, vectores, vectores/n)
-    ang = np.arccos(np.clip(np.einsum('ij,ij->i', v_norm[:-1], v_norm[1:]), -1, 1))
+    norms = np.linalg.norm(vectores, axis=1, keepdims=True)
+    v_norm = np.where(norms == 0, vectores, vectores / norms)
+    
+    angulos = np.arccos(np.clip(np.einsum('ij,ij->i', v_norm[:-1], v_norm[1:]), -1.0, 1.0))
     cruces = np.cross(v_norm[:-1], v_norm[1:])
-    ang = np.where(cruces>0, np.pi-ang, ang)
-    ang = np.where((cruces==0)&(ang<0), np.pi, ang)
-    ang = np.where(cruces<0, ang+np.pi, ang)
+    angulos = np.where(cruces > 0, np.pi - angulos, angulos)
+    angulos = np.where((cruces == 0) & (angulos < 0), np.pi, angulos)
+    angulos = np.where(cruces < 0, angulos + np.pi, angulos)
 
-    return 1.0 - np.abs(np.mean(np.exp(ang*1j)))
+    e = np.exp(angulos * 1j)
+    e1 = np.sum(e) / len(angulos)
+    J = 1.0 - np.abs(e1.real)
+    
+    return J
 
 
-def calcular_gamma_opt(data: np.ndarray, gamma_index: int, MS: float) -> float:
+def calcular_gamma_opt(data, gamma_index, MS):
     N = len(data)
     sd = np.std(data, ddof=1)
     eps = sd / MS
     maxdat = np.max(data)
-    data = np.concatenate(([0.0], data, [maxdat + 100*eps]))
+    data = np.concatenate(([0.0], data, [maxdat + 100 * eps]))  # data[0], data[N+1]
 
-    Ci = [0]*(gamma_index+2)
-    for j in range(1, N+1):
+    Ci = [0] * (gamma_index + 2)  # Necesitamos Ci[i-1], Ci[i], Ci[i+1]
+
+    for j in range(1, N + 1):
         for i in range(1, j):
             k = 0
-            while k <= gamma_index+1 and abs(data[i+k]-data[j+k]) <= eps:
-                if k in (gamma_index-1, gamma_index, gamma_index+1):
+            while k <= gamma_index + 1 and abs(data[i + k] - data[j + k]) <= eps:
+                if k in (gamma_index - 1, gamma_index, gamma_index + 1):
                     Ci[k] += 1
                 k += 1
 
-    norm = 2.0 / (N*(N-1))
-    C = [1.0] + [0.0]*(gamma_index+1)
-    for k in (gamma_index-1, gamma_index, gamma_index+1):
-        if k>=1:
-            C[k] = Ci[k]*norm
-    denom = C[gamma_index-1]*C[gamma_index+1]
-    return 0.0 if denom==0 else 1.0 - (C[gamma_index]**2)/denom
+    norm = 2.0 / (N * (N - 1))
+    C = [1.0] + [0.0] * (gamma_index + 1)
+    for k in (gamma_index - 1, gamma_index, gamma_index + 1):
+        if k >= 1:
+            C[k] = Ci[k] * norm
+
+    denominator = C[gamma_index - 1] * C[gamma_index + 1]
+    gamma = 0.0
+    if denominator != 0:
+        gamma = 1.0 - (C[gamma_index] ** 2) / denominator
+
+    return gamma
 
 
 def interpolar(serie: np.ndarray, method: str, size: int) -> np.ndarray:
@@ -103,7 +117,7 @@ def interpolar(serie: np.ndarray, method: str, size: int) -> np.ndarray:
 # === CONFIGURACIÓN ============================================================
 # -----------------------------------------------------------------------------
 
-DATA_DIR          = 'RRnSBP15min'
+DATA_DIR          = 'DatosRRnSBP700'
 EXCEL_EXCLUSIONES = 'CRPagingBetas.xlsx'
 EXCEL_SHEET       = 'ClavesBetasAging'
 PACIENTES         = [f'{i:04d}' for i in range(1, 1122)]  # 0001–1121
@@ -136,7 +150,7 @@ EXCLUSIONES = cargar_exclusiones()
 
 def procesar_paciente(pid: str):
     excl = EXCLUSIONES.get(pid, {'RR':False, 'SBP':False})
-    txt = os.path.join(DATA_DIR, f'{pid}RRnSBP15min.txt')
+    txt = os.path.join(DATA_DIR, f'{pid}RRnSBP700.txt')
     if not os.path.exists(txt):
         print('[!] Falta', txt)
         return pid, np.nan, np.nan, np.nan, np.nan  # id, J_rr, J_sbp, G_rr, G_sbp
