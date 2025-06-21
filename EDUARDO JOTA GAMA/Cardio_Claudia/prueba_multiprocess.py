@@ -124,7 +124,7 @@ PACIENTES         = [f'{i:04d}' for i in range(1, 1122)]  # 0001–1121
 
 # Parámetros
 METHOD_INTERP = 'lineal'   # 'lineal' | 'herm'
-SIZE_INTERP   = 0          # 0 ⇒ sin interpolación
+SIZE_INTERP   = 2          # 0 ⇒ sin interpolación
 MS_PARAM      = 3.0
 INDICE_GAMMA  = 1
 OUTPUT_DIR    = 'resultados'
