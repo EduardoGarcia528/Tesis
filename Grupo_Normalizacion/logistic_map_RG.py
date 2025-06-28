@@ -65,7 +65,7 @@ def J_univariante(X):
     e1 = np.sum(e) / len(angulos)
     J = 1.0 - np.abs(e1.real)
     
-    return J, angulos
+    return J
 
 def lyapunov_exponent_from_orbit(orbit, r):
     lyapunov_sum = 0
