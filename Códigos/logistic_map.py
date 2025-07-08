@@ -129,9 +129,6 @@ def lyapunov_exponent_from_orbit(orbit, r):
 
 
 
-
-
-
 def plot_orbit_diagram(interpolacion, interp_type,size, graficar=True, r_min = 3.0, r_max = 4.0, num_points_per_r=300,
  num_iterations_discard=1000, num_iterations_display=2000):
 

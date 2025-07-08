@@ -422,4 +422,4 @@ if __name__ == '__main__':
 
     J_null_continuo = np.vstack((interpolador_constante(Ns), Js_min_interp,Js_mean_interp,Js_std_interp))
 
-    np.save('Datos_J/J_null_continuo.npy' ,J_null_continuo)
+    np.save('Datos_J_min/J_null_continuo.npy' ,J_null_continuo)
