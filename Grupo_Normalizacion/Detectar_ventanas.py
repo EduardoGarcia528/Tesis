@@ -87,7 +87,7 @@ def plot_orbit_diagram(graficar=True, r_min = 3.45, r_max = 3.6, num_points_per_
 
     r_values = []
     orbit_values = []
-    for r in np.concatenate((np.linspace(3.45,3.56994,200),np.linspace(3.56994,3.6,100))):
+    for r in np.concatenate((np.linspace(3.45,3.56994,200),np.linspace(3.56994,3.6,100)[1:])):
         
         x = 0.6
  

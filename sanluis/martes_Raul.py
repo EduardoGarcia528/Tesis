@@ -1,11 +1,11 @@
 import matplotlib.pyplot
 import numpy as np
 
-S = [0,1]
+S = [0,1,2]
 
-Q = [[0.5,0.5],[0.5,0.5]]
+Q = [[1/3,1/3,1/3],[1/3,1/3,1/3],[1/3,1/3,1/3]]
 
-pi0 = [0.5,0.5]
+pi0 = [0,0,1]
 
 x = np.random.choice(S, p = pi0)
 print(x)
