@@ -15,7 +15,7 @@ def interpolador(subject, method, size):
         interpolator = PchipInterpolator(x, data)
         data_interp = interpolator(x_new)
     
-    return x_new, data_interp
+    return data_interp
 
 def interpolador_constante(subject):
     # data = np.array([int(line.strip()) for line in subject.to_numpy()])  # Si lo obtienes de un DataFrame
@@ -173,3 +173,12 @@ def derivada_index(array):
     array = np.asarray(array)
     derivada = np.abs(np.diff(array))  # Calcula la diferencia entre puntos subsecuentes
     return derivada
+
+def remover_duplicados(array):
+    resultado = []
+    vistos = set()
+    for x in array:
+        if x not in vistos:
+            resultado.append(x)
+            vistos.add(x)
+    return resultado

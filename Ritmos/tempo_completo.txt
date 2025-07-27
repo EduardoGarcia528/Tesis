@@ -1,0 +1,2048 @@
+Compás 0: <music21.tempo.MetronomeMark 60[Maessig] !!Metronome marking from printed source Quarter=None>
+Compás 0: <music21.tempo.MetronomeMark Allegretto giocoso Quarter=108>
+Compás 0: <music21.tempo.MetronomeMark Con anima Quarter=None>
+Compás 0: <music21.tempo.MetronomeMark Maessig, lieblich Quarter=None>
+Compás 0: <music21.tempo.MetronomeMark Moderato Quarter=92>
+Compás 0: <music21.tempo.MetronomeMark Quarter=100>
+Compás 0: <music21.tempo.MetronomeMark Quarter=102>
+Compás 0: <music21.tempo.MetronomeMark Quarter=103.5>
+Compás 0: <music21.tempo.MetronomeMark Quarter=104>
+Compás 0: <music21.tempo.MetronomeMark Quarter=105>
+Compás 0: <music21.tempo.MetronomeMark Quarter=112>
+Compás 0: <music21.tempo.MetronomeMark Quarter=113>
+Compás 0: <music21.tempo.MetronomeMark Quarter=114>
+Compás 0: <music21.tempo.MetronomeMark Quarter=116>
+Compás 0: <music21.tempo.MetronomeMark Quarter=124>
+Compás 0: <music21.tempo.MetronomeMark Quarter=135>
+Compás 0: <music21.tempo.MetronomeMark Quarter=148>
+Compás 0: <music21.tempo.MetronomeMark Quarter=150>
+Compás 0: <music21.tempo.MetronomeMark Quarter=152>
+Compás 0: <music21.tempo.MetronomeMark Quarter=156>
+Compás 0: <music21.tempo.MetronomeMark Quarter=164>
+Compás 0: <music21.tempo.MetronomeMark Quarter=172>
+Compás 0: <music21.tempo.MetronomeMark Quarter=176>
+Compás 0: <music21.tempo.MetronomeMark Quarter=178>
+Compás 0: <music21.tempo.MetronomeMark Quarter=180>
+Compás 0: <music21.tempo.MetronomeMark Quarter=189>
+Compás 0: <music21.tempo.MetronomeMark Quarter=204>
+Compás 0: <music21.tempo.MetronomeMark Quarter=216>
+Compás 0: <music21.tempo.MetronomeMark Quarter=220>
+Compás 0: <music21.tempo.MetronomeMark Quarter=224>
+Compás 0: <music21.tempo.MetronomeMark Quarter=228>
+Compás 0: <music21.tempo.MetronomeMark Quarter=232>
+Compás 0: <music21.tempo.MetronomeMark Quarter=240>
+Compás 0: <music21.tempo.MetronomeMark Quarter=264>
+Compás 0: <music21.tempo.MetronomeMark Quarter=280>
+Compás 0: <music21.tempo.MetronomeMark Quarter=320>
+Compás 0: <music21.tempo.MetronomeMark Quarter=63>
+Compás 0: <music21.tempo.MetronomeMark Quarter=69>
+Compás 0: <music21.tempo.MetronomeMark Quarter=76>
+Compás 0: <music21.tempo.MetronomeMark Quarter=95>
+Compás 0: <music21.tempo.MetronomeMark Quarter=96>
+Compás 0: <music21.tempo.MetronomeMark Quarter=99>
+Compás 0: <music21.tempo.MetronomeMark adagietto Quarter=64>
+Compás 0: <music21.tempo.MetronomeMark adagietto Quarter=66>
+Compás 0: <music21.tempo.MetronomeMark adagietto Quarter=68>
+Compás 0: <music21.tempo.MetronomeMark adagio Quarter=56>
+Compás 0: <music21.tempo.MetronomeMark adagio Quarter=58>
+Compás 0: <music21.tempo.MetronomeMark allegretto Quarter=106>
+Compás 0: <music21.tempo.MetronomeMark allegretto Quarter=108>
+Compás 0: <music21.tempo.MetronomeMark allegretto Quarter=110>
+Compás 0: <music21.tempo.MetronomeMark allegrissimo Quarter=138>
+Compás 0: <music21.tempo.MetronomeMark allegrissimo Quarter=140>
+Compás 0: <music21.tempo.MetronomeMark allegro Quarter=132>
+Compás 0: <music21.tempo.MetronomeMark allegro moderato Quarter=126>
+Compás 0: <music21.tempo.MetronomeMark allegro moderato Quarter=128>
+Compás 0: <music21.tempo.MetronomeMark allegro moderato Quarter=130>
+Compás 0: <music21.tempo.MetronomeMark andante Quarter=70>
+Compás 0: <music21.tempo.MetronomeMark andante Quarter=71.8>
+Compás 0: <music21.tempo.MetronomeMark andante Quarter=72>
+Compás 0: <music21.tempo.MetronomeMark andante Quarter=74>
+Compás 0: <music21.tempo.MetronomeMark andante moderato Quarter=84>
+Compás 0: <music21.tempo.MetronomeMark andantino Quarter=78>
+Compás 0: <music21.tempo.MetronomeMark andantino Quarter=80>
+Compás 0: <music21.tempo.MetronomeMark andantino Quarter=82>
+Compás 0: <music21.tempo.MetronomeMark animato Quarter=118>
+Compás 0: <music21.tempo.MetronomeMark animato Quarter=120>
+Compás 0: <music21.tempo.MetronomeMark grave Quarter=40>
+Compás 0: <music21.tempo.MetronomeMark larghetto Quarter=60>
+Compás 0: <music21.tempo.MetronomeMark larghetto Quarter=62>
+Compás 0: <music21.tempo.MetronomeMark largo Quarter=48>
+Compás 0: <music21.tempo.MetronomeMark lento Quarter=50>
+Compás 0: <music21.tempo.MetronomeMark lento Quarter=52>
+Compás 0: <music21.tempo.MetronomeMark lento Quarter=53>
+Compás 0: <music21.tempo.MetronomeMark lento Quarter=54>
+Compás 0: <music21.tempo.MetronomeMark maestoso Quarter=86>
+Compás 0: <music21.tempo.MetronomeMark maestoso Quarter=87>
+Compás 0: <music21.tempo.MetronomeMark maestoso Quarter=88>
+Compás 0: <music21.tempo.MetronomeMark maestoso Quarter=90>
+Compás 0: <music21.tempo.MetronomeMark moderate Quarter=92>
+Compás 0: <music21.tempo.MetronomeMark molto allegro Quarter=144>
+Compás 0: <music21.tempo.MetronomeMark prestissimo Quarter=207>
+Compás 0: <music21.tempo.MetronomeMark prestissimo Quarter=208>
+Compás 0: <music21.tempo.MetronomeMark presto Quarter=184>
+Compás 0: <music21.tempo.MetronomeMark vivace Quarter=158>
+Compás 0: <music21.tempo.MetronomeMark vivace Quarter=160>
+Compás 0: <music21.tempo.MetronomeMark vivacissimo Quarter=168>
+Compás 0: <music21.tempo.MetronomeMark vivacissimo Quarter=170>
+Compás 101: <music21.tempo.MetronomeMark Quarter=150>
+Compás 102: <music21.tempo.MetronomeMark Quarter=480>
+Compás 102: <music21.tempo.MetronomeMark animato Quarter=120>
+Compás 103: <music21.tempo.MetronomeMark Quarter=112>
+Compás 103: <music21.tempo.MetronomeMark Quarter=200>
+Compás 103: <music21.tempo.MetronomeMark Quarter=480>
+Compás 103: <music21.tempo.MetronomeMark lento Quarter=54>
+Compás 106: <music21.tempo.MetronomeMark animato Quarter=120>
+Compás 109: <music21.tempo.MetronomeMark Quarter=320>
+Compás 10: <music21.tempo.MetronomeMark 3/1 Quarter=None>
+Compás 10: <music21.tempo.MetronomeMark Quarter=156>
+Compás 10: <music21.tempo.MetronomeMark allegretto Quarter=108>
+Compás 10: <music21.tempo.MetronomeMark lento Quarter=52>
+Compás 10: <music21.tempo.MetronomeMark maestoso Quarter=88>
+Compás 1105: <music21.tempo.MetronomeMark andantino Quarter=78>
+Compás 110: <music21.tempo.MetronomeMark Quarter=420>
+Compás 111: <music21.tempo.MetronomeMark Quarter=384>
+Compás 113: <music21.tempo.MetronomeMark Quarter=152>
+Compás 113: <music21.tempo.MetronomeMark maestoso Quarter=88>
+Compás 114: <music21.tempo.MetronomeMark Quarter=190>
+Compás 117: <music21.tempo.MetronomeMark allegro Quarter=132>
+Compás 119: <music21.tempo.MetronomeMark Quarter=420>
+Compás 11: <music21.tempo.MetronomeMark Quarter=104>
+Compás 11: <music21.tempo.MetronomeMark andante Quarter=72>
+Compás 11: <music21.tempo.MetronomeMark maestoso Quarter=88>
+Compás 121: <music21.tempo.MetronomeMark Quarter=360>
+Compás 127: <music21.tempo.MetronomeMark Quarter=300>
+Compás 129: <music21.tempo.MetronomeMark Quarter=400>
+Compás 129: <music21.tempo.MetronomeMark adagietto Quarter=66>
+Compás 12: <music21.tempo.MetronomeMark Quarter=112>
+Compás 12: <music21.tempo.MetronomeMark Quarter=320>
+Compás 12: <music21.tempo.MetronomeMark allegro Quarter=132>
+Compás 12: <music21.tempo.MetronomeMark animato Quarter=120>
+Compás 130: <music21.tempo.MetronomeMark grave Quarter=40>
+Compás 131: <music21.tempo.MetronomeMark grave Quarter=40>
+Compás 132: <music21.tempo.MetronomeMark animato Quarter=120>
+Compás 133: <music21.tempo.MetronomeMark largo Quarter=48>
+Compás 134: <music21.tempo.MetronomeMark Quarter=400>
+Compás 135: <music21.tempo.MetronomeMark largo Quarter=48>
+Compás 139: <music21.tempo.MetronomeMark Quarter=154>
+Compás 13: <music21.tempo.MetronomeMark andante moderato Quarter=84>
+Compás 13: <music21.tempo.MetronomeMark lento Quarter=54>
+Compás 142: <music21.tempo.MetronomeMark Quarter=378>
+Compás 143: <music21.tempo.MetronomeMark molto allegro Quarter=144>
+Compás 144: <music21.tempo.MetronomeMark Quarter=300>
+Compás 145: <music21.tempo.MetronomeMark Quarter=450>
+Compás 145: <music21.tempo.MetronomeMark allegretto Quarter=108>
+Compás 145: <music21.tempo.MetronomeMark allegrissimo Quarter=138>
+Compás 147: <music21.tempo.MetronomeMark Quarter=480>
+Compás 149: <music21.tempo.MetronomeMark Quarter=400>
+Compás 14: <music21.tempo.MetronomeMark Das erste Zeitmass Quarter=None>
+Compás 14: <music21.tempo.MetronomeMark Quarter=112>
+Compás 14: <music21.tempo.MetronomeMark Quarter=69>
+Compás 14: <music21.tempo.MetronomeMark animato Quarter=120>
+Compás 14: <music21.tempo.MetronomeMark molto allegro Quarter=144>
+Compás 151: <music21.tempo.MetronomeMark Quarter=448>
+Compás 151: <music21.tempo.MetronomeMark largamente Quarter=32>
+Compás 158: <music21.tempo.MetronomeMark andante Quarter=72>
+Compás 158: <music21.tempo.MetronomeMark lento Quarter=54>
+Compás 159: <music21.tempo.MetronomeMark Quarter=104>
+Compás 159: <music21.tempo.MetronomeMark Quarter=252>
+Compás 159: <music21.tempo.MetronomeMark Quarter=420>
+Compás 15: <music21.tempo.MetronomeMark Quarter=96>
+Compás 161: <music21.tempo.MetronomeMark allegretto Quarter=110>
+Compás 161: <music21.tempo.MetronomeMark vivace Quarter=160>
+Compás 162: <music21.tempo.MetronomeMark Quarter=112>
+Compás 165: <music21.tempo.MetronomeMark andantino Quarter=80>
+Compás 166: <music21.tempo.MetronomeMark adagio Quarter=56>
+Compás 166: <music21.tempo.MetronomeMark largamente Quarter=32>
+Compás 167: <music21.tempo.MetronomeMark allegretto Quarter=110>
+Compás 176: <music21.tempo.MetronomeMark Quarter=360>
+Compás 177: <music21.tempo.MetronomeMark largo Quarter=44>
+Compás 178: <music21.tempo.MetronomeMark Quarter=320>
+Compás 178: <music21.tempo.MetronomeMark larghetto Quarter=60>
+Compás 179: <music21.tempo.MetronomeMark 4/4 Quarter=None>
+Compás 179: <music21.tempo.MetronomeMark Quarter=720>
+Compás 179: <music21.tempo.MetronomeMark animato Quarter=120>
+Compás 17: <music21.tempo.MetronomeMark adagio Quarter=56>
+Compás 17: <music21.tempo.MetronomeMark andante moderato Quarter=84>
+Compás 17: <music21.tempo.MetronomeMark animato Quarter=120>
+Compás 184: <music21.tempo.MetronomeMark Quarter=180>
+Compás 188: <music21.tempo.MetronomeMark animato Quarter=120>
+Compás 18: <music21.tempo.MetronomeMark Quarter=320>
+Compás 18: <music21.tempo.MetronomeMark adagietto Quarter=66>
+Compás 18: <music21.tempo.MetronomeMark allegro Quarter=132>
+Compás 193: <music21.tempo.MetronomeMark Quarter=156>
+Compás 194: <music21.tempo.MetronomeMark andante moderato Quarter=84>
+Compás 195: <music21.tempo.MetronomeMark maestoso Quarter=90>
+Compás 196: <music21.tempo.MetronomeMark Quarter=63>
+Compás 197: <music21.tempo.MetronomeMark andante Quarter=72>
+Compás 19: <music21.tempo.MetronomeMark Quarter=152>
+Compás 1: (OMD)
+Compás 1: (OMD) (M.M. [half] = 72.)
+Compás 1: (OMD) ([quarter-dot] = 152.)
+Compás 1: (OMD) ([quarter] = 144.)
+Compás 1: (OMD) ([quarter] = 148.)
+Compás 1: (OMD) 10. Allegretto.
+Compás 1: (OMD) 11. Andantino.
+Compás 1: (OMD) 12. Allegretto.
+Compás 1: (OMD) 13. Adagio.
+Compás 1: (OMD) 13. Andante.
+Compás 1: (OMD) 14. Allegro.
+Compás 1: (OMD) 15. Andante con moto. Na temat „WŻłobie leży‟
+Compás 1: (OMD) 15. Andante.
+Compás 1: (OMD) 16. Allegro moderato.
+Compás 1: (OMD) 17. Largo.
+Compás 1: (OMD) 18. Allegro non troppo.
+Compás 1: (OMD) 19. Maestoso.
+Compás 1: (OMD) 2. Allegro
+Compás 1: (OMD) 20. Lento.
+Compás 1: (OMD) 21. Largo.
+Compás 1: (OMD) 22. Andante.
+Compás 1: (OMD) 23. Grave.
+Compás 1: (OMD) 24. Mestoso.
+Compás 1: (OMD) 25.
+Compás 1: (OMD) 26. Moderato.
+Compás 1: (OMD) 27. Allegro.
+Compás 1: (OMD) 28. Maestoso.
+Compás 1: (OMD) 29.Moderato.
+Compás 1: (OMD) 3. Andante
+Compás 1: (OMD) 30. Andante.
+Compás 1: (OMD) 32. Lento.
+Compás 1: (OMD) 33. Andante.
+Compás 1: (OMD) 34. Allegro moderato.
+Compás 1: (OMD) 35. Moderato.
+Compás 1: (OMD) 36. Moderato.
+Compás 1: (OMD) 37. Adagio.
+Compás 1: (OMD) 38. Maestoso.
+Compás 1: (OMD) 39. Allegro.
+Compás 1: (OMD) 4. Moderato.
+Compás 1: (OMD) 40. Adagio.
+Compás 1: (OMD) 41. Allegro moderato.
+Compás 1: (OMD) 42. Allegro moderato.
+Compás 1: (OMD) 43. Andantino.
+Compás 1: (OMD) 44. Allegro.
+Compás 1: (OMD) 45. Moderato.
+Compás 1: (OMD) 46. Largo.
+Compás 1: (OMD) 47. Allegro moderato.
+Compás 1: (OMD) 48. Allegretto.
+Compás 1: (OMD) 49. Maestoso.
+Compás 1: (OMD) 5. Moderato
+Compás 1: (OMD) 50. Allegro.
+Compás 1: (OMD) 51. Grave.
+Compás 1: (OMD) 52. Allegro moderato.
+Compás 1: (OMD) 6. Allegretto.
+Compás 1: (OMD) 7. Adagio
+Compás 1: (OMD) 8. Lento.
+Compás 1: (OMD) 9 Larghetto.
+Compás 1: (OMD) A MONSIEUR JENÖ HUBAY.\nFANTAISIE ORIENTALE.
+Compás 1: (OMD) A capriccio.
+Compás 1: (OMD) A section (Mon seul plaisir / Se ung peu d'esperance)
+Compás 1: (OMD) A viro iniquo
+Compás 1: (OMD) AGNUS DEI.
+Compás 1: (OMD) AGNUS.
+Compás 1: (OMD) ALL. MAESTOSO.
+Compás 1: (OMD) ALLEGRETTO NON TANTO.
+Compás 1: (OMD) ALLEGRETTO.
+Compás 1: (OMD) ALLEGRETTO. M. M. [quarter] = 100
+Compás 1: (OMD) ALLEGRETTO. M. M. [quarter] = 120.
+Compás 1: (OMD) ALLEGRO
+Compás 1: (OMD) ALLEGRO ([half]=112)
+Compás 1: (OMD) ALLEGRO ([half]=120)
+Compás 1: (OMD) ALLEGRO APPASSIONATO.
+Compás 1: (OMD) ALLEGRO ASSAI QUASI PRESTO.
+Compás 1: (OMD) ALLEGRO CON FUOCO.
+Compás 1: (OMD) ALLEGRO MAESTOSO.
+Compás 1: (OMD) ALLEGRO MODERATO. M. M. [quarter]=88.
+Compás 1: (OMD) ALLEGRO MODERATO. M.M. [quarter] = 96.
+Compás 1: (OMD) ALLEGRO MOLTO AGITATO.
+Compás 1: (OMD) ALLEGRO NON TROPPO.
+Compás 1: (OMD) ALLEGRO NON TROPPO. ([quarter]=108.)
+Compás 1: (OMD) ALLEGRO RISOLUTO.
+Compás 1: (OMD) ALLEGRO [quarter]=126
+Compás 1: (OMD) ALLEGRO vivace.
+Compás 1: (OMD) ALLEGRO.
+Compás 1: (OMD) ALLEGRO. M.M. [quarter]. = 72.
+Compás 1: (OMD) ANDANTE ([quarter-dot]=40)
+Compás 1: (OMD) ANDANTE SPIANATO.
+Compás 1: (OMD) ANDANTE.
+Compás 1: (OMD) ANDANTE. M. M. [quarter] = 92.
+Compás 1: (OMD) ANDANTINO
+Compás 1: (OMD) ANDANTINO. M.M. [quarter-dot] = 69.
+Compás 1: (OMD) Ab homine
+Compás 1: (OMD) Acoutres vous
+Compás 1: (OMD) Adagio
+Compás 1: (OMD) Adagio Fantastico
+Compás 1: (OMD) Adagio Molto
+Compás 1: (OMD) Adagio affettuoso ed appassionato
+Compás 1: (OMD) Adagio cantabile
+Compás 1: (OMD) Adagio cantabile sostenuto
+Compás 1: (OMD) Adagio e cantabile
+Compás 1: (OMD) Adagio lamentoso
+Compás 1: (OMD) Adagio ma non troppo
+Compás 1: (OMD) Adagio ma non troppo - Allegro
+Compás 1: (OMD) Adagio ma non troppo e molto cantabile
+Compás 1: (OMD) Adagio ma non troppo e molto espressivo
+Compás 1: (OMD) Adagio maestoso
+Compás 1: (OMD) Adagio maestoso-Largo
+Compás 1: (OMD) Adagio maestoso.
+Compás 1: (OMD) Adagio molto e mesto
+Compás 1: (OMD) Adagio non lento
+Compás 1: (OMD) Adagio non troppo
+Compás 1: (OMD) Adagio quasi un poco andante
+Compás 1: (OMD) Adagio sostenuto
+Compás 1: (OMD) Adagio, ma non troppo e molto cantabile
+Compás 1: (OMD) Adagio---Allegro
+Compás 1: (OMD) Adagio.
+Compás 1: (OMD) Adagio.-
+Compás 1: (OMD) Adante Maestoso
+Compás 1: (OMD) Adatio
+Compás 1: (OMD) Adgio maestoso.
+Compás 1: (OMD) Affettuoso
+Compás 1: (OMD) Agitato
+Compás 1: (OMD) Agitato.
+Compás 1: (OMD) Agnus Dei
+Compás 1: (OMD) Agnus Dei I
+Compás 1: (OMD) Agnus Dei I, II
+Compás 1: (OMD) Agnus Dei I, III
+Compás 1: (OMD) Agnus Dei I/III
+Compás 1: (OMD) Agnus Dei II
+Compás 1: (OMD) Agnus Dei II (texted "...dona nobis pacem")
+Compás 1: (OMD) Agnus Dei I[, II?]
+Compás 1: (OMD) Agnus I
+Compás 1: (OMD) Agnus dei I
+Compás 1: (OMD) Agnus dei I/III
+Compás 1: (OMD) Agnus dei II
+Compás 1: (OMD) Ainsi a il
+Compás 1: (OMD) Alegretto.
+Compás 1: (OMD) Alegretto._
+Compás 1: (OMD) Alegro molto.
+Compás 1: (OMD) Aleph
+Compás 1: (OMD) All(egr)o
+Compás 1: (OMD) All(egr)o mod(era)to
+Compás 1: (OMD) All. apassionato.
+Compás 1: (OMD) All. mod.
+Compás 1: (OMD) All. molto.
+Compás 1: (OMD) All. vivace.
+Compás 1: (OMD) All..o mod to
+Compás 1: (OMD) All..o moderato.
+Compás 1: (OMD) All.o md.to [quarter] = 112.
+Compás 1: (OMD) All.o moderato
+Compás 1: (OMD) All.o modto.
+Compás 1: (OMD) All.o molto.
+Compás 1: (OMD) All.o non troppo.
+Compás 1: (OMD) All.o. modera_to_
+Compás 1: (OMD) All.o. moderato.
+Compás 1: (OMD) All.tto non tanto.
+Compás 1: (OMD) All.|o maestoso
+Compás 1: (OMD) All.°. mode.to. Nº 4.
+Compás 1: (OMD) All.º con fuoco.
+Compás 1: (OMD) All[egr]o
+Compás 1: (OMD) Alla Marcia, assai vivace
+Compás 1: (OMD) Alla Mazur
+Compás 1: (OMD) Alla Mazurka
+Compás 1: (OMD) Alla cappella.
+Compás 1: (OMD) Alla danza tedesca: Allegro assai
+Compás 1: (OMD) Alla polacca
+Compás 1: (OMD) Alle moderato
+Compás 1: (OMD) Allego non troppo.
+Compás 1: (OMD) Allegretto
+Compás 1: (OMD) Allegretto ([eighth]=144)
+Compás 1: (OMD) Allegretto ([quarter]=100)
+Compás 1: (OMD) Allegretto ([quarter]=126)
+Compás 1: (OMD) Allegretto Kołomyik:
+Compás 1: (OMD) Allegretto [quarter-dot]=60
+Compás 1: (OMD) Allegretto animato
+Compás 1: (OMD) Allegretto con Variazioni
+Compás 1: (OMD) Allegretto con moto.
+Compás 1: (OMD) Allegretto gracioso.
+Compás 1: (OMD) Allegretto ma non troppo
+Compás 1: (OMD) Allegretto ma non troppo.
+Compás 1: (OMD) Allegretto ma quasi Andante.
+Compás 1: (OMD) Allegretto moderato
+Compás 1: (OMD) Allegretto moderato.
+Compás 1: (OMD) Allegretto modto
+Compás 1: (OMD) Allegretto non tanto
+Compás 1: (OMD) Allegretto non troppo
+Compás 1: (OMD) Allegretto pastorale.
+Compás 1: (OMD) Allegretto piu tosto  Moderato.
+Compás 1: (OMD) Allegretto quasi Allegro
+Compás 1: (OMD) Allegretto quasi Andante.
+Compás 1: (OMD) Allegretto scherzando
+Compás 1: (OMD) Allegretto tranquillo
+Compás 1: (OMD) Allegretto tranquillo.
+Compás 1: (OMD) Allegretto un poco lentarello.
+Compás 1: (OMD) Allegretto vivace e sempre scherzando
+Compás 1: (OMD) Allegretto---Allegro
+Compás 1: (OMD) Allegretto.
+Compás 1: (OMD) Allegretto. M M [quarter] = 100.
+Compás 1: (OMD) Allegretto. M. M. [quarter] = 120.
+Compás 1: (OMD) Allegretto. M.M. [quarter]=104
+Compás 1: (OMD) Allegretto. [eighth] = 60.
+Compás 1: (OMD) Allegretto. [quarter-dot]=76.
+Compás 1: (OMD) Allegretto. [quarter-dot]=80
+Compás 1: (OMD) Allegrissimo ([half]=120)
+Compás 1: (OMD) Allegrissimo ([quarter]=112)
+Compás 1: (OMD) Allegro
+Compás 1: (OMD) Allegro (Th&egrave;me russe)
+Compás 1: (OMD) Allegro ([half-dot]=80)
+Compás 1: (OMD) Allegro ([half]=104)
+Compás 1: (OMD) Allegro ([half]=108)
+Compás 1: (OMD) Allegro ([half]=116)
+Compás 1: (OMD) Allegro ([half]=96)
+Compás 1: (OMD) Allegro ([quarter-dot]=100)
+Compás 1: (OMD) Allegro ([quarter-dot]=104)
+Compás 1: (OMD) Allegro ([quarter-dot]=132)
+Compás 1: (OMD) Allegro ([quarter-dot]=66)
+Compás 1: (OMD) Allegro ([quarter-dot]=72)
+Compás 1: (OMD) Allegro ([quarter-dot]=76)
+Compás 1: (OMD) Allegro ([quarter-dot]=80)
+Compás 1: (OMD) Allegro ([quarter-dot]=88)
+Compás 1: (OMD) Allegro ([quarter-dot]=96)
+Compás 1: (OMD) Allegro ([quarter]=112)
+Compás 1: (OMD) Allegro ([quarter]=126)
+Compás 1: (OMD) Allegro ([quarter]=152)
+Compás 1: (OMD) Allegro ([quarter]=160)
+Compás 1: (OMD) Allegro ([quarter]=168)
+Compás 1: (OMD) Allegro ([quarter]=92)
+Compás 1: (OMD) Allegro Madz: Metron [eighth] = 108.
+Compás 1: (OMD) Allegro Maestoso.
+Compás 1: (OMD) Allegro Mod: quasi Andante
+Compás 1: (OMD) Allegro Moderato
+Compás 1: (OMD) Allegro Moderato quasi Andantino.
+Compás 1: (OMD) Allegro Moderato.
+Compás 1: (OMD) Allegro Molto
+Compás 1: (OMD) Allegro Scherzando.
+Compás 1: (OMD) Allegro Vivace molto.
+Compás 1: (OMD) Allegro [quarter] = 108
+Compás 1: (OMD) Allegro [quarter] = 80
+Compás 1: (OMD) Allegro agitato ma non troppo presto .
+Compás 1: (OMD) Allegro agitato.
+Compás 1: (OMD) Allegro animato.
+Compás 1: (OMD) Allegro appassionato
+Compás 1: (OMD) Allegro appassionato.
+Compás 1: (OMD) Allegro assai
+Compás 1: (OMD) Allegro assai \nquasi Presto.
+Compás 1: (OMD) Allegro assai vivace ma serioso
+Compás 1: (OMD) Allegro assai.
+Compás 1: (OMD) Allegro comodo
+Compás 1: (OMD) Allegro comodo.
+Compás 1: (OMD) Allegro con brio
+Compás 1: (OMD) Allegro con brio.
+Compás 1: (OMD) Allegro con fuoco
+Compás 1: (OMD) Allegro con fuoco.
+Compás 1: (OMD) Allegro con fuoco. M.M.[quarter]=152.
+Compás 1: (OMD) Allegro con fuoco. M:M: [quarter]=152.
+Compás 1: (OMD) Allegro con moto.  [quarter]=120.
+Compás 1: (OMD) Allegro con spirito
+Compás 1: (OMD) Allegro con ſpirito.
+Compás 1: (OMD) Allegro determinato.
+Compás 1: (OMD) Allegro di molto
+Compás 1: (OMD) Allegro di molto e scherzando
+Compás 1: (OMD) Allegro espressivo
+Compás 1: (OMD) Allegro feroce.
+Compás 1: (OMD) Allegro giocoso.
+Compás 1: (OMD) Allegro giojoso
+Compás 1: (OMD) Allegro giojoso.
+Compás 1: (OMD) Allegro giusto
+Compás 1: (OMD) Allegro giusto.
+Compás 1: (OMD) Allegro grazioso
+Compás 1: (OMD) Allegro impetuoso.
+Compás 1: (OMD) Allegro ma non tanto
+Compás 1: (OMD) Allegro ma non tanto ([half]=88)
+Compás 1: (OMD) Allegro ma non troppo
+Compás 1: (OMD) Allegro ma non troppo.
+Compás 1: (OMD) Allegro ma non troppo. ([quarter] = 132)
+Compás 1: (OMD) Allegro maestoso.
+Compás 1: (OMD) Allegro maestoso. [quarter] = 84
+Compás 1: (OMD) Allegro maestoto.
+Compás 1: (OMD) Allegro marciale.
+Compás 1: (OMD) Allegro marziale.
+Compás 1: (OMD) Allegro mod.
+Compás 1: (OMD) Allegro mod. pomposo
+Compás 1: (OMD) Allegro mod. triomphale
+Compás 1: (OMD) Allegro mod.to.
+Compás 1: (OMD) Allegro moderato
+Compás 1: (OMD) Allegro moderato - Adagio
+Compás 1: (OMD) Allegro moderato, cantabile
+Compás 1: (OMD) Allegro moderato.
+Compás 1: (OMD) Allegro moderato. (M. [quarter-dot]=66.)
+Compás 1: (OMD) Allegro moderato. M. M. [quarter] = 96.
+Compás 1: (OMD) Allegro moderato. [quarter]=88.
+Compás 1: (OMD) Allegro moderto (Comodo)
+Compás 1: (OMD) Allegro modto
+Compás 1: (OMD) Allegro molto
+Compás 1: (OMD) Allegro molto ([quarter-dot]=88)
+Compás 1: (OMD) Allegro molto [quarter-dot] = 88.
+Compás 1: (OMD) Allegro molto [quarter] = 88.
+Compás 1: (OMD) Allegro molto maestoso
+Compás 1: (OMD) Allegro molto moderato
+Compás 1: (OMD) Allegro molto vivace
+Compás 1: (OMD) Allegro molto, agitato.
+Compás 1: (OMD) Allegro molto, quasi presto
+Compás 1: (OMD) Allegro molto.
+Compás 1: (OMD) Allegro non tanto
+Compás 1: (OMD) Allegro non tanto.
+Compás 1: (OMD) Allegro non troppo
+Compás 1: (OMD) Allegro non troppo ([quarter]=108)
+Compás 1: (OMD) Allegro non troppo [quarter] = 108
+Compás 1: (OMD) Allegro non troppo presto.
+Compás 1: (OMD) Allegro non troppo.
+Compás 1: (OMD) Allegro non. tanto.
+Compás 1: (OMD) Allegro risolut.
+Compás 1: (OMD) Allegro risoluto.
+Compás 1: (OMD) Allegro risolutto.
+Compás 1: (OMD) Allegro spirito
+Compás 1: (OMD) Allegro spiritoso
+Compás 1: (OMD) Allegro spiritoso.
+Compás 1: (OMD) Allegro tranquillo
+Compás 1: (OMD) Allegro vivace
+Compás 1: (OMD) Allegro vivace assai
+Compás 1: (OMD) Allegro vivace.
+Compás 1: (OMD) Allegro vivo
+Compás 1: (OMD) Allegro, molto animato.
+Compás 1: (OMD) Allegro, non troppo presto.
+Compás 1: (OMD) Allegro.
+Compás 1: (OMD) Allegro. ([eighth] = 108)
+Compás 1: (OMD) Allegro. M. M. [quarter]. = 72.
+Compás 1: (OMD) Allegro. [quarter] = 108
+Compás 1: (OMD) Allegro. agitato.
+Compás 1: (OMD) Allegro..
+Compás 1: (OMD) Alleretto
+Compás 1: (OMD) Allgero moderato.
+Compás 1: (OMD) Allgero.
+Compás 1: (OMD) Allgro molto vivace
+Compás 1: (OMD) Allo
+Compás 1: (OMD) Allo Moderato
+Compás 1: (OMD) Allo Moderato.
+Compás 1: (OMD) Allo espreſsivo e moderato.
+Compás 1: (OMD) Allo mod.
+Compás 1: (OMD) Allo moderato
+Compás 1: (OMD) Allo moderato.
+Compás 1: (OMD) Allo molto
+Compás 1: (OMD) Allo non tantao.
+Compás 1: (OMD) Allo vivace ma non troppo presto
+Compás 1: (OMD) Allo.
+Compás 1: (OMD) Allo. Moderato
+Compás 1: (OMD) Allo. agitato.
+Compás 1: (OMD) Allo. mod.to
+Compás 1: (OMD) Allo. molto agitato.
+Compás 1: (OMD) Allo. molto.
+Compás 1: (OMD) Allo:
+Compás 1: (OMD) All|o maestoso.
+Compás 1: (OMD) All|o. Moderato.
+Compás 1: (OMD) All|o. apassionato.
+Compás 1: (OMD) All°.
+Compás 1: (OMD) All°. Maestoso.
+Compás 1: (OMD) All°. maestoso.
+Compás 1: (OMD) Allº Moderato.
+Compás 1: (OMD) Allº moderato.
+Compás 1: (OMD) All⁰. assai quasi presto.
+Compás 1: (OMD) Alma redemptoris mater
+Compás 1: (OMD) Amours, amours, amours
+Compás 1: (OMD) And.te con moto.
+Compás 1: (OMD) Andante
+Compás 1: (OMD) Andante ([quarter-dot]=54)
+Compás 1: (OMD) Andante ([quarter]=108)
+Compás 1: (OMD) Andante ([quarter]=126)
+Compás 1: (OMD) Andante ([quarter]=132)
+Compás 1: (OMD) Andante ([quarter]=92)
+Compás 1: (OMD) Andante ([quarter]=96)
+Compás 1: (OMD) Andante Religioso
+Compás 1: (OMD) Andante [quarter] = 48.
+Compás 1: (OMD) Andante amoroso.
+Compás 1: (OMD) Andante appasionato.
+Compás 1: (OMD) Andante assai sostenuto.
+Compás 1: (OMD) Andante cantabile
+Compás 1: (OMD) Andante cantabile ([quarter]=104)
+Compás 1: (OMD) Andante cantabile ([quarter]=92)
+Compás 1: (OMD) Andante cantabile.
+Compás 1: (OMD) Andante con Moto
+Compás 1: (OMD) Andante con grazia
+Compás 1: (OMD) Andante con moto
+Compás 1: (OMD) Andante con moto ma non troppo
+Compás 1: (OMD) Andante con moto quasi Allegretto
+Compás 1: (OMD) Andante con moto.
+Compás 1: (OMD) Andante con moto.  Allegro vivace
+Compás 1: (OMD) Andante con tristesso
+Compás 1: (OMD) Andante con variazioni
+Compás 1: (OMD) Andante dolce e tranquillo.
+Compás 1: (OMD) Andante doloroso.
+Compás 1: (OMD) Andante ed innocentemente
+Compás 1: (OMD) Andante gratioso
+Compás 1: (OMD) Andante grave.
+Compás 1: (OMD) Andante grazioso
+Compás 1: (OMD) Andante ma molto sostenuto.
+Compás 1: (OMD) Andante ma non troppo
+Compás 1: (OMD) Andante ma non troppo lento.
+Compás 1: (OMD) Andante maestoso
+Compás 1: (OMD) Andante maestoso.
+Compás 1: (OMD) Andante misterioso.
+Compás 1: (OMD) Andante moderato ([quarter]=80)
+Compás 1: (OMD) Andante moderato e cantabile ([half]=66)
+Compás 1: (OMD) Andante moderato.
+Compás 1: (OMD) Andante molto
+Compás 1: (OMD) Andante molto sostenuto
+Compás 1: (OMD) Andante molto tranquillo
+Compás 1: (OMD) Andante molto.
+Compás 1: (OMD) Andante mosso.
+Compás 1: (OMD) Andante o pi&ugrave; tosto allegretto
+Compás 1: (OMD) Andante quasi Allegretto.
+Compás 1: (OMD) Andante quasi allegretto
+Compás 1: (OMD) Andante religioso
+Compás 1: (OMD) Andante religioso ([quarter] = 92)
+Compás 1: (OMD) Andante sostenuto
+Compás 1: (OMD) Andante sostenuto ma non troppo lento.
+Compás 1: (OMD) Andante sostenuto.
+Compás 1: (OMD) Andante sustenuto.
+Compás 1: (OMD) Andante tranquillo.
+Compás 1: (OMD) Andante, espressivo.
+Compás 1: (OMD) Andante, molto tranquillo.
+Compás 1: (OMD) Andante, non troppo lento.
+Compás 1: (OMD) Andante.
+Compás 1: (OMD) Andante. M. M. [quarter] = 92.
+Compás 1: (OMD) Andante. M.M. 72
+Compás 1: (OMD) Andante. [quarter]=60.
+Compás 1: (OMD) Andante/Adagio
+Compás 1: (OMD) Andante\nCantabile
+Compás 1: (OMD) Andantina
+Compás 1: (OMD) Andantino
+Compás 1: (OMD) Andantino Cantabile.
+Compás 1: (OMD) Andantino cantabile
+Compás 1: (OMD) Andantino cantabile.
+Compás 1: (OMD) Andantino con moto.
+Compás 1: (OMD) Andantino doloroso e molt’ espressivo.
+Compás 1: (OMD) Andantino grazioso
+Compás 1: (OMD) Andantino ma non troppo.
+Compás 1: (OMD) Andantino melancolico
+Compás 1: (OMD) Andantino non troppo lento.
+Compás 1: (OMD) Andantino non troppo.
+Compás 1: (OMD) Andantino quasi Alegretto.
+Compás 1: (OMD) Andantino quasi Allegretto
+Compás 1: (OMD) Andantino quazi Alegretto
+Compás 1: (OMD) Andantino semplice\ne dolce.
+Compás 1: (OMD) Andantino sostenuto.
+Compás 1: (OMD) Andantino,
+Compás 1: (OMD) Andantino.
+Compás 1: (OMD) Andantino. ([quarter] = 126)
+Compás 1: (OMD) Andantino. M. M. [quarter-dot] = 69.
+Compás 1: (OMD) Andantino. M. M. [quarter] = 100.
+Compás 1: (OMD) Andantino. M.M. [quarter]=60.
+Compás 1: (OMD) Anglaise par Wysocki
+Compás 1: (OMD) Anglaise par Wysocki.
+Compás 1: (OMD) Anima mea dominum
+Compás 1: (OMD) Animato
+Compás 1: (OMD) Animato.
+Compás 1: (OMD) Animé et très rythmé
+Compás 1: (OMD) Anthonius usque limina
+Compás 1: (OMD) Antiphona V Adagio.
+Compás 1: (OMD) Aria allegretto
+Compás 1: (OMD) Aria à 3. [Alto or Tenore missing]
+Compás 1: (OMD) Assai sostenuto
+Compás 1: (OMD) Assez vif
+Compás 1: (OMD) Audi, benigne conditor
+Compás 1: (OMD) Aures ad nostras
+Compás 1: (OMD) Auribus percipe
+Compás 1: (OMD) Aut quis requiescet
+Compás 1: (OMD) Ave Maria
+Compás 1: (OMD) Ave decus virginale
+Compás 1: (OMD) Ave festiva ferculis
+Compás 1: (OMD) Ave regina celorum
+Compás 1: (OMD) Benedicta sit sancta trinitas
+Compás 1: (OMD) Broadly
+Compás 1: (OMD) Broadly, but with fire
+Compás 1: (OMD) C'est celuy qui fera
+Compás 1: (OMD) CON MOTO MA NON TROPPO.
+Compás 1: (OMD) Cantabile
+Compás 1: (OMD) Cantabile ([quarter]=100)
+Compás 1: (OMD) Cantabile non troppo lento.
+Compás 1: (OMD) Cantabile.
+Compás 1: (OMD) Car aujourd'huy
+Compás 1: (OMD) Car il ne puet rien
+Compás 1: (OMD) Car le bien parfait
+Compás 1: (OMD) Car que je sceusse vivre ainsi
+Compás 1: (OMD) Car vraiement
+Compás 1: (OMD) Cavatina: Adagio molto espressivo
+Compás 1: (OMD) Christe
+Compás 1: (OMD) Clangat plebs flores/Sicut lilium
+Compás 1: (OMD) Coda
+Compás 1: (OMD) Commodo.
+Compás 1: (OMD) Con fuoco [half]= 120.
+Compás 1: (OMD) Con molto fuoco.
+Compás 1: (OMD) Con moto
+Compás 1: (OMD) Con moto ma non troppo. [half-note] = 69.
+Compás 1: (OMD) Con moto.
+Compás 1: (OMD) Con spirito e presto ([quarter-dot]=66)
+Compás 1: (OMD) Confitebimur, et
+Compás 1: (OMD) Confitemini domino
+Compás 1: (OMD) Considera Israel
+Compás 1: (OMD) Crucifixus
+Compás 1: (OMD) Cum recordaremur
+Compás 1: (OMD) Da pacem Domine
+Compás 1: (OMD) Da pacem, Domine
+Compás 1: (OMD) De grant beaulte
+Compás 1: (OMD) Delicta juventutis
+Compás 1: (OMD) Deo nostro
+Compás 1: (OMD) Descendi in ortum meum
+Compás 1: (OMD) Despitant fortune mauldite
+Compás 1: (OMD) Deus tuorum militum
+Compás 1: (OMD) Dicat nunc
+Compás 1: (OMD) Dies irae
+Compás 1: (OMD) Discedite a me
+Compás 1: (OMD) Dixi Domino
+Compás 1: (OMD) Dolce
+Compás 1: (OMD) Domine Deus
+Compás 1: (OMD) Domine Deus, Agnus Dei
+Compás 1: (OMD) Domine exaudi
+Compás 1: (OMD) Domine non secundum peccata nostra
+Compás 1: (OMD) Domine, ad adjuvandum
+Compás 1: (OMD) Domine, ne memineris
+Compás 1: (OMD) Domine, non secundum
+Compás 1: (OMD) Donc je me suis
+Compás 1: (OMD) Donne vidue
+Compás 1: (OMD) Ego autem
+Compás 1: (OMD) Eia ergo, advocata nostra
+Compás 1: (OMD) Energico.
+Compás 1: (OMD) Et benedicam
+Compás 1: (OMD) Et digitos meos
+Compás 1: (OMD) Et exaudivit me
+Compás 1: (OMD) Et exsultavit
+Compás 1: (OMD) Et exsultavit spiritus meus
+Compás 1: (OMD) Et exultavit
+Compás 1: (OMD) Et in terra
+Compás 1: (OMD) Et in terra pax
+Compás 1: (OMD) Et in virtute tua
+Compás 1: (OMD) Et incarnatus
+Compás 1: (OMD) Et incarnatus est
+Compás 1: (OMD) Et iterum
+Compás 1: (OMD) Et omnis mansuetudinis
+Compás 1: (OMD) Et populi meditati
+Compás 1: (OMD) Et resurrexit
+Compás 1: (OMD) Et tibi reddetur
+Compás 1: (OMD) Eternam dona eis
+Compás 1: (OMD) Etwas lebhaft
+Compás 1: (OMD) Exultet celum laudibus
+Compás 1: (OMD) FINALE.
+Compás 1: (OMD) Facta autem hac voce
+Compás 1: (OMD) Facti sumus
+Compás 1: (OMD) Factorem celi
+Compás 1: (OMD) Fantasia: Adagio
+Compás 1: (OMD) Fast-Schnell
+Compás 1: (OMD) Festum nunc celebre
+Compás 1: (OMD) Finale
+Compás 1: (OMD) Finale - Allegro con moto
+Compás 1: (OMD) Finale.: Allegretto.
+Compás 1: (OMD) Finale: Adagio---Presto---Adagio
+Compás 1: (OMD) Finale: Allegretto
+Compás 1: (OMD) Finale: Allegretto---Vivace
+Compás 1: (OMD) Finale: Allegro
+Compás 1: (OMD) Finale: Allegro con spirito
+Compás 1: (OMD) Finale: Allegro di molto
+Compás 1: (OMD) Finale: Allegro di molto.
+Compás 1: (OMD) Finale: Allegro ma non troppo
+Compás 1: (OMD) Finale: Allegro molto
+Compás 1: (OMD) Finale: Allegro spirituoso
+Compás 1: (OMD) Finale: Allegro.
+Compás 1: (OMD) Finale: Fuga. Allegro moderato
+Compás 1: (OMD) Finale: Molto vivace.
+Compás 1: (OMD) Finale: Presto
+Compás 1: (OMD) Finale: Presto.
+Compás 1: (OMD) Finale: Rondo. Presto
+Compás 1: (OMD) Finale: Vivace
+Compás 1: (OMD) Finale: Vivace assai
+Compás 1: (OMD) Freymütig, doch nich geſchwinde.
+Compás 1: (OMD) Fuga a due soggetti
+Compás 1: (OMD) Fuga a quattro soggeti: Allegro
+Compás 1: (OMD) Fuga a tre soggetti: Allegro
+Compás 1: (OMD) Fuga. Allegro ([half]=80)
+Compás 1: (OMD) Fugue
+Compás 1: (OMD) GLORIA
+Compás 1: (OMD) GRADUALE
+Compás 1: (OMD) GRAVE.
+Compás 1: (OMD) Gaude virgo
+Compás 1: (OMD) Gloria, laus et honor
+Compás 1: (OMD) Graduale
+Compás 1: (OMD) Grave
+Compás 1: (OMD) Grave ma non troppo tratto
+Compás 1: (OMD) Grave.
+Compás 1: (OMD) Grazioso
+Compás 1: (OMD) Grazioso.
+Compás 1: (OMD) Habitare fratres
+Compás 1: (OMD) Haec Okeghem
+Compás 1: (OMD) Helas, de vous
+Compás 1: (OMD) Helas, je suis
+Compás 1: (OMD) Hellas, qu'elle est a mon gr&egrave;
+Compás 1: (OMD) I. Maestoso. M.M. [quarter] = 100
+Compás 1: (OMD) III. Allegro Finale.
+Compás 1: (OMD) Il ne fault ja
+Compás 1: (OMD) Illumina oculos meos
+Compás 1: (OMD) In Israel magnum
+Compás 1: (OMD) In consilio justorum
+Compás 1: (OMD) In domum Domini
+Compás 1: (OMD) In mandatis ejus
+Compás 1: (OMD) In medio umbrae
+Compás 1: (OMD) In tribulatione
+Compás 1: (OMD) In vanum laboraverunt
+Compás 1: (OMD) Incipit Lamentatio Jeremie prophete
+Compás 1: (OMD) Intende voci mee
+Compás 1: (OMD) Introduction. \nTempo Polacca.
+Compás 1: (OMD) Introit
+Compás 1: (OMD) Iste confessor
+Compás 1: (OMD) J'ay confort doulx
+Compás 1: (OMD) Je ne veul plus etre amouroulx
+Compás 1: (OMD) Je ny veultz mary
+Compás 1: (OMD) Jesu, corona virginum
+Compás 1: (OMD) Jntroduction Moderato
+Compás 1: (OMD) KYRIE.
+Compás 1: (OMD) Kozak.
+Compás 1: (OMD) Kołomyika
+Compás 1: (OMD) Kołomyika.
+Compás 1: (OMD) Krakowiak
+Compás 1: (OMD) Krakowiak.
+Compás 1: (OMD) Kyrie
+Compás 1: (OMD) Kyrie I
+Compás 1: (OMD) Kyrie I / Agnus Dei I
+Compás 1: (OMD) Kyrie I/III
+Compás 1: (OMD) Kyrie and Christe
+Compás 1: (OMD) L'isteſso Tempo
+Compás 1: (OMD) LARGHETTO.
+Compás 1: (OMD) LARGHETTO. M.M. [quarter] = 72.
+Compás 1: (OMD) LARGO.
+Compás 1: (OMD) LENTO.
+Compás 1: (OMD) LENTO. ([quarter]=108.)
+Compás 1: (OMD) LENTO. M. M. [quarter] = 63.
+Compás 1: (OMD) La Malinconia. Adagio
+Compás 1: (OMD) Lagrimoso.
+Compás 1: (OMD) Langsam
+Compás 1: (OMD) Langsam, mit bewegtem Ausdruok
+Compás 1: (OMD) Langsamer Ländler
+Compás 1: (OMD) Larghete
+Compás 1: (OMD) Larghetto
+Compás 1: (OMD) Larghetto expressivo - Allegretto agitato
+Compás 1: (OMD) Larghetto.
+Compás 1: (OMD) Larghetto. [quarter] = 40.
+Compás 1: (OMD) Largo
+Compás 1: (OMD) Largo assai
+Compás 1: (OMD) Largo assai.
+Compás 1: (OMD) Largo e cantabile
+Compás 1: (OMD) Largo ma non troppo: cantabile e mesto "Graveyard Largo"
+Compás 1: (OMD) Largo sostenuto
+Compás 1: (OMD) Largo.
+Compás 1: (OMD) Largo. (Metronome de Mälzel. [quarter]=63.)
+Compás 1: (OMD) Largo. Sempre piano. Poco misterioso. <i>
+Compás 1: (OMD) Largo. metronome de Mälzel. [quarter]=63
+Compás 1: (OMD) Lauda Deum tuum
+Compás 1: (OMD) Lauda Sion salvatorem/Ego sum panis
+Compás 1: (OMD) Lauda, anima mea, dominum
+Compás 1: (OMD) Laudate dominum
+Compás 1: (OMD) Laudate nomen Domini
+Compás 1: (OMD) Laudate, servi
+Compás 1: (OMD) Le Ménétrier - Mazurka. \nII.
+Compás 1: (OMD) Le renom
+Compás 1: (OMD) Lebhaft
+Compás 1: (OMD) Legato assai
+Compás 1: (OMD) Legato assai.
+Compás 1: (OMD) Lent
+Compás 1: (OMD) Lente.
+Compás 1: (OMD) Lento
+Compás 1: (OMD) Lento Sostenuto.
+Compás 1: (OMD) Lento [quarter] = 108
+Compás 1: (OMD) Lento assai
+Compás 1: (OMD) Lento assai, cantante e tranquillo
+Compás 1: (OMD) Lento assai.
+Compás 1: (OMD) Lento con grand' espressione
+Compás 1: (OMD) Lento e mesto.
+Compás 1: (OMD) Lento ed espressivo
+Compás 1: (OMD) Lento ma non troppo
+Compás 1: (OMD) Lento ma non troppo.
+Compás 1: (OMD) Lento mesto.
+Compás 1: (OMD) Lento misterioso e rubato.
+Compás 1: (OMD) Lento sostenuto.
+Compás 1: (OMD) Lento, ma non troppo
+Compás 1: (OMD) Lento.
+Compás 1: (OMD) Lento. M. M. ([quarter] = 89.)
+Compás 1: (OMD) Lento. M: M: [quarter] = 89.
+Compás 1: (OMD) Les deulz
+Compás 1: (OMD) Lively
+Compás 1: (OMD) Loier mi fault
+Compás 1: (OMD) Luceat eis
+Compás 1: (OMD) Lux eterna
+Compás 1: (OMD) Lux solemnis/Repleti sunt omnes
+Compás 1: (OMD) M A Z U R K A .
+Compás 1: (OMD) M. M. ([quarter] = 138)
+Compás 1: (OMD) M. M. ([quarter] = 144)
+Compás 1: (OMD) M. M. ([quarter] = 89.)
+Compás 1: (OMD) M. M. [half-dot] = 54.
+Compás 1: (OMD) M. M. [quarter] = 108.
+Compás 1: (OMD) M. M. [quarter] = 132
+Compás 1: (OMD) M. M. [quarter] = 138.
+Compás 1: (OMD) M. M. [quarter] = 144.
+Compás 1: (OMD) M. M. [quarter] = 160.
+Compás 1: (OMD) M. M. [quarter] = 66.
+Compás 1: (OMD) M. M. [quarter] = 89.
+Compás 1: (OMD) M.M. [half note]=72
+Compás 1: (OMD) M.M. [half note]=84
+Compás 1: (OMD) M.M. [half-dot] = 50.
+Compás 1: (OMD) M.M. [half-dot] = 54
+Compás 1: (OMD) M.M. [half-note] = 69.
+Compás 1: (OMD) M.M. [quarter] 126.
+Compás 1: (OMD) M.M. [quarter] = 108.
+Compás 1: (OMD) M.M. [quarter] = 108. Allegro.
+Compás 1: (OMD) M.M. [quarter] = 116. Allegro deciso
+Compás 1: (OMD) M.M. [quarter] = 132.
+Compás 1: (OMD) M.M. [quarter] = 144.
+Compás 1: (OMD) M.M. [quarter] = 144. Legato assai.
+Compás 1: (OMD) M.M. [quarter] = 152. Allegro con fuoco.
+Compás 1: (OMD) M.M. [quarter] = 160
+Compás 1: (OMD) M.M. [quarter] = 160.
+Compás 1: (OMD) M.M. [quarter] = 160. Vivo e risoluto
+Compás 1: (OMD) M.M. [quarter] = 184
+Compás 1: (OMD) M.M. [quarter] = 60.
+Compás 1: (OMD) M.M. [quarter] = 63. Sostenuto.
+Compás 1: (OMD) M.M. [quarter] = 69.
+Compás 1: (OMD) M.M. [quarter] = 84.
+Compás 1: (OMD) M.M. [quarter]=104.
+Compás 1: (OMD) M.M. [quarter]=104. Allegretto.
+Compás 1: (OMD) M.M. [quarter]=138. (Marsz Obozowy)
+Compás 1: (OMD) MAESTOSO.
+Compás 1: (OMD) MAZUR
+Compás 1: (OMD) MENUETTO.
+Compás 1: (OMD) MESTO.
+Compás 1: (OMD) MODERATO
+Compás 1: (OMD) MODERATO con ANIMA. ([quarter]=126.)
+Compás 1: (OMD) MODERATO.
+Compás 1: (OMD) MODERATO. M. M. [quarter] = 100.
+Compás 1: (OMD) Ma bouche rit
+Compás 1: (OMD) Maestoso
+Compás 1: (OMD) Maestoso - Allegro
+Compás 1: (OMD) Maestoso molto.
+Compás 1: (OMD) Maestoso.
+Compás 1: (OMD) Maestosso
+Compás 1: (OMD) Maestuozo
+Compás 1: (OMD) Marcia
+Compás 1: (OMD) Marcia. Adagio maestoso.
+Compás 1: (OMD) Marcia. Grave.
+Compás 1: (OMD) Marschtempo
+Compás 1: (OMD) Mazur
+Compás 1: (OMD) Mazur.
+Compás 1: (OMD) Maëstoso, non troppo lento.
+Compás 1: (OMD) Maëstoso.
+Compás 1: (OMD) Meastoso.
+Compás 1: (OMD) Menuet and Trio
+Compás 1: (OMD) Menuett.
+Compás 1: (OMD) Menuetto
+Compás 1: (OMD) Menuetto + Trio
+Compás 1: (OMD) Menuetto I
+Compás 1: (OMD) Menuetto II
+Compás 1: (OMD) Menuetto alla zingarese
+Compás 1: (OMD) Menuetto: Allegretto
+Compás 1: (OMD) Menuetto: Allegro
+Compás 1: (OMD) Menuetto: Allegro ma non troppo
+Compás 1: (OMD) Menuetto: Moderato
+Compás 1: (OMD) Menuetto: Poco allegretto
+Compás 1: (OMD) Menuetto: Presto
+Compás 1: (OMD) Menuetto: Presto ma non troppo
+Compás 1: (OMD) Menuetto: un poco allegretto
+Compás 1: (OMD) Mesto
+Compás 1: (OMD) Mesto.
+Compás 1: (OMD) Met: [quarter] = 132.
+Compás 1: (OMD) Metr: M: [half-dot] = 76.
+Compás 1: (OMD) Metr: M: [quarter] = 132
+Compás 1: (OMD) Metr: M: [quarter] = 63.
+Compás 1: (OMD) Metr: M: [quarter] = 66.
+Compás 1: (OMD) Metr: M: [quarter]=160.
+Compás 1: (OMD) Metronome [quarter] = 152.
+Compás 1: (OMD) Metronome [quarter]=152.
+Compás 1: (OMD) Metr|e. [quarter] = 152.
+Compás 1: (OMD) Minuetto
+Compás 1: (OMD) Minuetto II
+Compás 1: (OMD) Minuetto: Allegretto
+Compás 1: (OMD) Mneuetto II
+Compás 1: (OMD) Moderato
+Compás 1: (OMD) Moderato ([quarter]=92)
+Compás 1: (OMD) Moderato assai
+Compás 1: (OMD) Moderato assai.
+Compás 1: (OMD) Moderato aſsai.
+Compás 1: (OMD) Moderato cantabile
+Compás 1: (OMD) Moderato cantabile.
+Compás 1: (OMD) Moderato con anima [quarter] = 126
+Compás 1: (OMD) Moderato con grazia.
+Compás 1: (OMD) Moderato poco lento
+Compás 1: (OMD) Moderato qasi Andante
+Compás 1: (OMD) Moderato quasi Andante
+Compás 1: (OMD) Moderato è  con leggerezza
+Compás 1: (OMD) Moderato,
+Compás 1: (OMD) Moderato, con anima
+Compás 1: (OMD) Moderato, non troppo lento.
+Compás 1: (OMD) Moderato.
+Compás 1: (OMD) Moderato. ([quarter]=92.)
+Compás 1: (OMD) Moderato. Tempo di Menuetto.
+Compás 1: (OMD) Moderato. [eighth] = 144
+Compás 1: (OMD) Moderato. [quarter]=72.
+Compás 1: (OMD) Moderatto
+Compás 1: (OMD) Modto
+Compás 1: (OMD) Modéré
+Compás 1: (OMD) Modéré, presque vif, énergique
+Compás 1: (OMD) Modéré, un peu lent, rêveur
+Compás 1: (OMD) Molto Allegro
+Compás 1: (OMD) Molto Allegro.
+Compás 1: (OMD) Molto Moderato
+Compás 1: (OMD) Molto Vivace
+Compás 1: (OMD) Molto adagio
+Compás 1: (OMD) Molto adagio -- Andante
+Compás 1: (OMD) Molto agitato
+Compás 1: (OMD) Molto agitato.
+Compás 1: (OMD) Molto allegro
+Compás 1: (OMD) Molto allegro.
+Compás 1: (OMD) Molto maestoso.
+Compás 1: (OMD) Molto moderato
+Compás 1: (OMD) Molto moderato ma giocoso
+Compás 1: (OMD) Molto sostenuto. ([eighth]=87.)
+Compás 1: (OMD) Molto vivace
+Compás 1: (OMD) Molto vivace.
+Compás 1: (OMD) Mouvement de Valse.
+Compás 1: (OMD) Mässig. [eighth] = 136
+Compás 1: (OMD) N 1.
+Compás 1: (OMD) N 6.
+Compás 1: (OMD) N. 2. Con grazio
+Compás 1: (OMD) N. 3.
+Compás 1: (OMD) N. 3. D: bravura
+Compás 1: (OMD) N. 4.
+Compás 1: (OMD) N. 5.
+Compás 1: (OMD) N. 7. Energico
+Compás 1: (OMD) N.° 2
+Compás 1: (OMD) N.° 3
+Compás 1: (OMD) N.° 4
+Compás 1: (OMD) N.° 5
+Compás 1: (OMD) Nec delectasti
+Compás 1: (OMD) Nec sine te manet
+Compás 1: (OMD) Neque elati
+Compás 1: (OMD) Nie za prędko
+Compás 1: (OMD) Niezbyt prędko.
+Compás 1: (OMD) Nisi quia
+Compás 1: (OMD) No 10. Andantino.
+Compás 1: (OMD) No 12. Allegretto.
+Compás 1: (OMD) No 13. Allegro.
+Compás 1: (OMD) No 2.
+Compás 1: (OMD) No 2. Grave
+Compás 1: (OMD) No 2. Moderato.
+Compás 1: (OMD) No 3.
+Compás 1: (OMD) No 5. All..o mod..to
+Compás 1: (OMD) No 52. Moderato
+Compás 1: (OMD) No 53. Allegretto
+Compás 1: (OMD) No 6. Adagio.
+Compás 1: (OMD) No 60. Andante
+Compás 1: (OMD) No 61. Allegretto
+Compás 1: (OMD) No 62. Allegretto
+Compás 1: (OMD) No 73. Maestoso.
+Compás 1: (OMD) No 75. Andantino
+Compás 1: (OMD) No 78. Andantino
+Compás 1: (OMD) No 84. Tempo di Mazur
+Compás 1: (OMD) No 85. Andante
+Compás 1: (OMD) No 88. Allegretto
+Compás 1: (OMD) No 89. Allegretto
+Compás 1: (OMD) No 91. Allegro Moderato.
+Compás 1: (OMD) No 93. Andante
+Compás 1: (OMD) No 94. Moderato
+Compás 1: (OMD) No 95. Moderato
+Compás 1: (OMD) No 96. Moderato
+Compás 1: (OMD) No 97. Tempo di Mazur.
+Compás 1: (OMD) No. 11. Allegro moderato.
+Compás 1: (OMD) No. 2.
+Compás 1: (OMD) No. 23.
+Compás 1: (OMD) No. 7.
+Compás 1: (OMD) No. 74. Allegretto
+Compás 1: (OMD) No.2. Andante.
+Compás 1: (OMD) Non commovebitur
+Compás 1: (OMD) Non troppo largo.
+Compás 1: (OMD) Non troppo lento.
+Compás 1: (OMD) Non troppo presto.
+Compás 1: (OMD) Nr: Maestoso
+Compás 1: (OMD) Nº 2.
+Compás 1: (OMD) Nº 3.
+Compás 1: (OMD) O beate Sebastiane
+Compás 1: (OMD) O beate Sebastianue
+Compás 1: (OMD) O domine Jesu Christe
+Compás 1: (OMD) O florens rosa
+Compás 1: (OMD) O intemerata
+Compás 1: (OMD) O lux beatissima
+Compás 1: (OMD) O salutaris hostia
+Compás 1: (OMD) OFFERTORIUM.
+Compás 1: (OMD) Or au facteur
+Compás 1: (OMD) Orbis terrarum
+Compás 1: (OMD) P I A N O .
+Compás 1: (OMD) POLONAISE.
+Compás 1: (OMD) POLONAISE. No.1.
+Compás 1: (OMD) PRESTO ([half]=112)
+Compás 1: (OMD) PRESTO CON FUOCO.
+Compás 1: (OMD) PRESTO MA NON TROPPO.
+Compás 1: (OMD) PRESTO.
+Compás 1: (OMD) Pars I: O Domine Jesu Christe
+Compás 1: (OMD) Pastorale ([quarter-dot]=76)
+Compás 1: (OMD) Pater de celis, deus
+Compás 1: (OMD) Patrem
+Compás 1: (OMD) Patrem omnipotentem
+Compás 1: (OMD) Patrem omnipotentum
+Compás 1: (OMD) Per parte del excelso
+Compás 1: (OMD) Perfunde celi rore
+Compás 1: (OMD) Pesante
+Compás 1: (OMD) Piu lento
+Compás 1: (OMD) Più lento.
+Compás 1: (OMD) Più mosso.
+Compás 1: (OMD) Più tosto Lento espressivo
+Compás 1: (OMD) Plainlif
+Compás 1: (OMD) Pleni
+Compás 1: (OMD) Pleni sunt celi
+Compás 1: (OMD) Poco Adagio.
+Compás 1: (OMD) Poco Adagio. Allegro
+Compás 1: (OMD) Poco Allegro
+Compás 1: (OMD) Poco adagio
+Compás 1: (OMD) Poco adagio, cantabile
+Compás 1: (OMD) Poco allegretto
+Compás 1: (OMD) Poco allegro
+Compás 1: (OMD) Poco moderato
+Compás 1: (OMD) Poco moderato, ma tranquillamente.
+Compás 1: (OMD) Poco vivace
+Compás 1: (OMD) Polacca maestoso.
+Compás 1: (OMD) Polka Moderato.
+Compás 1: (OMD) Polonaise.
+Compás 1: (OMD) Polonez
+Compás 1: (OMD) Polonez Gwiazdka. 1872 r.
+Compás 1: (OMD) Polonez N.º 2.
+Compás 1: (OMD) Polonez.
+Compás 1: (OMD) Pomposo, [[Maëstoso]], non troppo lento.
+Compás 1: (OMD) Precipitato
+Compás 1: (OMD) Prestissimo ([quarter]=144)
+Compás 1: (OMD) Prestissimo.
+Compás 1: (OMD) Presto
+Compás 1: (OMD) Presto ([half]=104)
+Compás 1: (OMD) Presto ([quarter-dot]=104)
+Compás 1: (OMD) Presto Finale
+Compás 1: (OMD) Presto assai
+Compás 1: (OMD) Presto con fuoco
+Compás 1: (OMD) Presto con fuoco.
+Compás 1: (OMD) Presto e scherzando
+Compás 1: (OMD) Presto ma non troppo
+Compás 1: (OMD) Presto non tanto
+Compás 1: (OMD) Presto non tanto.
+Compás 1: (OMD) Presto scherzando e capriccioso.
+Compás 1: (OMD) Presto, con brio.
+Compás 1: (OMD) Presto, ma non troppo
+Compás 1: (OMD) Presto.
+Compás 1: (OMD) Presto. [half] = 132.
+Compás 1: (OMD) Presto. [quarter] = 152
+Compás 1: (OMD) Prima Pars: Aspice Domine
+Compás 1: (OMD) Prima Pars: Ave sanctissima Maria
+Compás 1: (OMD) Prima Pars: Beati omnes
+Compás 1: (OMD) Prima Pars: Hec dies quam fecit
+Compás 1: (OMD) Prima Pars: Illuminavit eum Dominus
+Compás 1: (OMD) Prima Pars: Nuptie facte sunt
+Compás 1: (OMD) Prima Pars: O Domine Jesu Christe
+Compás 1: (OMD) Prima Pars: O Jesu Christe miserere mei
+Compás 1: (OMD) Prima Pars: Paradisi portas aperuit
+Compás 1: (OMD) Prima Pars: Peccantem me cotidie
+Compás 1: (OMD) Prima Pars: Petrus apostolus
+Compás 1: (OMD) Prima pars
+Compás 1: (OMD) Prima pars: A subitanea et improvisa morte
+Compás 1: (OMD) Prima pars: Ad Dominum cum tribularer
+Compás 1: (OMD) Prima pars: Adiuva me, Domine
+Compás 1: (OMD) Prima pars: Alleluia confitemini Domino
+Compás 1: (OMD) Prima pars: Alleluia surrexit Dominus
+Compás 1: (OMD) Prima pars: Alma redemptoris mater
+Compás 1: (OMD) Prima pars: Angele Dei
+Compás 1: (OMD) Prima pars: Angelus Domini
+Compás 1: (OMD) Prima pars: Angelus ad pastores
+Compás 1: (OMD) Prima pars: Ascendens Christus
+Compás 1: (OMD) Prima pars: Aspice, Domine
+Compás 1: (OMD) Prima pars: Assumpta est Maria
+Compás 1: (OMD) Prima pars: Attendite populi de longe
+Compás 1: (OMD) Prima pars: Ave Domina mea
+Compás 1: (OMD) Prima pars: Ave Maria gratia plena
+Compás 1: (OMD) Prima pars: Ave Maria, gratia plena
+Compás 1: (OMD) Prima pars: Ave ancilla trinitatis
+Compás 1: (OMD) Prima pars: Ave gloriose beatissime Antoni
+Compás 1: (OMD) Prima pars: Ave gratia plena
+Compás 1: (OMD) Prima pars: Ave mater matris Dei
+Compás 1: (OMD) Prima pars: Ave regina celorum
+Compás 1: (OMD) Prima pars: Ave sanctissima Maria
+Compás 1: (OMD) Prima pars: Ave stella matutina
+Compás 1: (OMD) Prima pars: Ave, Domine Jesu Christe, Rex benedicte, verbum patris
+Compás 1: (OMD) Prima pars: Ave, sanctissima Maria
+Compás 1: (OMD) Prima pars: Beata dei genitrix Maria
+Compás 1: (OMD) Prima pars: Beata viscera Maria virginis
+Compás 1: (OMD) Prima pars: Beati omnes qui timent Dominum
+Compás 1: (OMD) Prima pars: Beatus Johannes apostolus
+Compás 1: (OMD) Prima pars: Beatus Stephanus
+Compás 1: (OMD) Prima pars: Benedicta es celorum regina
+Compás 1: (OMD) Prima pars: Benedixit Deus noe
+Compás 1: (OMD) Prima pars: Cantate Domino
+Compás 1: (OMD) Prima pars: Caro mea vere est cibus
+Compás 1: (OMD) Prima pars: Christe, qui lux es
+Compás 1: (OMD) Prima pars: Christus resurgens
+Compás 1: (OMD) Prima pars: Christus vincit, Christus regnat
+Compás 1: (OMD) Prima pars: Clamavi ad dominum cum tribularer
+Compás 1: (OMD) Prima pars: Clare sanctorum
+Compás 1: (OMD) Prima pars: Cognoscimus, Domine
+Compás 1: (OMD) Prima pars: Collegerunt pontifices
+Compás 1: (OMD) Prima pars: Completi sunt dies Mariae
+Compás 1: (OMD) Prima pars: Conditor alme siderum
+Compás 1: (OMD) Prima pars: Confirma hoc Deus
+Compás 1: (OMD) Prima pars: Congratulamini mihi
+Compás 1: (OMD) Prima pars: Congratulamini mihi omnes
+Compás 1: (OMD) Prima pars: Congregati sunt
+Compás 1: (OMD) Prima pars: Consolator captivorum
+Compás 1: (OMD) Prima pars: Cum aegrotasset Job
+Compás 1: (OMD) Prima pars: Cum inducerent
+Compás 1: (OMD) Prima pars: Da pacem, Domine
+Compás 1: (OMD) Prima pars: De profundis clamavi
+Compás 1: (OMD) Prima pars: Deduc me, Domine
+Compás 1: (OMD) Prima pars: Descendi in hortum nucum
+Compás 1: (OMD) Prima pars: Deus in adiutorium meum
+Compás 1: (OMD) Prima pars: Deus in nomine tuo
+Compás 1: (OMD) Prima pars: Deus regnorum
+Compás 1: (OMD) Prima pars: Dicite in magni
+Compás 1: (OMD) Prima pars: Dies est laetitiae
+Compás 1: (OMD) Prima pars: Dignare me
+Compás 1: (OMD) Prima pars: Domine Jesu Christe, fili dei
+Compás 1: (OMD) Prima pars: Domine bonum est
+Compás 1: (OMD) Prima pars: Domine quis habitabit
+Compás 1: (OMD) Prima pars: Domini est terra
+Compás 1: (OMD) Prima pars: Dominus regit me
+Compás 1: (OMD) Prima pars: Dulcis mater
+Compás 1: (OMD) Prima pars: Dum complerentur
+Compás 1: (OMD) Prima pars: Dum steteritis
+Compás 1: (OMD) Prima pars: Ecce Deus salvator meus
+Compás 1: (OMD) Prima pars: Ecce Maria genuit
+Compás 1: (OMD) Prima pars: Ecce concipies et paries filium
+Compás 1: (OMD) Prima pars: Ecce quam bonum
+Compás 1: (OMD) Prima pars: Ecce tu pulcra es
+Compás 1: (OMD) Prima pars: Ecclesiam tuam Deus
+Compás 1: (OMD) Prima pars: Ego sum qui sum
+Compás 1: (OMD) Prima pars: Egregie Dei martyr
+Compás 1: (OMD) Prima pars: Elisabeth beatissima
+Compás 1: (OMD) Prima pars: Elizabeth Zacharie
+Compás 1: (OMD) Prima pars: Emendemus in melius
+Compás 1: (OMD) Prima pars: Eripe me, Domine
+Compás 1: (OMD) Prima pars: Esto nobis
+Compás 1: (OMD) Prima pars: Estote fortes
+Compás 1: (OMD) Prima pars: Exaltabo te Deus meus
+Compás 1: (OMD) Prima pars: Exaudiat te Dominus
+Compás 1: (OMD) Prima pars: Factor orbis/Veni domine
+Compás 1: (OMD) Prima pars: Festum nunc celebre
+Compás 1: (OMD) Prima pars: Fiere attropos
+Compás 1: (OMD) Prima pars: Filiae Jerusalem
+Compás 1: (OMD) Prima pars: Gaude Barbara
+Compás 1: (OMD) Prima pars: Gaude, Dei genitrix
+Compás 1: (OMD) Prima pars: Gaudeamus omnes in Domino
+Compás 1: (OMD) Prima pars: Genuit puerpera
+Compás 1: (OMD) Prima pars: Gloriosa principes
+Compás 1: (OMD) Prima pars: Gloriosus Dei apostolus Bartholomeus
+Compás 1: (OMD) Prima pars: Haec dies
+Compás 1: (OMD) Prima pars: Hec est illa dulcis rosa
+Compás 1: (OMD) Prima pars: Hesterna die
+Compás 1: (OMD) Prima pars: Hic accipiet benedictionem
+Compás 1: (OMD) Prima pars: Hodie salvator mundi
+Compás 1: (OMD) Prima pars: Homo quidam
+Compás 1: (OMD) Prima pars: Impetum inimicorum
+Compás 1: (OMD) Prima pars: In convertendo Dominus
+Compás 1: (OMD) Prima pars: In illo tempore
+Compás 1: (OMD) Prima pars: In illo tempore postquam
+Compás 1: (OMD) Prima pars: In nomine Jesu
+Compás 1: (OMD) Prima pars: In te Domine speravi
+Compás 1: (OMD) Prima pars: In te, Domine, speravi
+Compás 1: (OMD) Prima pars: In tua patientia
+Compás 1: (OMD) Prima pars: Inter preclarissimas virtutes/Estote fortes
+Compás 1: (OMD) Prima pars: Intercessio, quesumus, Domine
+Compás 1: (OMD) Prima pars: Intonuit de celo Dominus
+Compás 1: (OMD) Prima pars: Inviolata, integra et casta es
+Compás 1: (OMD) Prima pars: Inviolata, integra, et casta es
+Compás 1: (OMD) Prima pars: Jam non dicam
+Compás 1: (OMD) Prima pars: Jerusalem luge
+Compás 1: (OMD) Prima pars: Jocundare Jerusalem
+Compás 1: (OMD) Prima pars: Johannes Jesu Christo
+Compás 1: (OMD) Prima pars: Joseph sancte
+Compás 1: (OMD) Prima pars: Lauda Jerusalem Dominum
+Compás 1: (OMD) Prima pars: Lauda Jerusalem dominum
+Compás 1: (OMD) Prima pars: Laudate Dominum omnes gentes
+Compás 1: (OMD) Prima pars: Lectio actuum apostolorum
+Compás 1: (OMD) Prima pars: Letatus sum
+Compás 1: (OMD) Prima pars: Letetur omne seculum
+Compás 1: (OMD) Prima pars: Magnum hereditatis mysterium
+Compás 1: (OMD) Prima pars: Maria virgo, prescripta
+Compás 1: (OMD) Prima pars: Mater floreat
+Compás 1: (OMD) Prima pars: Mille quintentis/Requiem
+Compás 1: (OMD) Prima pars: Mirabile misterium
+Compás 1: (OMD) Prima pars: Miseremini mei
+Compás 1: (OMD) Prima pars: Miserere mei Deus
+Compás 1: (OMD) Prima pars: Miserere mei Domine
+Compás 1: (OMD) Prima pars: Missus est angelus Gabriel
+Compás 1: (OMD) Prima pars: Moriens lux
+Compás 1: (OMD) Prima pars: Nativitas tua, Dei genitrix virgo
+Compás 1: (OMD) Prima pars: Ne reminiscaris, Domine
+Compás 1: (OMD) Prima pars: Nesciens mater
+Compás 1: (OMD) Prima pars: Nesciens mater virgo virum
+Compás 1: (OMD) Prima pars: Nigra sum
+Compás 1: (OMD) Prima pars: Nil maius superi vident
+Compás 1: (OMD) Prima pars: Nisi Dominus
+Compás 1: (OMD) Prima pars: Noe noe hodie salvator mundi
+Compás 1: (OMD) Prima pars: Non moriar sed vivam
+Compás 1: (OMD) Prima pars: Nunc dimittis
+Compás 1: (OMD) Prima pars: Nunc dimittis servum tuum
+Compás 1: (OMD) Prima pars: Nunc, Deus, ad requiem
+Compás 1: (OMD) Prima pars: O Beata infantia
+Compás 1: (OMD) Prima pars: O Domine Jesu Christe
+Compás 1: (OMD) Prima pars: O Jesu Christe miserere mei
+Compás 1: (OMD) Prima pars: O benignissime Domine Jesu
+Compás 1: (OMD) Prima pars: O bone Jesu
+Compás 1: (OMD) Prima pars: O clemens o pia virgo
+Compás 1: (OMD) Prima pars: O dulcis amica
+Compás 1: (OMD) Prima pars: O dulcissime Domine Jesu Christe
+Compás 1: (OMD) Prima pars: O felix desiderium
+Compás 1: (OMD) Prima pars: O gemma clarissima
+Compás 1: (OMD) Prima pars: O magnae admirationis
+Compás 1: (OMD) Prima pars: O magnum misterium
+Compás 1: (OMD) Prima pars: O mundi Domina
+Compás 1: (OMD) Prima pars: O pulcherrima mulierum
+Compás 1: (OMD) Prima pars: O pulcherrima virgo
+Compás 1: (OMD) Prima pars: O sacrum convivium
+Compás 1: (OMD) Prima pars: O salutaris hostia
+Compás 1: (OMD) Prima pars: O virgo benedicta
+Compás 1: (OMD) Prima pars: O vos qui transitis
+Compás 1: (OMD) Prima pars: Omnes sancti tui quesumus
+Compás 1: (OMD) Prima pars: Omnipotens sempiterne Deus
+Compás 1: (OMD) Prima pars: Omnis pulchritudo Domini
+Compás 1: (OMD) Prima pars: Pange, lingua, gloriosi
+Compás 1: (OMD) Prima pars: Partus et integritas
+Compás 1: (OMD) Prima pars: Patefacte sunt
+Compás 1: (OMD) Prima pars: Pater noster
+Compás 1: (OMD) Prima pars: Pater poster
+Compás 1: (OMD) Prima pars: Patris sapientia, veritas divina
+Compás 1: (OMD) Prima pars: Peccata mea
+Compás 1: (OMD) Prima pars: Per lignum salvi facti sumus
+Compás 1: (OMD) Prima pars: Philomena praevia
+Compás 1: (OMD) Prima pars: Ploremus omnes et lacrimemur
+Compás 1: (OMD) Prima pars: Postquam consummati sunt
+Compás 1: (OMD) Prima pars: Precatus est Moyses
+Compás 1: (OMD) Prima pars: Puer natus est
+Compás 1: (OMD) Prima pars: Quam pulchra es
+Compás 1: (OMD) Prima pars: Quare fremerunt gentes
+Compás 1: (OMD) Prima pars: Quare fremuerunt gentes
+Compás 1: (OMD) Prima pars: Quare tristis
+Compás 1: (OMD) Prima pars: Quem dicunt homines
+Compás 1: (OMD) Prima pars: Qui colis Ausoniam
+Compás 1: (OMD) Prima pars: Qui confidunt in Domino
+Compás 1: (OMD) Prima pars: Quid vitam sine te
+Compás 1: (OMD) Prima pars: Quis dabit oculis
+Compás 1: (OMD) Prima pars: Quomodo fiet
+Compás 1: (OMD) Prima pars: Quosque non reverteris pax
+Compás 1: (OMD) Prima pars: Recordare Domine
+Compás 1: (OMD) Prima pars: Recordare, Domine
+Compás 1: (OMD) Prima pars: Regem archangelorum
+Compás 1: (OMD) Prima pars: Regem regum Dominum
+Compás 1: (OMD) Prima pars: Regina caeli, laetare / Conscendit iubilans
+Compás 1: (OMD) Prima pars: Regina celi
+Compás 1: (OMD) Prima pars: Regina celi, letare
+Compás 1: (OMD) Prima pars: Retribuere dignare, Domine
+Compás 1: (OMD) Prima pars: Rogamus te
+Compás 1: (OMD) Prima pars: Rubum quem viderat Moyses
+Compás 1: (OMD) Prima pars: Saluto te
+Compás 1: (OMD) Prima pars: Salva nos ab excidio
+Compás 1: (OMD) Prima pars: Salva nos, Domine
+Compás 1: (OMD) Prima pars: Salvator mundi
+Compás 1: (OMD) Prima pars: Salve Barbara
+Compás 1: (OMD) Prima pars: Salve regina
+Compás 1: (OMD) Prima pars: Salve, crux sancta
+Compás 1: (OMD) Prima pars: Salve, regina Barbara
+Compás 1: (OMD) Prima pars: Sancta Maria Virgo, intercede
+Compás 1: (OMD) Prima pars: Sancta Maria succurre miseris
+Compás 1: (OMD) Prima pars: Sancta Maria, mater Dei
+Compás 1: (OMD) Prima pars: Sancta Maria, succurre miseris
+Compás 1: (OMD) Prima pars: Sancta Maria, virgo virginum
+Compás 1: (OMD) Prima pars: Sancta Trinitas
+Compás 1: (OMD) Prima pars: Sancta et immaculata virginitas
+Compás 1: (OMD) Prima pars: Sancta trinitas
+Compás 1: (OMD) Prima pars: Si bona suscepimus
+Compás 1: (OMD) Prima pars: Sub tuum presedium
+Compás 1: (OMD) Prima pars: Sub tuum presidium
+Compás 1: (OMD) Prima pars: Sufficiebat
+Compás 1: (OMD) Prima pars: Sufficiebat nobis paupertas
+Compás 1: (OMD) Prima pars: Sum tuus in vita
+Compás 1: (OMD) Prima pars: Sum tuus in vita I
+Compás 1: (OMD) Prima pars: Super flumina babilonis
+Compás 1: (OMD) Prima pars: Suscepimus Deus misericordiam tuam
+Compás 1: (OMD) Prima pars: Tanto tempore
+Compás 1: (OMD) Prima pars: Te matrem
+Compás 1: (OMD) Prima pars: Tempus est ut revertar
+Compás 1: (OMD) Prima pars: Tota pulchra es
+Compás 1: (OMD) Prima pars: Tribus miraculis
+Compás 1: (OMD) Prima pars: Tristia fata boni
+Compás 1: (OMD) Prima pars: Tua est potentia
+Compás 1: (OMD) Prima pars: Usquequo Domine
+Compás 1: (OMD) Prima pars: Usquequo, Domine
+Compás 1: (OMD) Prima pars: Veni sancte spiritus
+Compás 1: (OMD) Prima pars: Veni, sponsa Christi
+Compás 1: (OMD) Prima pars: Verbum bonum
+Compás 1: (OMD) Prima pars: Verbum bonum et suave
+Compás 1: (OMD) Prima pars: Vergine sacra
+Compás 1: (OMD) Prima pars: Victime pascali laudes
+Compás 1: (OMD) Prima pars: Vide, Domine, afflictionem nostram
+Compás 1: (OMD) Prima pars: Videns Dominus
+Compás 1: (OMD) Prima pars: Vidi speciosam
+Compás 1: (OMD) Prima pars: Virga Jesse floruit
+Compás 1: (OMD) Prima pars: Virgo Christi egregia
+Compás 1: (OMD) Prima pars: Virgo carens criminibus
+Compás 1: (OMD) Prima pars: Virgo gloriosa Christi
+Compás 1: (OMD) Prima pars: Virgo prudentissima, quo progrederis
+Compás 1: (OMD) Prima pars: Visita, quesumus Domine
+Compás 1: (OMD) Prima pars: Vivo ego, dicit Dominus
+Compás 1: (OMD) Prima pars: Vox de celis
+Compás 1: (OMD) Prima pars: Vox in rama
+Compás 1: (OMD) Prima pars: Vulnerasti cor meum
+Compás 1: (OMD) Quasi Andante
+Compás 1: (OMD) Quasi Andantino
+Compás 1: (OMD) Quasi Andantino.
+Compás 1: (OMD) Quasi Mazurka, ma moderato.
+Compás 1: (OMD) Quasi allegretto.
+Compás 1: (OMD) Quasi andante.
+Compás 1: (OMD) Quasi improvisazione
+Compás 1: (OMD) Que pleust a dieu
+Compás 1: (OMD) Que puis je avoir vous meffait
+Compás 1: (OMD) Qui ambulant
+Compás 1: (OMD) Qui habitas
+Compás 1: (OMD) Qui mane iunctum
+Compás 1: (OMD) Qui propter nos homines
+Compás 1: (OMD) Qui sedes
+Compás 1: (OMD) Qui tollis
+Compás 1: (OMD) Qui tollis I
+Compás 1: (OMD) Quia fecit
+Compás 1: (OMD) Quia visitavit
+Compás 1: (OMD) Quis dabit pacem
+Compás 1: (OMD) Quoniam audisti
+Compás 1: (OMD) Quoniam in eternum
+Compás 1: (OMD) ROMANCE.
+Compás 1: (OMD) RONDO.
+Compás 1: (OMD) Refrain
+Compás 1: (OMD) Regina celi
+Compás 1: (OMD) Requiem
+Compás 1: (OMD) Requiescant
+Compás 1: (OMD) Resvellies vous
+Compás 1: (OMD) Rex gloriae
+Compás 1: (OMD) Rex glorie
+Compás 1: (OMD) Risoluto ed agitato
+Compás 1: (OMD) Romance.
+Compás 1: (OMD) Rondeau
+Compás 1: (OMD) Rondo Elégant. \nAllegro giojoso.
+Compás 1: (OMD) Rondo.
+Compás 1: (OMD) Rondo: Allegretto grazioso
+Compás 1: (OMD) Rondo: Allegro
+Compás 1: (OMD) Ruhig
+Compás 1: (OMD) S'en tel estat
+Compás 1: (OMD) SANCTUS.
+Compás 1: (OMD) SCHERZO.
+Compás 1: (OMD) SIELAUKA\nla Champêtre.
+Compás 1: (OMD) SLOW-FOX
+Compás 1: (OMD) SOSTENUTO.
+Compás 1: (OMD) SOTTO VOCE.
+Compás 1: (OMD) SOUVENIR DE POSEN. \nMAZOURKA - CARACTERISTIQUE \npar \nH. WIENIAWSKI. \n Op.3
+Compás 1: (OMD) Salve Regina. Pour les frères et soeurs
+Compás 1: (OMD) Salve regina
+Compás 1: (OMD) Salve regis mater sanctissima/Hic est sacerdos
+Compás 1: (OMD) Sanctorum meritis
+Compás 1: (OMD) Sanctus
+Compás 1: (OMD) Sanctus and Osanna
+Compás 1: (OMD) Sanctus and Pleni
+Compás 1: (OMD) Sanctus and Pleni(?)
+Compás 1: (OMD) Sanctus, Pleni, and Osanna I
+Compás 1: (OMD) Sanctus-Pleni-Osanna I
+Compás 1: (OMD) Sanft.
+Compás 1: (OMD) Scherzando vivace - Presto
+Compás 1: (OMD) Scherzando.
+Compás 1: (OMD) Scherzo Allegro
+Compás 1: (OMD) Scherzo. Allegro
+Compás 1: (OMD) Scherzo: Allegretto
+Compás 1: (OMD) Scherzo: Allegro
+Compás 1: (OMD) Scherzo: Allegro molto
+Compás 1: (OMD) Scherzo: Andante scherzoso quasi Allegretto
+Compás 1: (OMD) Schnelle viertel
+Compás 1: (OMD) Se vostre doux cueur
+Compás 1: (OMD) Secunda Pars: Cantate canticum
+Compás 1: (OMD) Secunda pars
+Compás 1: (OMD) Secunda pars&colon; Non accedet ad te malum
+Compás 1: (OMD) Secunda pars&colon; Nostra ut pura pectora
+Compás 1: (OMD) Secunda pars: A custodia
+Compás 1: (OMD) Secunda pars: Accede, nuntia
+Compás 1: (OMD) Secunda pars: Audi virgo puerpera
+Compás 1: (OMD) Secunda pars: Audi, auditui meo
+Compás 1: (OMD) Secunda pars: Ave Maria
+Compás 1: (OMD) Secunda pars: Ave solem
+Compás 1: (OMD) Secunda pars: Ave virginum decus
+Compás 1: (OMD) Secunda pars: Benedic, Domine
+Compás 1: (OMD) Secunda pars: Christe, audi nos
+Compás 1: (OMD) Secunda pars: Christus pungavit
+Compás 1: (OMD) Secunda pars: Cor meum conturbatum est
+Compás 1: (OMD) Secunda pars: Cujus latus
+Compás 1: (OMD) Secunda pars: Cum ergo
+Compás 1: (OMD) Secunda pars: D'ung aultre amer
+Compás 1: (OMD) Secunda pars: Descendi in ortum meum
+Compás 1: (OMD) Secunda pars: Deus autem noster in celo
+Compás 1: (OMD) Secunda pars: Dic nobis, Maria
+Compás 1: (OMD) Secunda pars: Doc nobis Maria
+Compás 1: (OMD) Secunda pars: Dominus pars haereditatis meae
+Compás 1: (OMD) Secunda pars: Eia ergo, advocata nostra
+Compás 1: (OMD) Secunda pars: Eia mater
+Compás 1: (OMD) Secunda pars: Eja ergo
+Compás 1: (OMD) Secunda pars: Et introibo ad altare
+Compás 1: (OMD) Secunda pars: Et ut avertat
+Compás 1: (OMD) Secunda pars: Felle sitim magni regis
+Compás 1: (OMD) Secunda pars: Filie Jerusalem
+Compás 1: (OMD) Secunda pars: Filii tui
+Compás 1: (OMD) Secunda pars: Fuit homo missus
+Compás 1: (OMD) Secunda pars: Fuit homo missus a Deo
+Compás 1: (OMD) Secunda pars: Hic erit magnus
+Compás 1: (OMD) Secunda pars: Illumina oculos meos
+Compás 1: (OMD) Secunda pars: In principio
+Compás 1: (OMD) Secunda pars: Ipsum regem angelorum
+Compás 1: (OMD) Secunda pars: Is absolutos
+Compás 1: (OMD) Secunda pars: Justus est, Domine
+Compás 1: (OMD) Secunda pars: Labia tua lilia
+Compás 1: (OMD) Secunda pars: Latius in numerum canit/La sol fa mi re ut
+Compás 1: (OMD) Secunda pars: Laudate nomen
+Compás 1: (OMD) Secunda pars: Mandasti justitiam
+Compás 1: (OMD) Secunda pars: Manus tue domine
+Compás 1: (OMD) Secunda pars: Memor fui dierum antiquorum
+Compás 1: (OMD) Secunda pars: O crux
+Compás 1: (OMD) Secunda pars: O domine adoro te in cruce vulneratum
+Compás 1: (OMD) Secunda pars: Oculi ejus
+Compás 1: (OMD) Secunda pars: Patrem immensae majestatis
+Compás 1: (OMD) Secunda pars: Per illud ave prolatum
+Compás 1: (OMD) Secunda pars: Portio mea
+Compás 1: (OMD) Secunda pars: Posuisti in nervo pedem meum
+Compás 1: (OMD) Secunda pars: Quando natus est
+Compás 1: (OMD) Secunda pars: Qui fuit Heli
+Compás 1: (OMD) Secunda pars: Quoniam confirmata est
+Compás 1: (OMD) Secunda pars: Quoniam est
+Compás 1: (OMD) Secunda pars: Resurrexit
+Compás 1: (OMD) Secunda pars: Sagitta Jonathe
+Compás 1: (OMD) Secunda pars: Salve corpus Jesu Christi
+Compás 1: (OMD) Secunda pars: Scio enim
+Compás 1: (OMD) Secunda pars: Sepulcrum Christi viventis
+Compás 1: (OMD) Secunda pars: Si ego commissi
+Compás 1: (OMD) Secunda pars: Solomon autem genuit
+Compás 1: (OMD) Secunda pars: Tibi domina gloriosa
+Compás 1: (OMD) Secunda pars: Tollite hostias
+Compás 1: (OMD) Secunda pars: Tu potis es
+Compás 1: (OMD) Secunda pars: Tu que genuisti
+Compás 1: (OMD) Secunda pars: Tu que genuisti / Gaude virgo
+Compás 1: (OMD) Secunda pars: Tulerunt dominum
+Compás 1: (OMD) Secunda pars: Turbatus est a furore
+Compás 1: (OMD) Secunda pars: Ubi pascas
+Compás 1: (OMD) Secunda pars: Ut collocet eum
+Compás 1: (OMD) Secunda pars: Verumtamen
+Compás 1: (OMD) Secunda pars: Virtus sancti spiritus
+Compás 1: (OMD) Secunda pars: Voluntarie sacrificabo
+Compás 1: (OMD) Secundum magnam
+Compás 1: (OMD) Sede a dextris
+Compás 1: (OMD) Sehr rash
+Compás 1: (OMD) Sehr ruhig und zart
+Compás 1: (OMD) Semplice.
+Compás 1: (OMD) Sicut cervus
+Compás 1: (OMD) Simplice
+Compás 1: (OMD) Sitivit anima mea
+Compás 1: (OMD) Son corps est plaint
+Compás 1: (OMD) Sostenuto
+Compás 1: (OMD) Sostenuto.
+Compás 1: (OMD) Sostenuto. M.M. [quarter] = 63.
+Compás 1: (OMD) Sostetuno.
+Compás 1: (OMD) Sotto voce ([half-dot]=63)
+Compás 1: (OMD) TEMA.\nAllegretto tranquillo. (Grazioso.)
+Compás 1: (OMD) TEMPO BLUESA.
+Compás 1: (OMD) TEMPO di MARCIA.
+Compás 1: (OMD) TROIS MAZURKAS. par F. CHOPIN
+Compás 1: (OMD) Tarde
+Compás 1: (OMD) Te decet laus
+Compás 1: (OMD) Te eternum patrem
+Compás 1: (OMD) Tema con variazioni: Tempo di Menuetto.
+Compás 1: (OMD) Tempo Alla Mazurek
+Compás 1: (OMD) Tempo Giusto.
+Compás 1: (OMD) Tempo Mazurka.
+Compás 1: (OMD) Tempo Mesto
+Compás 1: (OMD) Tempo alla Mazurek.
+Compás 1: (OMD) Tempo alla mazurek
+Compás 1: (OMD) Tempo di Marcia
+Compás 1: (OMD) Tempo di Marcia.
+Compás 1: (OMD) Tempo di Mazur
+Compás 1: (OMD) Tempo di Mazur Ballo Polacco.
+Compás 1: (OMD) Tempo di Mazur.
+Compás 1: (OMD) Tempo di Mazurka.
+Compás 1: (OMD) Tempo di Menuetto
+Compás 1: (OMD) Tempo di Minuetto
+Compás 1: (OMD) Tempo di Polacca
+Compás 1: (OMD) Tempo di Polacca Maestoso
+Compás 1: (OMD) Tempo di Polacca.
+Compás 1: (OMD) Tempo di Pollaca. moderato
+Compás 1: (OMD) Tempo di Valca
+Compás 1: (OMD) Tempo di Valse lento.
+Compás 1: (OMD) Tempo di marcia
+Compás 1: (OMD) Tempo di marcia.
+Compás 1: (OMD) Tempo di tango
+Compás 1: (OMD) Tempo giusto.
+Compás 1: (OMD) Tempo giusto. ([half-dot]=76.)
+Compás 1: (OMD) Tempo moderato
+Compás 1: (OMD) Tempo moderato.
+Compás 1: (OMD) Tout plasir doncqs ie veulx habandonner
+Compás 1: (OMD) Tranquillo. [quarter] = 69
+Compás 1: (OMD) Trio
+Compás 1: (OMD) Trio.
+Compás 1: (OMD) Très lent
+Compás 1: (OMD) Très modéré
+Compás 1: (OMD) Tu felix et sacre permanes
+Compás 1: (OMD) Tu suscipe
+Compás 1: (OMD) Un peu vif
+Compás 1: (OMD) Un poco adagio
+Compás 1: (OMD) Unde veniet
+Compás 1: (OMD) Une fois a vous / Si dedero
+Compás 1: (OMD) V. Scene. Ulana. Urok. \nAllegro.
+Compás 1: (OMD) V. Scene.\nUlana Urok.
+Compás 1: (OMD) VIVACE ([half]=108)
+Compás 1: (OMD) VIVACE.
+Compás 1: (OMD) VIVACE. M.M. [half-dot] = 63.
+Compás 1: (OMD) VIVO.
+Compás 1: (OMD) Ventris obstruso
+Compás 1: (OMD) Venus n'aproche
+Compás 1: (OMD) Vere passum
+Compás 1: (OMD) Versus 1: In exitu Israel
+Compás 1: (OMD) Versus 1: Salve regina / Stella maris
+Compás 1: (OMD) Versus 1: Salve, rex aeternae misericordiae
+Compás 1: (OMD) Versus 2: Vita, dulcedo
+Compás 1: (OMD) Versus: Venite, comedite panem meum
+Compás 1: (OMD) Vexilla regis
+Compás 1: (OMD) Vif et gai
+Compás 1: (OMD) Vif et léger
+Compás 1: (OMD) Virelai
+Compás 1: (OMD) Virga tua
+Compás 1: (OMD) Vita dulcedo
+Compás 1: (OMD) Vivace
+Compás 1: (OMD) Vivace assai
+Compás 1: (OMD) Vivace aſsai
+Compás 1: (OMD) Vivace legato.
+Compás 1: (OMD) Vivace molto legato.
+Compás 1: (OMD) Vivace.
+Compás 1: (OMD) Vivace. ([half-dot]=60)
+Compás 1: (OMD) Vivaci assai
+Compás 1: (OMD) Vivo
+Compás 1: (OMD) Vivo e risoluto
+Compás 1: (OMD) Vivo, con spirito, giojoso.
+Compás 1: (OMD) Vivo, ma non troppo. ([quarter]=160)
+Compás 1: (OMD) Vivo.
+Compás 1: (OMD) Vocem orationis
+Compás 1: (OMD) Walc
+Compás 1: (OMD) Wstęp do Mazura. Maestoso.
+Compás 1: (OMD) XXIII.
+Compás 1: (OMD) [Secunda pars:] Hora qui ductus tercia
+Compás 1: (OMD) [[Grave.]]
+Compás 1: (OMD) [half-note] = 112.
+Compás 1: (OMD) [half-note] = 72
+Compás 1: (OMD) [half-note] = 80.
+Compás 1: (OMD) [half-note]=69.
+Compás 1: (OMD) [half] = 112
+Compás 1: (OMD) [half] = 64.
+Compás 1: (OMD) [half] = 72.
+Compás 1: (OMD) [half] = 80
+Compás 1: (OMD) [half] = 88.
+Compás 1: (OMD) [quarter-dot] 50.
+Compás 1: (OMD) [quarter-dot] = 152.
+Compás 1: (OMD) [quarter] = 12.
+Compás 1: (OMD) [quarter] = 120
+Compás 1: (OMD) [quarter] = 144.
+Compás 1: (OMD) [quarter] = 69.
+Compás 1: (OMD) [quarter]=116
+Compás 1: (OMD) [quarter]=56
+Compás 1: (OMD) adagio
+Compás 1: (OMD) adagio.
+Compás 1: (OMD) agitato.
+Compás 1: (OMD) alla Mazur ma p[i]u moderato
+Compás 1: (OMD) alla Polacca.
+Compás 1: (OMD) allegretto giacoso.
+Compás 1: (OMD) allegro
+Compás 1: (OMD) allegro mod.
+Compás 1: (OMD) allegro moderato.
+Compás 1: (OMD) allegro molto
+Compás 1: (OMD) allegro.
+Compás 1: (OMD) allo
+Compás 1: (OMD) allo Moderato
+Compás 1: (OMD) allo molto
+Compás 1: (OMD) allo. - moderato
+Compás 1: (OMD) andante cantabile.
+Compás 1: (OMD) andante.
+Compás 1: (OMD) andantino
+Compás 1: (OMD) andantino quasi Allegretto
+Compás 1: (OMD) andantino un poco agitato.
+Compás 1: (OMD) andantino.
+Compás 1: (OMD) cantabile
+Compás 1: (OMD) eternam
+Compás 1: (OMD) in medio umbre mortis
+Compás 1: (OMD) maestoso.
+Compás 1: (OMD) moderato
+Compás 1: (OMD) molto agitato
+Compás 1: (OMD) molto allegro
+Compás 1: (OMD) none
+Compás 1: (OMD) piú mosſo
+Compás 1: (OMD) poco Adagio
+Compás 1: (OMD) rex glorie
+Compás 1: (OMD) sostenuto.
+Compás 1: (OMD) un poco Allegretto
+Compás 1: <music21.tempo.MetronomeMark 54[Langsam Quarter=None>
+Compás 1: <music21.tempo.MetronomeMark 54[Maessig] !! Tempo for the introduction, which is not encoded Quarter=None>
+Compás 1: <music21.tempo.MetronomeMark 81[Langsam Quarter=None>
+Compás 1: <music21.tempo.MetronomeMark 81[Maessig, geschwind Quarter=None>
+Compás 1: <music21.tempo.MetronomeMark Allegretto Quarter=108>
+Compás 1: <music21.tempo.MetronomeMark Allegro moderato Quarter=128>
+Compás 1: <music21.tempo.MetronomeMark Brightly Quarter=None>
+Compás 1: <music21.tempo.MetronomeMark Etwas bewegt Quarter=None>
+Compás 1: <music21.tempo.MetronomeMark Etwas geschwind Quarter=None>
+Compás 1: <music21.tempo.MetronomeMark Etwas geschwinder] !! Tempo for the singer's first entrance, which *is* encoded Quarter=None>
+Compás 1: <music21.tempo.MetronomeMark Etwas langsam Quarter=56>
+Compás 1: <music21.tempo.MetronomeMark Etwas lebhaft Quarter=None>
+Compás 1: <music21.tempo.MetronomeMark Geschwind, feurig Quarter=None>
+Compás 1: <music21.tempo.MetronomeMark Langsam Quarter=56>
+Compás 1: <music21.tempo.MetronomeMark Langsam, andaechtig Quarter=None>
+Compás 1: <music21.tempo.MetronomeMark Lieblich Quarter=None>
+Compás 1: <music21.tempo.MetronomeMark Lively Quarter=None>
+Compás 1: <music21.tempo.MetronomeMark Maessig Quarter=None>
+Compás 1: <music21.tempo.MetronomeMark Moderato Quarter=92>
+Compás 1: <music21.tempo.MetronomeMark Moderato con spirito Quarter=92>
+Compás 1: <music21.tempo.MetronomeMark Molto moderato Quarter=92>
+Compás 1: <music21.tempo.MetronomeMark Nicht zu geschwind, doch kraeftig Quarter=None>
+Compás 1: <music21.tempo.MetronomeMark Nicht zu schnell Quarter=132>
+Compás 1: <music21.tempo.MetronomeMark Quarter=100>
+Compás 1: <music21.tempo.MetronomeMark Quarter=102>
+Compás 1: <music21.tempo.MetronomeMark Quarter=103.5>
+Compás 1: <music21.tempo.MetronomeMark Quarter=103>
+Compás 1: <music21.tempo.MetronomeMark Quarter=104>
+Compás 1: <music21.tempo.MetronomeMark Quarter=105>
+Compás 1: <music21.tempo.MetronomeMark Quarter=112>
+Compás 1: <music21.tempo.MetronomeMark Quarter=114>
+Compás 1: <music21.tempo.MetronomeMark Quarter=116>
+Compás 1: <music21.tempo.MetronomeMark Quarter=117.7>
+Compás 1: <music21.tempo.MetronomeMark Quarter=1200>
+Compás 1: <music21.tempo.MetronomeMark Quarter=124>
+Compás 1: <music21.tempo.MetronomeMark Quarter=135>
+Compás 1: <music21.tempo.MetronomeMark Quarter=148>
+Compás 1: <music21.tempo.MetronomeMark Quarter=150>
+Compás 1: <music21.tempo.MetronomeMark Quarter=152>
+Compás 1: <music21.tempo.MetronomeMark Quarter=154>
+Compás 1: <music21.tempo.MetronomeMark Quarter=156>
+Compás 1: <music21.tempo.MetronomeMark Quarter=164>
+Compás 1: <music21.tempo.MetronomeMark Quarter=172>
+Compás 1: <music21.tempo.MetronomeMark Quarter=176>
+Compás 1: <music21.tempo.MetronomeMark Quarter=180>
+Compás 1: <music21.tempo.MetronomeMark Quarter=188>
+Compás 1: <music21.tempo.MetronomeMark Quarter=189>
+Compás 1: <music21.tempo.MetronomeMark Quarter=192>
+Compás 1: <music21.tempo.MetronomeMark Quarter=196>
+Compás 1: <music21.tempo.MetronomeMark Quarter=197>
+Compás 1: <music21.tempo.MetronomeMark Quarter=198>
+Compás 1: <music21.tempo.MetronomeMark Quarter=200>
+Compás 1: <music21.tempo.MetronomeMark Quarter=204>
+Compás 1: <music21.tempo.MetronomeMark Quarter=20>
+Compás 1: <music21.tempo.MetronomeMark Quarter=216>
+Compás 1: <music21.tempo.MetronomeMark Quarter=220>
+Compás 1: <music21.tempo.MetronomeMark Quarter=222>
+Compás 1: <music21.tempo.MetronomeMark Quarter=224>
+Compás 1: <music21.tempo.MetronomeMark Quarter=225>
+Compás 1: <music21.tempo.MetronomeMark Quarter=228>
+Compás 1: <music21.tempo.MetronomeMark Quarter=232>
+Compás 1: <music21.tempo.MetronomeMark Quarter=240>
+Compás 1: <music21.tempo.MetronomeMark Quarter=24>
+Compás 1: <music21.tempo.MetronomeMark Quarter=252>
+Compás 1: <music21.tempo.MetronomeMark Quarter=260>
+Compás 1: <music21.tempo.MetronomeMark Quarter=264>
+Compás 1: <music21.tempo.MetronomeMark Quarter=270>
+Compás 1: <music21.tempo.MetronomeMark Quarter=280>
+Compás 1: <music21.tempo.MetronomeMark Quarter=288>
+Compás 1: <music21.tempo.MetronomeMark Quarter=28>
+Compás 1: <music21.tempo.MetronomeMark Quarter=296>
+Compás 1: <music21.tempo.MetronomeMark Quarter=300>
+Compás 1: <music21.tempo.MetronomeMark Quarter=312>
+Compás 1: <music21.tempo.MetronomeMark Quarter=320>
+Compás 1: <music21.tempo.MetronomeMark Quarter=336>
+Compás 1: <music21.tempo.MetronomeMark Quarter=340>
+Compás 1: <music21.tempo.MetronomeMark Quarter=35>
+Compás 1: <music21.tempo.MetronomeMark Quarter=360>
+Compás 1: <music21.tempo.MetronomeMark Quarter=36>
+Compás 1: <music21.tempo.MetronomeMark Quarter=384>
+Compás 1: <music21.tempo.MetronomeMark Quarter=400>
+Compás 1: <music21.tempo.MetronomeMark Quarter=408>
+Compás 1: <music21.tempo.MetronomeMark Quarter=450>
+Compás 1: <music21.tempo.MetronomeMark Quarter=520>
+Compás 1: <music21.tempo.MetronomeMark Quarter=63>
+Compás 1: <music21.tempo.MetronomeMark Quarter=69>
+Compás 1: <music21.tempo.MetronomeMark Quarter=75>
+Compás 1: <music21.tempo.MetronomeMark Quarter=76.9>
+Compás 1: <music21.tempo.MetronomeMark Quarter=76>
+Compás 1: <music21.tempo.MetronomeMark Quarter=95>
+Compás 1: <music21.tempo.MetronomeMark Quarter=96>
+Compás 1: <music21.tempo.MetronomeMark Quarter=98>
+Compás 1: <music21.tempo.MetronomeMark Quarter=99>
+Compás 1: <music21.tempo.MetronomeMark Sehr langsam Quarter=56>
+Compás 1: <music21.tempo.MetronomeMark Sehr langsam, aengstlich Quarter=None>
+Compás 1: <music21.tempo.MetronomeMark Sehr langsam, wehmuetig Quarter=None>
+Compás 1: <music21.tempo.MetronomeMark Ziemlich geschwind, kraeftig Quarter=None>
+Compás 1: <music21.tempo.MetronomeMark Ziemlich lebhaft Quarter=None>
+Compás 1: <music21.tempo.MetronomeMark adagietto Quarter=64>
+Compás 1: <music21.tempo.MetronomeMark adagietto Quarter=66>
+Compás 1: <music21.tempo.MetronomeMark adagietto Quarter=67>
+Compás 1: <music21.tempo.MetronomeMark adagietto Quarter=68>
+Compás 1: <music21.tempo.MetronomeMark adagio Quarter=55.4>
+Compás 1: <music21.tempo.MetronomeMark adagio Quarter=56.4>
+Compás 1: <music21.tempo.MetronomeMark adagio Quarter=56>
+Compás 1: <music21.tempo.MetronomeMark adagio Quarter=57.2>
+Compás 1: <music21.tempo.MetronomeMark adagio Quarter=58>
+Compás 1: <music21.tempo.MetronomeMark allegretto Quarter=106.4>
+Compás 1: <music21.tempo.MetronomeMark allegretto Quarter=106>
+Compás 1: <music21.tempo.MetronomeMark allegretto Quarter=107>
+Compás 1: <music21.tempo.MetronomeMark allegretto Quarter=108>
+Compás 1: <music21.tempo.MetronomeMark allegretto Quarter=109.6>
+Compás 1: <music21.tempo.MetronomeMark allegretto Quarter=110>
+Compás 1: <music21.tempo.MetronomeMark allegrissimo Quarter=138>
+Compás 1: <music21.tempo.MetronomeMark allegrissimo Quarter=139.4>
+Compás 1: <music21.tempo.MetronomeMark allegrissimo Quarter=140>
+Compás 1: <music21.tempo.MetronomeMark allegrissimo Quarter=142>
+Compás 1: <music21.tempo.MetronomeMark allegro Quarter=132>
+Compás 1: <music21.tempo.MetronomeMark allegro Quarter=133>
+Compás 1: <music21.tempo.MetronomeMark allegro Quarter=134>
+Compás 1: <music21.tempo.MetronomeMark allegro moderato Quarter=126>
+Compás 1: <music21.tempo.MetronomeMark allegro moderato Quarter=128>
+Compás 1: <music21.tempo.MetronomeMark allegro moderato Quarter=129>
+Compás 1: <music21.tempo.MetronomeMark allegro moderato Quarter=130>
+Compás 1: <music21.tempo.MetronomeMark andante Quarter=70>
+Compás 1: <music21.tempo.MetronomeMark andante Quarter=72>
+Compás 1: <music21.tempo.MetronomeMark andante Quarter=73.3>
+Compás 1: <music21.tempo.MetronomeMark andante Quarter=74>
+Compás 1: <music21.tempo.MetronomeMark andante moderato Quarter=84>
+Compás 1: <music21.tempo.MetronomeMark andante moderato Quarter=85>
+Compás 1: <music21.tempo.MetronomeMark andantino Quarter=78>
+Compás 1: <music21.tempo.MetronomeMark andantino Quarter=80>
+Compás 1: <music21.tempo.MetronomeMark andantino Quarter=81>
+Compás 1: <music21.tempo.MetronomeMark andantino Quarter=82>
+Compás 1: <music21.tempo.MetronomeMark animato Quarter=118>
+Compás 1: <music21.tempo.MetronomeMark animato Quarter=120>
+Compás 1: <music21.tempo.MetronomeMark grave Quarter=38>
+Compás 1: <music21.tempo.MetronomeMark grave Quarter=40>
+Compás 1: <music21.tempo.MetronomeMark largamente Quarter=30>
+Compás 1: <music21.tempo.MetronomeMark largamente Quarter=32>
+Compás 1: <music21.tempo.MetronomeMark largamente Quarter=34>
+Compás 1: <music21.tempo.MetronomeMark larghetto Quarter=59.3>
+Compás 1: <music21.tempo.MetronomeMark larghetto Quarter=60>
+Compás 1: <music21.tempo.MetronomeMark larghetto Quarter=62>
+Compás 1: <music21.tempo.MetronomeMark largo Quarter=44>
+Compás 1: <music21.tempo.MetronomeMark largo Quarter=45>
+Compás 1: <music21.tempo.MetronomeMark largo Quarter=46>
+Compás 1: <music21.tempo.MetronomeMark largo Quarter=48>
+Compás 1: <music21.tempo.MetronomeMark lento Quarter=50>
+Compás 1: <music21.tempo.MetronomeMark lento Quarter=51.1>
+Compás 1: <music21.tempo.MetronomeMark lento Quarter=52>
+Compás 1: <music21.tempo.MetronomeMark lento Quarter=54>
+Compás 1: <music21.tempo.MetronomeMark maestoso Quarter=86>
+Compás 1: <music21.tempo.MetronomeMark maestoso Quarter=88>
+Compás 1: <music21.tempo.MetronomeMark maestoso Quarter=89.4>
+Compás 1: <music21.tempo.MetronomeMark maestoso Quarter=89>
+Compás 1: <music21.tempo.MetronomeMark maestoso Quarter=90>
+Compás 1: <music21.tempo.MetronomeMark moderate Quarter=91.4>
+Compás 1: <music21.tempo.MetronomeMark moderate Quarter=92>
+Compás 1: <music21.tempo.MetronomeMark moderato Quarter=92>
+Compás 1: <music21.tempo.MetronomeMark molto allegro Quarter=144>
+Compás 1: <music21.tempo.MetronomeMark molto allegro Quarter=145>
+Compás 1: <music21.tempo.MetronomeMark prestissimo Quarter=208>
+Compás 1: <music21.tempo.MetronomeMark presto Quarter=182>
+Compás 1: <music21.tempo.MetronomeMark presto Quarter=184>
+Compás 1: <music21.tempo.MetronomeMark vivace Quarter=160>
+Compás 1: <music21.tempo.MetronomeMark vivace Quarter=162>
+Compás 1: <music21.tempo.MetronomeMark vivacissimo Quarter=168>
+Compás 1: <music21.tempo.MetronomeMark vivacissimo Quarter=170>
+Compás 205: <music21.tempo.MetronomeMark Quarter=300>
+Compás 205: <music21.tempo.MetronomeMark Quarter=480>
+Compás 209: <music21.tempo.MetronomeMark Quarter=156>
+Compás 209: <music21.tempo.MetronomeMark allegro moderato Quarter=126>
+Compás 20: <music21.tempo.MetronomeMark Quarter=96>
+Compás 20: <music21.tempo.MetronomeMark lento Quarter=54>
+Compás 211: <music21.tempo.MetronomeMark Quarter=150>
+Compás 216: <music21.tempo.MetronomeMark lento Quarter=54>
+Compás 218: <music21.tempo.MetronomeMark Quarter=300>
+Compás 21: <music21.tempo.MetronomeMark allegro Quarter=132>
+Compás 21: <music21.tempo.MetronomeMark grave Quarter=40>
+Compás 220: <music21.tempo.MetronomeMark Quarter=320>
+Compás 220: <music21.tempo.MetronomeMark animato Quarter=120>
+Compás 221: <music21.tempo.MetronomeMark lento Quarter=54>
+Compás 222: <music21.tempo.MetronomeMark animato Quarter=120>
+Compás 224: <music21.tempo.MetronomeMark animato Quarter=120>
+Compás 225: <music21.tempo.MetronomeMark Quarter=360>
+Compás 225: <music21.tempo.MetronomeMark adagio Quarter=55>
+Compás 227: <music21.tempo.MetronomeMark andante moderato Quarter=84>
+Compás 22: <music21.tempo.MetronomeMark Quarter=76>
+Compás 232: <music21.tempo.MetronomeMark Quarter=112>
+Compás 233: <music21.tempo.MetronomeMark Quarter=154>
+Compás 233: <music21.tempo.MetronomeMark Quarter=300>
+Compás 237: <music21.tempo.MetronomeMark Quarter=384>
+Compás 23: <music21.tempo.MetronomeMark Quarter=152>
+Compás 23: <music21.tempo.MetronomeMark Quarter=340>
+Compás 23: <music21.tempo.MetronomeMark largamente Quarter=30>
+Compás 23: <music21.tempo.MetronomeMark molto allegro Quarter=144>
+Compás 247: <music21.tempo.MetronomeMark Quarter=480>
+Compás 249: <music21.tempo.MetronomeMark Quarter=150>
+Compás 24: <music21.tempo.MetronomeMark Quarter=400>
+Compás 24: <music21.tempo.MetronomeMark animato Quarter=120>
+Compás 251: <music21.tempo.MetronomeMark andante moderato Quarter=84>
+Compás 257: <music21.tempo.MetronomeMark Quarter=34.5>
+Compás 25: <music21.tempo.MetronomeMark Quarter=152>
+Compás 25: <music21.tempo.MetronomeMark Quarter=480>
+Compás 265: <music21.tempo.MetronomeMark Quarter=150>
+Compás 26: <music21.tempo.MetronomeMark Quarter=336>
+Compás 26: <music21.tempo.MetronomeMark Quarter=96>
+Compás 274: <music21.tempo.MetronomeMark Quarter=96>
+Compás 27: <music21.tempo.MetronomeMark Quarter=104>
+Compás 280: <music21.tempo.MetronomeMark Quarter=312>
+Compás 281: <music21.tempo.MetronomeMark Quarter=150>
+Compás 28: <music21.tempo.MetronomeMark Quarter=315>
+Compás 290: <music21.tempo.MetronomeMark Quarter=300>
+Compás 297: <music21.tempo.MetronomeMark Quarter=154>
+Compás 2: <music21.tempo.MetronomeMark presto Quarter=184>
+Compás 309: <music21.tempo.MetronomeMark grave Quarter=40>
+Compás 30: <music21.tempo.MetronomeMark Quarter=164>
+Compás 319: <music21.tempo.MetronomeMark Quarter=180>
+Compás 31: <music21.tempo.MetronomeMark allegro moderato Quarter=126>
+Compás 31: <music21.tempo.MetronomeMark animato Quarter=120>
+Compás 322: <music21.tempo.MetronomeMark largo Quarter=48>
+Compás 326: <music21.tempo.MetronomeMark Quarter=100>
+Compás 326: <music21.tempo.MetronomeMark allegrissimo Quarter=140>
+Compás 327: <music21.tempo.MetronomeMark andantino Quarter=80>
+Compás 32: <music21.tempo.MetronomeMark Quarter=272>
+Compás 32: <music21.tempo.MetronomeMark grave Quarter=40>
+Compás 33: <music21.tempo.MetronomeMark Quarter=100>
+Compás 33: <music21.tempo.MetronomeMark Quarter=150>
+Compás 33: <music21.tempo.MetronomeMark Quarter=180>
+Compás 33: <music21.tempo.MetronomeMark Quarter=188>
+Compás 33: <music21.tempo.MetronomeMark Quarter=384>
+Compás 33: <music21.tempo.MetronomeMark Quarter=96>
+Compás 33: <music21.tempo.MetronomeMark andantino Quarter=80>
+Compás 33: <music21.tempo.MetronomeMark molto allegro Quarter=144>
+Compás 34: <music21.tempo.MetronomeMark Quarter=480>
+Compás 35: <music21.tempo.MetronomeMark Quarter=220>
+Compás 35: <music21.tempo.MetronomeMark moderate Quarter=92>
+Compás 361: <music21.tempo.MetronomeMark andante moderato Quarter=84>
+Compás 36: <music21.tempo.MetronomeMark allegro Quarter=132>
+Compás 37: <music21.tempo.MetronomeMark Quarter=232>
+Compás 384: <music21.tempo.MetronomeMark Quarter=320>
+Compás 38: <music21.tempo.MetronomeMark Quarter=420>
+Compás 38: <music21.tempo.MetronomeMark maestoso Quarter=88>
+Compás 39: <music21.tempo.MetronomeMark Quarter=190>
+Compás 39: <music21.tempo.MetronomeMark allegro Quarter=132>
+Compás 40: <music21.tempo.MetronomeMark Quarter=250>
+Compás 40: <music21.tempo.MetronomeMark Quarter=400>
+Compás 40: <music21.tempo.MetronomeMark Quarter=480>
+Compás 41: <music21.tempo.MetronomeMark Quarter=336>
+Compás 41: <music21.tempo.MetronomeMark Quarter=400>
+Compás 41: <music21.tempo.MetronomeMark vivace Quarter=160>
+Compás 42: <music21.tempo.MetronomeMark Quarter=112>
+Compás 42: <music21.tempo.MetronomeMark Quarter=300>
+Compás 42: <music21.tempo.MetronomeMark Quarter=384>
+Compás 43: <music21.tempo.MetronomeMark Quarter=384>
+Compás 44: <music21.tempo.MetronomeMark Quarter=100>
+Compás 44: <music21.tempo.MetronomeMark Quarter=104>
+Compás 44: <music21.tempo.MetronomeMark Quarter=420>
+Compás 44: <music21.tempo.MetronomeMark Quarter=96>
+Compás 44: <music21.tempo.MetronomeMark allegretto Quarter=108>
+Compás 45: <music21.tempo.MetronomeMark Quarter=200>
+Compás 45: <music21.tempo.MetronomeMark allegro Quarter=132>
+Compás 45: <music21.tempo.MetronomeMark maestoso Quarter=88>
+Compás 46: <music21.tempo.MetronomeMark Quarter=112>
+Compás 47: <music21.tempo.MetronomeMark allegro moderato Quarter=126>
+Compás 487: <music21.tempo.MetronomeMark Quarter=154>
+Compás 48: <music21.tempo.MetronomeMark Quarter=112>
+Compás 493: <music21.tempo.MetronomeMark molto allegro Quarter=144>
+Compás 49: <music21.tempo.MetronomeMark Quarter=154>
+Compás 49: <music21.tempo.MetronomeMark adagietto Quarter=64>
+Compás 4: <music21.tempo.MetronomeMark andantino Quarter=80>
+Compás 51: <music21.tempo.MetronomeMark andante Quarter=72>
+Compás 52: <music21.tempo.MetronomeMark Quarter=96>
+Compás 52: <music21.tempo.MetronomeMark larghetto Quarter=60>
+Compás 53: <music21.tempo.MetronomeMark animato Quarter=120>
+Compás 53: <music21.tempo.MetronomeMark larghetto Quarter=60>
+Compás 54: <music21.tempo.MetronomeMark Quarter=116>
+Compás 557: <music21.tempo.MetronomeMark Quarter=280>
+Compás 55: <music21.tempo.MetronomeMark Quarter=320>
+Compás 56: <music21.tempo.MetronomeMark Quarter=336>
+Compás 57: <music21.tempo.MetronomeMark Quarter=148>
+Compás 58: <music21.tempo.MetronomeMark Quarter=360>
+Compás 5: <music21.tempo.MetronomeMark Quarter=100>
+Compás 5: <music21.tempo.MetronomeMark Quarter=112>
+Compás 5: <music21.tempo.MetronomeMark moderate Quarter=92>
+Compás 60: <music21.tempo.MetronomeMark Quarter=448>
+Compás 60: <music21.tempo.MetronomeMark allegro moderato Quarter=126>
+Compás 62: <music21.tempo.MetronomeMark Quarter=315>
+Compás 63: <music21.tempo.MetronomeMark Quarter=408>
+Compás 65: <music21.tempo.MetronomeMark Quarter=150>
+Compás 65: <music21.tempo.MetronomeMark Quarter=20>
+Compás 65: <music21.tempo.MetronomeMark larghetto Quarter=60>
+Compás 65: <music21.tempo.MetronomeMark maestoso Quarter=88>
+Compás 66: <music21.tempo.MetronomeMark Quarter=400>
+Compás 66: <music21.tempo.MetronomeMark adagietto Quarter=64>
+Compás 683: <music21.tempo.MetronomeMark Quarter=154>
+Compás 69: <music21.tempo.MetronomeMark andante Quarter=72>
+Compás 6: <music21.tempo.MetronomeMark Quarter=100>
+Compás 6: <music21.tempo.MetronomeMark andante Quarter=72>
+Compás 6: <music21.tempo.MetronomeMark andantino Quarter=80>
+Compás 6: <music21.tempo.MetronomeMark grave Quarter=40>
+Compás 6: <music21.tempo.MetronomeMark moderate Quarter=92>
+Compás 71: <music21.tempo.MetronomeMark allegrissimo Quarter=138>
+Compás 72: <music21.tempo.MetronomeMark Quarter=400>
+Compás 73: <music21.tempo.MetronomeMark Quarter=384>
+Compás 73: <music21.tempo.MetronomeMark Quarter=400>
+Compás 75: <music21.tempo.MetronomeMark largo Quarter=48>
+Compás 760: <music21.tempo.MetronomeMark Quarter=154>
+Compás 766: <music21.tempo.MetronomeMark Quarter=154>
+Compás 76: <music21.tempo.MetronomeMark Quarter=378>
+Compás 77: <music21.tempo.MetronomeMark Quarter=99>
+Compás 78: <music21.tempo.MetronomeMark Quarter=384>
+Compás 78: <music21.tempo.MetronomeMark Quarter=480>
+Compás 7: <music21.tempo.MetronomeMark Quarter=100>
+Compás 7: <music21.tempo.MetronomeMark Quarter=152>
+Compás 7: <music21.tempo.MetronomeMark Quarter=156>
+Compás 7: <music21.tempo.MetronomeMark andante moderato Quarter=84>
+Compás 7: <music21.tempo.MetronomeMark andantino Quarter=80>
+Compás 7: <music21.tempo.MetronomeMark molto allegro Quarter=144>
+Compás 80: <music21.tempo.MetronomeMark Quarter=264>
+Compás 80: <music21.tempo.MetronomeMark Quarter=272>
+Compás 80: <music21.tempo.MetronomeMark andante moderato Quarter=84>
+Compás 81: <music21.tempo.MetronomeMark Quarter=152>
+Compás 81: <music21.tempo.MetronomeMark Quarter=154>
+Compás 81: <music21.tempo.MetronomeMark molto allegro Quarter=144>
+Compás 829: <music21.tempo.MetronomeMark Quarter=280>
+Compás 841: <music21.tempo.MetronomeMark Quarter=154>
+Compás 84: <music21.tempo.MetronomeMark Quarter=320>
+Compás 84: <music21.tempo.MetronomeMark Quarter=424>
+Compás 86: <music21.tempo.MetronomeMark Quarter=104>
+Compás 86: <music21.tempo.MetronomeMark Quarter=63>
+Compás 86: <music21.tempo.MetronomeMark allegretto Quarter=108>
+Compás 87: <music21.tempo.MetronomeMark Quarter=400>
+Compás 87: <music21.tempo.MetronomeMark lento Quarter=50>
+Compás 88: <music21.tempo.MetronomeMark Quarter=480>
+Compás 8: <music21.tempo.MetronomeMark allegro moderato Quarter=128>
+Compás 8: <music21.tempo.MetronomeMark animato Quarter=120>
+Compás 8: <music21.tempo.MetronomeMark molto allegro Quarter=144>
+Compás 92: <music21.tempo.MetronomeMark Quarter=420>
+Compás 93: <music21.tempo.MetronomeMark Quarter=400>
+Compás 94: <music21.tempo.MetronomeMark Quarter=114>
+Compás 94: <music21.tempo.MetronomeMark Quarter=216>
+Compás 95: <music21.tempo.MetronomeMark lento Quarter=54>
+Compás 96: <music21.tempo.MetronomeMark lento Quarter=54>
+Compás 97: <music21.tempo.MetronomeMark Quarter=150>
+Compás 98: <music21.tempo.MetronomeMark andantino Quarter=80>
+Compás 98: <music21.tempo.MetronomeMark animato Quarter=120>
+Compás 99: <music21.tempo.MetronomeMark lento Quarter=54>
+Compás 9: <music21.tempo.MetronomeMark Quarter=100>
+Compás 9: <music21.tempo.MetronomeMark Quarter=152>
+Compás 9: <music21.tempo.MetronomeMark allegretto Quarter=108>
+Compás 9: <music21.tempo.MetronomeMark allegro Quarter=132>
+Compás 9: <music21.tempo.MetronomeMark andantino Quarter=80>
+Compás 9: <music21.tempo.MetronomeMark animato Quarter=120>
+Compás 9: <music21.tempo.MetronomeMark larghetto Quarter=60>
+Compás 9: <music21.tempo.MetronomeMark molto allegro Quarter=144>
