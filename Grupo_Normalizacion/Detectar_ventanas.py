@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from multiprocessing import Pool, cpu_count
 from numba import njit
+from scipy.signal import periodogram
 
 def generar_uniforme_centrada(n, varianza):
     # Calcular el límite superior e inferior de la distribución uniforme
@@ -78,19 +79,32 @@ def detector_ventanas_criticas_parallel(X, window_size, umbral_percentil, paso):
     resultados = np.array(resultados)
     return resultados[~np.isnan(resultados)]
 
+def periodicidad(signal, fs = 1.0):
+    f , Pxx = periodogram(signal, fs = fs)
+    if len(Pxx) <= 1:
+        return 0.0
+    Pxx = Pxx[1:]
+    total_energy = np.sum(Pxx)
+    if total_energy == 0:
+        return 0.0
+    max_energy = np.max(Pxx)
+    return max_energy/total_energy
 
 def logistic_map(r, x):
     return r * x * (1 - x)
 
 def plot_orbit_diagram(graficar=True, r_min = 3.45, r_max = 3.6, num_points_per_r=300,
- num_iterations_discard=1000, num_iterations_display=1_000_000):
+ num_iterations_discard=1000, num_iterations_display=100_000):
 
     r_values = []
     orbit_values = []
     for r in np.concatenate((np.linspace(3.45,3.56994,200),np.linspace(3.56994,3.6,100)[1:])):
         
         x = 0.6
- 
+
+        for _ in range(num_iterations_discard):
+            x = np.clip(x, 0.0, 1.0)
+            x = logistic_map(r, x) + generar_uniforme_centrada(1, 1e-10)[0]
         for _ in range(num_iterations_display):
             x = np.clip(x, 0.0, 1.0)
             x = logistic_map(r, x) + generar_uniforme_centrada(1, 1e-10)[0]
@@ -111,23 +125,25 @@ def plotear(orbit_values, r_values):
         if r_values[i] != r_values[i+1]:
             r_single_orbit = orbit_values[a:i+1]
             a = i+1
-            J_ventanas = detector_ventanas_criticas_parallel(r_single_orbit,window_size=500, umbral_percentil=95, paso=100)
-            J = J_univariante(J_ventanas)
+            J_ventanas = detector_ventanas_criticas_parallel(r_single_orbit,window_size=100, umbral_percentil=95, paso=100)
+            # J = J_univariante(J_ventanas)
+            J_values.append(periodicidad(J_ventanas))
             print(r_values[i])
-            J_values.append(J)
+            # J_values.append(J)
             J_index.append(r_values[i])
     
     #ultimo valor de r
     r_single_orbit = orbit_values[a:]
     
-    J_ventanas = detector_ventanas_criticas_parallel(r_single_orbit, window_size=500, umbral_percentil=95, paso=100)
-    J = J_univariante(J_ventanas)
-    J_values.append(J)
+    J_ventanas = detector_ventanas_criticas_parallel(r_single_orbit, window_size=100, umbral_percentil=95, paso=100)
+    # J = J_univariante(J_ventanas)
+    J_values.append(periodicidad(J_ventanas))
+    # J_values.append(J)
     J_index.append(r_values[len(r_values) - 1])
 
     #A partir de aqui, lyapunob y J fueron calculados
-    np.save('J_ventanas_criticas_logistic_r_critico.npy',J_values)
-    # J_values = np.load('J_ventanas_criticas_logisstic.npy')
+    np.save('J_ventanas_criticas_periodicidad.npy',J_values)
+    # J_values = np.load('J_ventanas_criticas_logistic_r_critico_transit.npy')
     if True:
         fig, ax1 = plt.subplots(figsize=(10,6))
         

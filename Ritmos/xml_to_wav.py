@@ -6,10 +6,10 @@ import os
 environment.set('musescoreDirectPNGPath', r"C:\Program Files\MuseScore 4\bin\MuseScore4.exe")
 
 # Ruta a tu archivo MusicXML
-archivo_xml = "partitura_generada.xml"
+archivo_xml = "partitura_escala_180.xml"
 
 # Archivo de salida MP3
-archivo_wav = "partitura.wav"
+archivo_wav = "partitura_escala180.wav"
 
 # Llama a MuseScore desde la línea de comandos para exportar directamente a MP3
 subprocess.run([

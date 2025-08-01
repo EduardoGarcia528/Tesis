@@ -7,6 +7,7 @@ import pandas as pd
 import multiprocessing as mp
 from sklearn.linear_model import LinearRegression
 # import import_ipynb
+from numba import njit
 from scipy.interpolate import PchipInterpolator
 # import seaborn as sns
 
@@ -331,8 +332,61 @@ def mean_d(array):
     distancias = np.abs(np.diff(array))
     return np.mean(distancias)
 
+@njit
+def construir_vectores(ff1, ff2):
+    vectores = []
+    for i in range(len(ff1) - 1):
+        p1x, p1y = ff1[i], ff2[i]
+        p2x, p2y = ff1[i + 1], ff2[i + 1]
+        cuadrantes = np.array([
+            [p2x - p1x, p2y - p1y],
+            [p2x - p1x, p2y + 2*np.pi - p1y],
+            [p2x + 2*np.pi - p1x, p2y + 2*np.pi - p1y],
+            [p2x + 2*np.pi - p1x, p2y - p1y],
+            [p2x + 2*np.pi - p1x, p2y - 2*np.pi - p1y],
+            [p2x - p1x, p2y - 2*np.pi - p1y],
+            [p2x - 2*np.pi - p1x, p2y - 2*np.pi - p1y],
+            [p2x - 2*np.pi - p1x, p2y - p1y],
+            [p2x - 2*np.pi - p1x, p2y + 2*np.pi - p1y],
+        ])
+
+        min_dist = 1e10
+        min_index = 0
+        for j in range(9):
+            dx = cuadrantes[j][0]
+            dy = cuadrantes[j][1]
+            dist = np.sqrt((dx)**2 + (dy)**2)
+            if dist < min_dist:
+                min_dist = dist
+                min_index = j
+
+        mejor = cuadrantes[min_index]
+        vectores.append([mejor[0], mejor[1]])
+
+    return np.array(vectores)
+
+def J_null_numba(N):
+    ff1 = np.random.uniform(-np.pi, np.pi, N)
+    ff2 = np.random.uniform(-np.pi, np.pi, N)
+    vectores = construir_vectores(ff1, ff2)
+    norms = np.linalg.norm(vectores, axis=1, keepdims=True)
+    v_norm = np.where(norms == 0, vectores, vectores / norms)
+    
+    angulos = np.arccos(np.clip(np.einsum('ij,ij->i', v_norm[:-1], v_norm[1:]), -1.0, 1.0))
+    cruces = np.cross(v_norm[:-1], v_norm[1:])
+    angulos = np.where(cruces > 0, np.pi - angulos, angulos)
+    angulos = np.where((cruces == 0) & (angulos < 0), np.pi, angulos)
+    angulos = np.where(cruces < 0, angulos + np.pi, angulos)
+
+    e = np.exp(angulos * 1j)
+    e1 = np.sum(e) / len(angulos)
+    J = 1.0 - np.abs(e1.real)
+    
+    return J
+
+
 def J_null(N):
-    ff1 = np.random.uniform(np.pi, np.pi, N)
+    ff1 = np.random.uniform(-np.pi, np.pi, N)
     ff2 = np.random.uniform(-np.pi, np.pi, N)
 
     vectores = []
@@ -370,12 +424,20 @@ def J_null(N):
     
     return J
 
-
 def calcular_J_N(N):
-    subjects = [J_null(N) for _ in range(100)]
-    J_N_min = np.mean([np.min(subjects) for _ in range(100)])
-    J_N_mean = np.mean([np.mean(subjects) for _ in range(100)])
-    J_N_std = np.mean([np.std(subjects) for _ in range(100)])
+    J_N_min = np.ones(100)
+    J_N_mean = np.ones(100)
+    J_N_std = np.ones(100)
+    for i in range(100):
+        subjects = np.zeros(100)
+        for j in range(100):
+            subjects[j] = J_null_numba(N)
+        J_N_min[i] = np.min(subjects)
+        J_N_mean[i] = np.mean(subjects)
+        J_N_std[i] = np.std(subjects)
+    J_N_min = np.mean(J_N_min)
+    J_N_mean = np.mean(J_N_mean)
+    J_N_std = np.mean(J_N_std)
     print(N)
     return J_N_min, J_N_std, J_N_mean
 
@@ -387,10 +449,9 @@ if __name__ == '__main__':
     N2 = np.arange(100, 2000, 10)
     N3 = np.arange(2000, 10000, 100)
     N4 = np.arange(10000, 100000, 500)
-    N5 = np.arange(100000, 500000, 1000)
-    N6 = np.arange(500000, 1000000, 2000)
-    N7 = np.arange(1000000, 2500000, 10000)
-    Ns = np.concatenate((N0, N1, N2, N3, N4, N5, N6, N7))
+    N5 = np.arange(100000, 200000, 5000)
+    N6 = np.array([500_000,1000000])
+    Ns = np.concatenate((N0, N1, N2, N3, N4, N5))
 
     # Usa multiprocessing para calcular J_min en paralelo
     with mp.Pool(processes=mp.cpu_count()) as pool:
