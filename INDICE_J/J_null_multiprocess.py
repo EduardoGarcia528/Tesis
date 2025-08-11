@@ -332,7 +332,7 @@ def mean_d(array):
     distancias = np.abs(np.diff(array))
     return np.mean(distancias)
 
-@njit
+
 def construir_vectores(ff1, ff2):
     vectores = []
     for i in range(len(ff1) - 1):
@@ -418,20 +418,28 @@ def J_null(N):
     angulos = np.where((cruces == 0) & (angulos < 0), np.pi, angulos)
     angulos = np.where(cruces < 0, angulos + np.pi, angulos)
 
-    e = np.exp(angulos * 1j)
-    e1 = np.sum(e) / len(angulos)
-    J = 1.0 - np.abs(e1.real)
+    # e = np.exp(angulos * 1j)
+    # e1 = np.sum(e) / len(angulos)
+    # J = 1.0 - np.abs(e1.real)
     
-    return J
+    return angulos
+
+def entropia_shannon(x, bins=100):
+    hist, _ = np.histogram(x, bins=bins)
+    p = hist[hist > 0]
+    p = p / np.sum(p)  
+    return -np.sum(p * np.log2(p)) / np.log2(bins)
 
 def calcular_J_N(N):
-    J_N_min = np.ones(100)
-    J_N_mean = np.ones(100)
-    J_N_std = np.ones(100)
-    for i in range(100):
+    J_N_min = np.ones(10)
+    J_N_mean = np.ones(10)
+    J_N_std = np.ones(10)
+    for i in range(10):
         subjects = np.zeros(100)
         for j in range(100):
-            subjects[j] = J_null_numba(N)
+            angulos = J_null(N)
+            subjects[j] = entropia_shannon(np.diff(angulos))
+
         J_N_min[i] = np.min(subjects)
         J_N_mean[i] = np.mean(subjects)
         J_N_std[i] = np.std(subjects)
@@ -446,10 +454,10 @@ if __name__ == '__main__':
 
     N0 = np.arange(10, 20, 1)
     N1 = np.arange(20, 100, 5)
-    N2 = np.arange(100, 2000, 10)
-    N3 = np.arange(2000, 10000, 100)
-    N4 = np.arange(10000, 100000, 500)
-    N5 = np.arange(100000, 200000, 5000)
+    N2 = np.arange(100, 2000, 100)
+    N3 = np.arange(2000, 10000, 200)
+    N4 = np.arange(10000, 100000, 1000)
+    N5 = np.arange(100000, 200000, 10000)
     N6 = np.array([500_000,1000000])
     Ns = np.concatenate((N0, N1, N2, N3, N4, N5))
 
@@ -483,4 +491,4 @@ if __name__ == '__main__':
 
     J_null_continuo = np.vstack((interpolador_constante(Ns), Js_min_interp,Js_mean_interp,Js_std_interp))
 
-    np.save('Datos_J_min/J_null_continuo.npy' ,J_null_continuo)
+    np.save('Datos_J_min/S_null_continuo.npy' ,J_null_continuo)
