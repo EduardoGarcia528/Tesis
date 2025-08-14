@@ -333,102 +333,109 @@ def mean_d(array):
     return np.mean(distancias)
 
 
-def construir_vectores(ff1, ff2):
-    vectores = []
-    for i in range(len(ff1) - 1):
-        p1x, p1y = ff1[i], ff2[i]
-        p2x, p2y = ff1[i + 1], ff2[i + 1]
-        cuadrantes = np.array([
-            [p2x - p1x, p2y - p1y],
-            [p2x - p1x, p2y + 2*np.pi - p1y],
-            [p2x + 2*np.pi - p1x, p2y + 2*np.pi - p1y],
-            [p2x + 2*np.pi - p1x, p2y - p1y],
-            [p2x + 2*np.pi - p1x, p2y - 2*np.pi - p1y],
-            [p2x - p1x, p2y - 2*np.pi - p1y],
-            [p2x - 2*np.pi - p1x, p2y - 2*np.pi - p1y],
-            [p2x - 2*np.pi - p1x, p2y - p1y],
-            [p2x - 2*np.pi - p1x, p2y + 2*np.pi - p1y],
-        ])
+@njit
+def distancia(p1, p2):
+    return np.sqrt((p2[0] - p1[0])**2 + (p2[1] - p1[1])**2)
 
-        min_dist = 1e10
-        min_index = 0
-        for j in range(9):
-            dx = cuadrantes[j][0]
-            dy = cuadrantes[j][1]
-            dist = np.sqrt((dx)**2 + (dy)**2)
-            if dist < min_dist:
-                min_dist = dist
-                min_index = j
+@njit
+def mejor_vector(p1, p2):
+    # Precomputar diferencias en los 9 cuadrantes
+    diffs = [
+        [p2[0], p2[1]],
+        [p2[0], p2[1] + 2 * np.pi],
+        [p2[0] + 2 * np.pi, p2[1] + 2 * np.pi],
+        [p2[0] + 2 * np.pi, p2[1]],
+        [p2[0] + 2 * np.pi, p2[1] - 2 * np.pi],
+        [p2[0], p2[1] - 2 * np.pi],
+        [p2[0] - 2 * np.pi, p2[1] - 2 * np.pi],
+        [p2[0] - 2 * np.pi, p2[1]],
+        [p2[0] - 2 * np.pi, p2[1] + 2 * np.pi],
+    ]
+    # Encontrar el índice con menor distancia
+    d_og = distancia(p1,p2)
+    min_idx = 0
+    for i in range(9):
+        d = distancia(p1, diffs[i])
+        if d < d_og:
+            min_idx = i
+            d_og = d
+    p2 = diffs[min_idx]
+    return [p2[0] - 2*p1[0], p2[1] - 2*p1[1]]
 
-        mejor = cuadrantes[min_index]
-        vectores.append([mejor[0], mejor[1]])
+@njit
+def calcular_angulos(vectores):
+    n = len(vectores) - 1
+    angulos = np.empty(n)
+    for i in range(n):
+        v1 = vectores[i]
+        v2 = vectores[i + 1]
+        norm_v1 = np.sqrt(v1[0]**2 + v1[1]**2)
+        norm_v2 = np.sqrt(v2[0]**2 + v2[1]**2)
+        if norm_v1 == 0 or norm_v2 == 0:
+            angulo = 0.0
+        else:
+            v1n0 = v1[0] / norm_v1
+            v1n1 = v1[1] / norm_v1
+            v2n0 = v2[0] / norm_v2
+            v2n1 = v2[1] / norm_v2
+            dot = v1n0 * v2n0 + v1n1 * v2n1
+            if dot > 1.0: dot = 1.0
+            if dot < -1.0: dot = -1.0
+            angulo = np.arccos(dot)
+            cruz = v1[0] * v2[1] - v1[1] * v2[0]
+            if cruz > 0:
+                angulo = np.pi - angulo
+            elif cruz == 0 and angulo < 0:
+                angulo = np.pi
+            elif cruz < 0:
+                angulo += np.pi
+        angulos[i] = angulo
+    return angulos
 
-    return np.array(vectores)
+def caminata_univariante(X, tau):
+    ff1 = np.random.uniform(-np.pi, np.pi, X)
+    ff2 = np.random.uniform(-np.pi, np.pi, X)
 
-def J_null_numba(N):
-    ff1 = np.random.uniform(-np.pi, np.pi, N)
-    ff2 = np.random.uniform(-np.pi, np.pi, N)
-    vectores = construir_vectores(ff1, ff2)
-    norms = np.linalg.norm(vectores, axis=1, keepdims=True)
-    v_norm = np.where(norms == 0, vectores, vectores / norms)
-    
-    angulos = np.arccos(np.clip(np.einsum('ij,ij->i', v_norm[:-1], v_norm[1:]), -1.0, 1.0))
-    cruces = np.cross(v_norm[:-1], v_norm[1:])
-    angulos = np.where(cruces > 0, np.pi - angulos, angulos)
-    angulos = np.where((cruces == 0) & (angulos < 0), np.pi, angulos)
-    angulos = np.where(cruces < 0, angulos + np.pi, angulos)
+    n = len(ff1) - 1
+    vectores = np.empty((n, 2))
+    for i in range(n):
+        p1 = (ff1[i], ff2[i])
+        p2 = (ff1[i+1], ff2[i+1])
+        vectores[i] = mejor_vector(p1, p2)
 
+    return vectores
+
+def indice_J(angulos):
     e = np.exp(angulos * 1j)
     e1 = np.sum(e) / len(angulos)
     J = 1.0 - np.abs(e1.real)
-    
     return J
 
-
-def J_null(N):
-    ff1 = np.random.uniform(-np.pi, np.pi, N)
-    ff2 = np.random.uniform(-np.pi, np.pi, N)
-
-    vectores = []
-    for i in range(len(ff1) - 1):
-        p1 = [ff1[i], ff2[i]]
-        p2 = [ff1[i + 1], ff2[i + 1]]
-        cuadrante = [
-            [p2[0] - p1[0], p2[1] - p1[1]],
-            [p2[0] - p1[0], p2[1] + 2 * np.pi - p1[1]],
-            [p2[0] + 2 * np.pi - p1[0], p2[1] + 2 * np.pi - p1[1]],
-            [p2[0] + 2 * np.pi - p1[0], p2[1] - p1[1]],
-            [p2[0] + 2 * np.pi - p1[0], p2[1] - 2 * np.pi - p1[1]],
-            [p2[0] - p1[0], p2[1] - 2 * np.pi - p1[1]],
-            [p2[0] - 2 * np.pi - p1[0], p2[1] - 2 * np.pi - p1[1]],
-            [p2[0] - 2 * np.pi - p1[0], p2[1] - p1[1]],
-            [p2[0] - 2 * np.pi - p1[0], p2[1] + 2 * np.pi - p1[1]],
-        ]
-        distancias = np.array([np.linalg.norm(np.array(c) - np.array(p1)) for c in cuadrante])
-        p2 = cuadrante[np.argmin(distancias)]
-        vectores.append([p2[0] - p1[0], p2[1] - p1[1]])
-
-    vectores = np.array(vectores)
-    norms = np.linalg.norm(vectores, axis=1, keepdims=True)
-    v_norm = np.where(norms == 0, vectores, vectores / norms)
-    
-    angulos = np.arccos(np.clip(np.einsum('ij,ij->i', v_norm[:-1], v_norm[1:]), -1.0, 1.0))
-    cruces = np.cross(v_norm[:-1], v_norm[1:])
-    angulos = np.where(cruces > 0, np.pi - angulos, angulos)
-    angulos = np.where((cruces == 0) & (angulos < 0), np.pi, angulos)
-    angulos = np.where(cruces < 0, angulos + np.pi, angulos)
-
-    # e = np.exp(angulos * 1j)
-    # e1 = np.sum(e) / len(angulos)
-    # J = 1.0 - np.abs(e1.real)
-    
-    return angulos
-
 def entropia_shannon(x, bins=100):
-    hist, _ = np.histogram(x, bins=bins)
-    p = hist[hist > 0]
-    p = p / np.sum(p)  
-    return -np.sum(p * np.log2(p)) / np.log2(bins)
+    x = np.asarray(x)
+    x = x[np.isfinite(x)]
+    if x.size == 0:
+        return np.nan
+    hist, _ = np.histogram(x, bins=bins, density=True)
+    hist = hist[hist > 0]
+    if hist.size == 0:
+        return np.nan
+    p = hist / hist.sum()
+    H = -np.sum(p * np.log2(p))
+    return H / np.log2(bins)
+
+def diff_S(d, angulos):
+    for _ in range(d):
+        dif_angulos = np.diff(angulos)
+
+    return entropia_shannon(dif_angulos)
+
+def main(X):
+    vectores = caminata_univariante(X,tau = 1)
+    angulos = calcular_angulos(vectores)
+    # entropia = diff_S(d=1,angulos=angulos)
+    J = indice_J(angulos)
+    return J
 
 def calcular_J_N(N):
     J_N_min = np.ones(10)
@@ -437,8 +444,8 @@ def calcular_J_N(N):
     for i in range(10):
         subjects = np.zeros(100)
         for j in range(100):
-            angulos = J_null(N)
-            subjects[j] = entropia_shannon(np.diff(angulos))
+            subjects[j] = main(X=N)
+            # entropia_shannon(np.diff(angulos))
 
         J_N_min[i] = np.min(subjects)
         J_N_mean[i] = np.mean(subjects)
@@ -455,11 +462,11 @@ if __name__ == '__main__':
     N0 = np.arange(10, 20, 1)
     N1 = np.arange(20, 100, 5)
     N2 = np.arange(100, 2000, 100)
-    N3 = np.arange(2000, 10000, 200)
-    N4 = np.arange(10000, 100000, 1000)
+    N3 = np.arange(2000, 10000, 500)
+    N4 = np.arange(10000, 100000, 10000)
     N5 = np.arange(100000, 200000, 10000)
     N6 = np.array([500_000,1000000])
-    Ns = np.concatenate((N0, N1, N2, N3, N4, N5))
+    Ns = np.concatenate((N0, N1, N2, N3, N4, N5, N6))
 
     # Usa multiprocessing para calcular J_min en paralelo
     with mp.Pool(processes=mp.cpu_count()) as pool:
@@ -491,4 +498,4 @@ if __name__ == '__main__':
 
     J_null_continuo = np.vstack((interpolador_constante(Ns), Js_min_interp,Js_mean_interp,Js_std_interp))
 
-    np.save('Datos_J_min/S_null_continuo.npy' ,J_null_continuo)
+    np.save('Datos_J_min/J_null_continuo.npy' ,J_null_continuo)

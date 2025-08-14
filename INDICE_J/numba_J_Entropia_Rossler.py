@@ -127,7 +127,7 @@ def mejor_vector(p1, p2):
             min_idx = i
             d_og = d
     p2 = diffs[min_idx]
-    return [p2[0] - p1[0], p2[1] - p1[1]]
+    return [p2[0] - 2*p1[0], p2[1] - 2*p1[1]]
 
 @njit
 def calcular_angulos(vectores):
