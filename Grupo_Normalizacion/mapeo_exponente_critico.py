@@ -149,7 +149,8 @@ if __name__ == '__main__':
 
     x = 0.6
     # r = 3.5699431086217244
-    r = 3.52
+    # r = 3.52
+    r = 4.0
     serie = []
     for _ in range(100000):
         x = logistic_map(r,x)
@@ -159,7 +160,7 @@ if __name__ == '__main__':
         serie.append(x)
     serie = np.array(serie)
     # serie = np.random.uniform(0, 1, 200_000)
-
+    serie = np.load('magnetization_time_series.npy')
     main_con_serie = partial(main, serie)
 
     with mp.Pool(processes=mp.cpu_count()) as pool:
