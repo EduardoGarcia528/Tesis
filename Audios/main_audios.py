@@ -5,7 +5,7 @@ import re
 import importlib
 import funciones
 importlib.reload(funciones)
-from funciones import J_univariante
+from funciones import main, entropia_shannon
 import xml.etree.ElementTree as ET
 import subprocess
 from music21 import stream, note, chord, meter, tempo, duration, instrument, clef, expressions, converter, environment
@@ -17,6 +17,21 @@ from scipy.fft import fft, fftfreq, fftshift
 import time
 
 """Funciones"""
+
+def extraer_partitura_npy(carpeta):
+    arrays = []
+
+    # iteramos sobre los archivos
+    for i, archivo in enumerate(os.listdir(carpeta)):
+        ruta = os.path.join(carpeta, archivo)
+        if os.path.isfile(ruta) and archivo.endswith(".npy"):
+            # cargamos el array
+            array = np.load(ruta)
+            arrays.append(array)
+
+    array_complete = np.array(arrays, dtype='object')
+
+    return array_complete
 
 def get_time_signature_from_offsets(arr):
     # Filtrar compás 1
@@ -139,7 +154,7 @@ def generador_partitura(array_3d,output_name,tempo,path):
     if path == False:
         score = stream.Score() 
         for i in range(np.shape(array_3d)[0]):
-            arr = array_3d[i,:,:]
+            arr = array_3d[i]
             print(arr)
             print(np.shape(arr))
             p = array_to_voice(arr, get_time_signature_from_offsets(arr))
@@ -232,7 +247,7 @@ def process_wav(archivo_wav, segundo2, minuto2 = 0.0):
     plt.plot(t_muestra, muestra)
     plt.xlabel('Tiempo')
     plt.ylabel('Amplitud')
-    plt.title(f'Muestra de la señal J = {J_univariante(muestra)}')
+    plt.title(f'Muestra de la señal S = {main(muestra,d=1,bivariante=False)}')
 
     plt.tight_layout()
     plt.show() 
@@ -240,7 +255,6 @@ def process_wav(archivo_wav, segundo2, minuto2 = 0.0):
 """""""""
 
 """""""""
-
 ostinato = np.array([
         [0.0, 1.0, 1.0, 60.0, 1.0],
         [1.0, 2.0, 1.0, 64.0, 1.0],
@@ -339,15 +353,20 @@ acorde = np.array([
 
     # [0.0,1.0,1.0,70.,1.0]])
 
-array_complete = np.array((acorde,))
+array_complete = np.array((ostinato,))
+
+partitura = r'data\humdrum-data-numpy\beethoven\piano\sonata\sonata14-3'
+array_complete = extraer_partitura_npy(partitura)
+
 mxl_file ='partitura.xml'
-tempo = 180
+tempo = 120
 
 generador_partitura(array_complete,output_name=mxl_file,tempo=tempo,path=False)
 
 archivo_wav = mxl_to_wav(mxl_file)
 # archivo_wav = generador_ruido_wav(duration=12,amplitude=0.3)
-process_wav(archivo_wav, segundo2=(60/tempo)*0.5) #15.5
+# process_wav(archivo_wav, segundo2=5.0) #15.5
+process_wav(archivo_wav, segundo2=(60/tempo)*4*4) #15.5
 
 for arch in [mxl_file,archivo_wav,'first_step.xml']:
     if os.path.exists(arch):

@@ -5,8 +5,8 @@ from numba import njit
 # Parámetros
 N = 128
 T = 2.269
-n = 1_000_000
-equilibrar = 1000
+n = 100_000
+equilibrar = 10_000
 
 # Funciones numba
 @njit
@@ -49,4 +49,4 @@ spins = np.random.choice([-1, 1], size=(N, N))
 #Correr y guardar
 serie = generar_serie_ising(spins, T=T, n=n, equilibrar=equilibrar)
 
-np.save('serie_ising_Tc.csv',serie)
+np.save('serie_ising_Tc.npy',serie)

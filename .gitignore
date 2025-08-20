@@ -3,3 +3,5 @@
 /workspace.xml
 Ritmos/data/humdrum-data
 Ritmos/data/humdrum-data-numpy
+Audios/data
+Grupo_Normalizacion/kuramoto_Rc.npy

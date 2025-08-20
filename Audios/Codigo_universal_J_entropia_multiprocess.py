@@ -68,13 +68,9 @@ def calcular_angulos(vectores):
         angulos[i] = angulo
     return angulos
 
-def caminata_univariante(X, tau, bivariante):
-    if bivariante is False:
-        x1 = X[tau:]
-        y1 = X[:-tau]
-    else:
-        x1 = X
-        y1 = bivariante
+def caminata_univariante(X, tau):
+    x1 = X[tau:]
+    y1 = X[:-tau]
     ff1 = np.angle(np.fft.rfft(x1))
     ff2 = np.angle(np.fft.rfft(y1))
 
@@ -98,10 +94,7 @@ def entropia_shannon(x, bins=150):
     x = x[np.isfinite(x)]
     if x.size == 0:
         return np.nan
-    try:
-        hist, _ = np.histogram(x, bins=bins, density=True)
-    except: 
-        return np.nan
+    hist, _ = np.histogram(x, bins=bins, density=True)
     hist = hist[hist > 0]
     if hist.size == 0:
         return np.nan
@@ -135,10 +128,9 @@ def diff_S(d, angulos):
 
     return entropia_shannon(angulos)
 
-def main(serie,bivariante,d):
-    vectores = caminata_univariante(serie,tau = 1,bivariante=bivariante)
+def main(serie,d):
+    vectores = caminata_univariante(serie,tau = 1)
     angulos = calcular_angulos(vectores)
-    # angulos = np.load('henon_C_1000diff.npy')
     entropia = diff_S(d,angulos=angulos)
     print(d)
     J = indice_J(angulos)
@@ -146,68 +138,14 @@ def main(serie,bivariante,d):
         entropia = 0
     return J, entropia
 
-def henon_map(a, b, n, trans=0):
-    total = n + trans
-    xs = np.zeros(total)
-    ys = np.zeros(total)
-    
-    # Condiciones iniciales
-    xs[0] = 0.1
-    ys[0] = 0.1
-    
-    # Iteraciones
-    for i in range(1, total):
-        xs[i] = 1 - a * xs[i-1]**2 + ys[i-1]
-        ys[i] = b * xs[i-1]
-    
-    return xs[trans:], ys[trans:]
-
-
-
 
 if __name__ == '__main__':
-    # mp.freeze_support()
-    
-    l = 1000
-    d = range(l)
+    mp.freeze_support()
 
-    x = 0.6
-    r = 3.5699431086217244
-    # r = 3.52
-    # r = 4.0
-    serie = []
-    for _ in range(100_000):
-        x = logistic_map(r,x)
+    # main_con_serie = partial(main, serie) Si main tiene más parámetros
 
-    for _ in range(100_000):
-        x = logistic_map(r,x)
-        serie.append(x)
-    serie = np.array(serie)
-    print("ja")
-    serie = np.load("kuramoto_Rc.npy")[90000:]
-    # seriex,seriey = henon_map(a = 1.426, b = 0.3, n = 200_000,trans=100_000)
-    print("ja")
-    # serie = np.random.uniform(0, 1, 200_000)
-
-    main_con_seriex = partial(main, serie)
-    main_con_serie = partial(main_con_seriex, False)
-    print("jo")
     with mp.Pool(processes=mp.cpu_count()) as pool:
-        resultados = pool.map(main_con_serie, d)
-    
+        resultados = pool.map(main, d)
+
 
     J, S_vals = map(np.array, zip(*resultados))
-
-    # S_vals = []
-    # for d in range(2000):
-    #     J, S = main(seriex,d, bivariante=seriey)
-    #     S_vals.append(S)
-
-    plt.plot(range(l), S_vals, marker='o')
-    plt.xscale('log')
-    plt.yscale('log')
-    plt.xlabel('Diferenciación (d)')
-    plt.ylabel('Entropía de Shannon normalizada')
-    plt.title(f'Entropía de Shannon vs diferenciación para Henon Map a=1.426,b=0.3')
-    plt.grid()
-    plt.show()
