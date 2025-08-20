@@ -405,6 +405,7 @@ def caminata_univariante(X, tau):
 
     return vectores
 
+@njit
 def indice_J(angulos):
     e = np.exp(angulos * 1j)
     e1 = np.sum(e) / len(angulos)
@@ -466,7 +467,7 @@ if __name__ == '__main__':
     N4 = np.arange(10000, 100000, 10000)
     N5 = np.arange(100000, 200000, 10000)
     N6 = np.array([500_000,1000000])
-    Ns = np.concatenate((N0, N1, N2, N3, N4, N5, N6))
+    Ns = np.concatenate((N0, N1, N2, N3, N4, N5))
 
     # Usa multiprocessing para calcular J_min en paralelo
     with mp.Pool(processes=mp.cpu_count()) as pool:
