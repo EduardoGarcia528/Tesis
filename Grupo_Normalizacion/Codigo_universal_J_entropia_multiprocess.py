@@ -142,6 +142,9 @@ def main(serie,d):
 if __name__ == '__main__':
     mp.freeze_support()
 
+    l = 1000
+    d = range(1000)
+
     # main_con_serie = partial(main, serie) Si main tiene más parámetros
 
     with mp.Pool(processes=mp.cpu_count()) as pool:

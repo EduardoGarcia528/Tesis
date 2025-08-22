@@ -93,7 +93,7 @@ def indice_J(angulos):
     J = 1.0 - np.abs(e1.real)
     return J
 
-def entropia_shannon(x, bins=150):
+def entropia_shannon(x, bins=100):
     x = np.asarray(x)
     x = x[np.isfinite(x)]
     if x.size == 0:
@@ -135,9 +135,7 @@ def diff_S(d, angulos):
 
     return entropia_shannon(angulos)
 
-def main(serie,bivariante,d):
-    vectores = caminata_univariante(serie,tau = 1,bivariante=bivariante)
-    angulos = calcular_angulos(vectores)
+def main(angulos,d):
     # angulos = np.load('henon_C_1000diff.npy')
     entropia = diff_S(d,angulos=angulos)
     print(d)
@@ -163,13 +161,74 @@ def henon_map(a, b, n, trans=0):
     return xs[trans:], ys[trans:]
 
 
+def pendiente_loglog_optima(d, H, min_len=10):
+    """
+    Encuentra la pendiente óptima de log(H) vs log(d) y el rango donde el ajuste es mejor.
+
+    Parámetros:
+        d : array_like
+            Valores de la variable independiente (debe ser >0).
+        H : array_like
+            Valores de la variable dependiente (debe ser >0).
+        min_len : int
+            Longitud mínima de la ventana para considerar el ajuste.
+    
+    Retorna:
+        dict con:
+            'pendiente': pendiente óptima beta
+            'intercepto': log-constante
+            'indices_opt': índices de la ventana óptima
+            'd_fit': valores de d de la ventana óptima
+            'H_fit': valores ajustados de H en la ventana óptima
+            'error': error cuadrático medio del ajuste
+    """
+    d = np.array(d)
+    H = np.array(H)
+    
+    # Verificar que todos los valores sean positivos para el log
+    if np.any(d <= 0) or np.any(H <= 0):
+        raise ValueError("Todos los valores de d y H deben ser positivos para log.")
+    
+    x = np.log(d)
+    y = np.log(H)
+    
+    n = len(y)
+    mejor_error = np.inf
+    resultado = {}
+
+    # Probar todas las ventanas posibles mayores a min_len
+    for start in range(n):
+        for end in range(start + min_len, n+1):
+            x_window = x[start:end]
+            y_window = y[start:end]
+
+            # Ajuste lineal (mínimos cuadrados)
+            A = np.vstack([x_window, np.ones_like(x_window)]).T
+            m, b = np.linalg.lstsq(A, y_window, rcond=None)[0]
+
+            # Error cuadrático medio
+            y_fit = m*x_window + b
+            error = np.mean((y_window - y_fit)**2)
+
+            if error < mejor_error:
+                mejor_error = error
+                resultado = {
+                    'pendiente': m,
+                    'intercepto': b,
+                    'indices_opt': np.arange(start, end),
+                    'd_fit': d[start:end],
+                    'H_fit': np.exp(y_fit),  # volver a escala original
+                    'error': error
+                }
+    
+    return resultado
 
 
 if __name__ == '__main__':
     # mp.freeze_support()
     
     l = 1000
-    d = range(l)
+    d = np.arange(1,l+1,1)
 
     x = 0.6
     r = 3.5699431086217244
@@ -184,30 +243,48 @@ if __name__ == '__main__':
         serie.append(x)
     serie = np.array(serie)
     print("ja")
-    serie = np.load("kuramoto_Rc.npy")[90000:]
-    # seriex,seriey = henon_map(a = 1.426, b = 0.3, n = 200_000,trans=100_000)
+    # serie = np.load("kuramoto_Rc.npy")[90000:] # 1.401155189
+    a = 1.0576244479 
+    a = 1.057730803809001
+    # a = 1.06
+    # a = 1.057730791108901
+    seriex,seriey = henon_map(a, b = 0.3, n = 300_000,trans=100_000)
     print("ja")
     # serie = np.random.uniform(0, 1, 200_000)
-
-    main_con_seriex = partial(main, serie)
-    main_con_serie = partial(main_con_seriex, False)
-    print("jo")
-    with mp.Pool(processes=mp.cpu_count()) as pool:
-        resultados = pool.map(main_con_serie, d)
+    vectores = caminata_univariante(seriex,tau = 1,bivariante=seriey)
+    angulos = calcular_angulos(vectores)
+    S_vals= []
+    for i in np.arange(1,l+1,1):
+        print(i)
+        angulos = np.diff(angulos)
+        S_vals.append(entropia_shannon(angulos,bins=100))
+    # main_con_serie = partial(main, angulos)
+    # print("jo")
+    # with mp.Pool(processes=mp.cpu_count()) as pool:
+    #     resultados = pool.map(main_con_serie, d)
     
 
-    J, S_vals = map(np.array, zip(*resultados))
+    # J, S_vals = map(np.array, zip(*resultados))
 
     # S_vals = []
     # for d in range(2000):
     #     J, S = main(seriex,d, bivariante=seriey)
     #     S_vals.append(S)
+    # np.save('S_vals_henon_Rc.npy')
+    S_vals = np.array(S_vals, dtype=np.float64)[np.isfinite(S_vals)]
+    d = d[np.isfinite(S_vals)]
 
-    plt.plot(range(l), S_vals, marker='o')
-    plt.xscale('log')
-    plt.yscale('log')
-    plt.xlabel('Diferenciación (d)')
-    plt.ylabel('Entropía de Shannon normalizada')
-    plt.title(f'Entropía de Shannon vs diferenciación para Henon Map a=1.426,b=0.3')
+    print(len(S_vals[np.isfinite(S_vals)]))
+    # Ejemplo
+    res = pendiente_loglog_optima(d, S_vals, min_len=100)
+    print("Pendiente:", res['pendiente'])
+    print("Intercepto:", res['indices_opt'])
+    print("Error óptimo:", res['error'])
+    # Graficar
+    plt.loglog(S_vals[np.isfinite(S_vals)], marker='o')
+    plt.xlabel("Diferenciación (d)")
+    plt.title(f'Henon Map (bivariante), a = {a}, b = 0.3')
+    plt.ylabel("Entropía de Shannon normalizada")
     plt.grid()
+    plt.tight_layout()
     plt.show()
