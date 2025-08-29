@@ -18,7 +18,8 @@ from fathon import fathonUtils as fu
 def extraer_dataset_musica():
 
     datos_composers = {}
-    carpeta = r'D:\La formula secreta de la cangreburger\Documentos\uaem\octavo semestre\Tesis\Sequences\labels'
+    # carpeta = r'D:\La formula secreta de la cangreburger\Documentos\uaem\octavo semestre\Tesis\Sequences\labels'
+    carpeta = r'D:\La formula secreta de la cangreburger\Documentos\uaem\octavo semestre\Tesis\musica-tesis\data\Sequences\labels'
     archivos_en_carpeta = os.listdir(carpeta)
     index0 = 0
     indice = 0
@@ -38,7 +39,8 @@ def extraer_dataset_musica():
 
     composers = {}
     M = 0
-    carpeta = r'D:\La formula secreta de la cangreburger\Documentos\uaem\octavo semestre\Tesis\Sequences\Series'
+    # carpeta = r'D:\La formula secreta de la cangreburger\Documentos\uaem\octavo semestre\Tesis\Sequences\Series'
+    carpeta = r'D:\La formula secreta de la cangreburger\Documentos\uaem\octavo semestre\Tesis\musica-tesis\data\Sequences\Series'
     archivos_en_carpeta = os.listdir(carpeta)
 
     for archivo in archivos_en_carpeta:
@@ -499,24 +501,24 @@ if __name__ == '__main__':
     freeze_support()  # Necesario en Windows o si haces ejecutable
     composers, datos_composers = extraer_dataset_musica()
 
-    # for composer in composers.keys():
-    composer = 'Debussy'
-    birth_year = datos_composers[composer]['Birth_year']
-    piezas = list(composers[composer].keys())
-    subjects = [composers[composer][serie] for serie in piezas]
+    for composer in composers.keys():
+    # composer = 'Debussy'
+        birth_year = datos_composers[composer]['Birth_year']
+        piezas = list(composers[composer].keys())
+        subjects = [composers[composer][serie] for serie in piezas]
 
-    # Prepara lista de argumentos
-    args_list = [(composer, serie, subject, birth_year) 
-                    for serie, subject in zip(piezas, subjects)]
+        # Prepara lista de argumentos
+        args_list = [(composer, serie, subject, birth_year) 
+                        for serie, subject in zip(piezas, subjects)]
 
-    # Paraleliza el procesamiento de las piezas
-    with Pool(processes=cpu_count()) as pool:
-        resultados = pool.map(procesar_serie, args_list)
+        # Paraleliza el procesamiento de las piezas
+        with Pool(processes=cpu_count()) as pool:
+            resultados = pool.map(procesar_serie, args_list)
 
-    # Guarda los resultados como matriz
-    xi_index = np.array(resultados)
-    path = 'D:/La formula secreta de la cangreburger/Documentos/uaem/octavo semestre/Tesis/DFA/xi_index'
-    # os.makedirs('xi_index', exist_ok=True)
-    np.save(f'{path}/{birth_year}_{composer}_xi.npy', xi_index)
-    end = time.time()
-    print(f"Tiempo transcurrido: {(end - start)/60} min")
+        # Guarda los resultados como matriz
+        xi_index = np.array(resultados)
+        path = 'D:/La formula secreta de la cangreburger/Documentos/uaem/octavo semestre/Tesis/DFA/xi_index_mdfa'
+        os.makedirs('xi_index_mdfa', exist_ok=True)
+        np.save(f'{path}/{birth_year}_{composer}_xi.npy', xi_index)
+        end = time.time()
+        print(f"Tiempo transcurrido: {(end - start)/60} min")
