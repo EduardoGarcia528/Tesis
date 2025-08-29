@@ -39,6 +39,21 @@ def mejor_vector(p1, p2):
     p2 = diffs[min_idx]
     return [p2[0] - 2*p1[0], p2[1] - 2*p1[1]]
 
+
+
+@njit
+def isaac_vector(p1, p2):
+    # Precomputar diferencias en los 9 cuadrantes
+    cuadrante = [[p2[0]-p1[0], p2[1]-p1[1]], [p2[0]-p1[0], p2[1]+2*np.pi-p1[1]],
+        [p2[0]+2*np.pi-p1[0],p2[1]+2*np.pi-p1[1]],[p2[0]+2*np.pi-p1[0],p2[1]-p1[1]],
+        [p2[0]+2*np.pi-p1[0],p2[1]-2*np.pi-p1[1]],[p2[0]-p1[0],p2[1]-2*np.pi-p1[1]],
+        [p2[0]-2*np.pi-p1[0],p2[1]-2*np.pi-p1[1]],[p2[0]-2*np.pi-p1[0],p2[1]-p1[1]],
+        [p2[0]-2*np.pi-p1[0],p2[1]+2*np.pi-p1[1]]]
+    # Encontrar el índice con menor distancia
+    distancia1 = [distancia(p1,c) for c in cuadrante]
+    p2 = cuadrante[np.argmin(distancia1)]
+    return [p2[0]-p1[0],p2[1]-p1[1]]
+
 @njit
 def calcular_angulos(vectores):
     n = len(vectores) - 1
@@ -84,7 +99,7 @@ def caminata_univariante(X, tau, bivariante):
     for i in range(n):
         p1 = (ff1[i], ff2[i])
         p2 = (ff1[i+1], ff2[i+1])
-        vectores[i] = mejor_vector(p1, p2)
+        vectores[i] = isaac_vector(p1, p2)
 
     return vectores
 
@@ -237,10 +252,10 @@ if __name__ == '__main__':
     for x, composer in enumerate(composers):
         for y, serie in enumerate(composers[composer]):
             f = composers[composer][serie]
-            vectores = caminata_univariante(np.abs(np.diff(f)),tau = 1,bivariante=False)
+            vectores = caminata_univariante(f,tau = 1,bivariante=False)
             angulos = calcular_angulos(vectores)
             J, S = main(angulos=angulos, d=0)
-            Js[x,y] = S
+            Js[x,y] = J
         print(composer)
     # np.save('J_composers_Hz_depurado.npy', Js)
     
