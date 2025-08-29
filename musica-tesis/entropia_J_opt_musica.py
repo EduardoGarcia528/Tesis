@@ -37,7 +37,29 @@ def mejor_vector(p1, p2):
             min_idx = i
             d_og = d
     p2 = diffs[min_idx]
-    return [p2[0] - 2*p1[0], p2[1] - 2*p1[1]]
+    v1 = p1
+    v2 = p2
+    norm_v1 = np.sqrt(v1[0]**2 + v1[1]**2)
+    norm_v2 = np.sqrt(v2[0]**2 + v2[1]**2)
+    if norm_v1 == 0 or norm_v2 == 0:
+        angulo = 0.0
+    else:
+        v1n0 = v1[0] / norm_v1
+        v1n1 = v1[1] / norm_v1
+        v2n0 = v2[0] / norm_v2
+        v2n1 = v2[1] / norm_v2
+        dot = v1n0 * v2n0 + v1n1 * v2n1
+        if dot > 1.0: dot = 1.0
+        if dot < -1.0: dot = -1.0
+        angulo = np.arccos(dot)
+        cruz = v1[0] * v2[1] - v1[1] * v2[0]
+        if cruz > 0:
+            angulo = np.pi - angulo
+        elif cruz == 0 and angulo < 0:
+            angulo = np.pi
+        elif cruz < 0:
+            angulo += np.pi
+    return angulo
 
 
 
@@ -50,8 +72,14 @@ def isaac_vector(p1, p2):
         [p2[0]-2*np.pi-p1[0],p2[1]-2*np.pi-p1[1]],[p2[0]-2*np.pi-p1[0],p2[1]-p1[1]],
         [p2[0]-2*np.pi-p1[0],p2[1]+2*np.pi-p1[1]]]
     # Encontrar el índice con menor distancia
-    distancia1 = [distancia(p1,c) for c in cuadrante]
-    p2 = cuadrante[np.argmin(distancia1)]
+    d_og = distancia(p1,p2)
+    min_idx = 0
+    for i in range(9):
+        d = distancia(p1, cuadrante[i])
+        if d < d_og:
+            min_idx = i
+            d_og = d
+    p2 = cuadrante[min_idx]
     return [p2[0]-p1[0],p2[1]-p1[1]]
 
 @njit
@@ -95,11 +123,11 @@ def caminata_univariante(X, tau, bivariante):
     ff2 = np.angle(np.fft.rfft(y1))
 
     n = len(ff1) - 1
-    vectores = np.empty((n, 2))
+    vectores = np.empty(n)
     for i in range(n):
         p1 = (ff1[i], ff2[i])
         p2 = (ff1[i+1], ff2[i+1])
-        vectores[i] = isaac_vector(p1, p2)
+        vectores[i] = mejor_vector(p1, p2)
 
     return vectores
 
@@ -252,8 +280,8 @@ if __name__ == '__main__':
     for x, composer in enumerate(composers):
         for y, serie in enumerate(composers[composer]):
             f = composers[composer][serie]
-            vectores = caminata_univariante(f,tau = 1,bivariante=False)
-            angulos = calcular_angulos(vectores)
+            angulos = caminata_univariante(f,tau = 1,bivariante=False)
+            # angulos = calcular_angulos(vectores)
             J, S = main(angulos=angulos, d=0)
             Js[x,y] = J
         print(composer)
@@ -264,10 +292,11 @@ if __name__ == '__main__':
 
     num_compositores = 19
     Ns = np.load('data/Ns_depurado.npy')
-    J_null_matrix = np.load('data\S_null_continuo.npy')
+    J_null_matrix = np.load('data\J_null_continuo.npy')
     J_minus = J_null_matrix[:2,:]
+    # J_minus = np.load('data/J_minus_continuo.npy')
 
-    pts_interp = 2
+    pts_interp = 1
     carpeta2 = 'data/J_lineal_sincorte_depurado/interp_'+str(pts_interp)
     # carpeta2 = 'data/J_hermite_sincorte_depurado/interp_'+str(pts_interp) 
 
@@ -289,13 +318,13 @@ if __name__ == '__main__':
     #         if Ns_data[j][i]//2 >= 13920:
     #             Ns_data[j][i] = 27840
 
-    umbral = [[1-J_minus[1, np.where(J_minus[0] == (i-1)//2)[0]][0] for i in Ns_data[j]] for j in range(num_compositores)]
+    umbral = [[1-J_minus[1, np.where(J_minus[0] == (i)//2)[0]][0] for i in Ns_data[j]] for j in range(num_compositores)]
     # Aquí, asume que `puntos` es la lista con los num_compositores elementos
     # puntos1 = [J_minus[int(np.mean(Ns_data[j])) - 20] for j in range(num_compositores)]
     puntos2 = [1-np.mean(np.array([J_minus[1, np.where(J_minus[0] == i//2)[0]] for i in Ns_data[j]])) for j in range(num_compositores)]
     mediana = [np.median(array) for array in data2]
     print('mean',np.mean(puntos2))
-    fig, ax = plt.subplots(figsize=(20, 10))
+    fig, ax = plt.subplots(figsize=(15, 10))
     # box2 = ax.boxplot(data2, patch_artist=True)
 
     total_red_points = 0
@@ -328,7 +357,7 @@ if __name__ == '__main__':
 
     # ax.set_xlabel(f'Distribución del índice (1-J) con interpolación lineal de {pts_interp} pts', fontsize=13)
     # ax.set_xlabel(f'Distribución del índice (1-J) de las melodias de larga duración', fontsize=13)
-    ax.set_ylabel('1 - S', fontsize=11)
+    ax.set_ylabel('1 - J', fontsize=11)
     ax.tick_params(axis='y', labelsize=11)
     ax.set_xticks(np.arange(1, num_compositores+1))
 
