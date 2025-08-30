@@ -278,21 +278,25 @@ if __name__ == '__main__':
     """"""
     Js = np.full((19,2160), np.nan)
     for x, composer in enumerate(composers):
+        birth_year = datos_composers[composer]['Birth_year']
         for y, serie in enumerate(composers[composer]):
             f = composers[composer][serie]
-            angulos = caminata_univariante(f,tau = 1,bivariante=False)
+            random = np.random.uniform(0,1, size = len(f))
+            angulos = caminata_univariante(random,tau = 1,bivariante=False)
             # angulos = calcular_angulos(vectores)
-            J, S = main(angulos=angulos, d=0)
-            Js[x,y] = J
+            J, S = main(angulos=angulos, d=1)
+            Js[x,y] = S
+            lenght = y
         print(composer)
+        # np.save(f'new_data/Ss/{birth_year}_{composer}_Ss.npy', Js[x,:lenght])
     # np.save('J_composers_Hz_depurado.npy', Js)
     
     
     """"""
 
     num_compositores = 19
-    Ns = np.load('data/Ns_depurado.npy')
-    J_null_matrix = np.load('data\J_null_continuo.npy')
+    Ns = np.load(r'data/Ns_depurado.npy') 
+    J_null_matrix = np.load(r'new_data\S_null_continuo.npy')
     J_minus = J_null_matrix[:2,:]
     # J_minus = np.load('data/J_minus_continuo.npy')
 
@@ -304,8 +308,8 @@ if __name__ == '__main__':
 
     data2 = [1 - np.sort(np.load(os.path.join(carpeta2, array)))[:] for array in archivos_en_carpeta2]
     Ns_data = [Ns[array] for array in range(np.shape(Ns)[0])]
-    J_OG = [1-np.load('data\J_composers_Hz_depurado.npy')[array] for array in range(np.shape(Ns)[0])]
-    J_new = [1-Js[array] for array in range(np.shape(Ns)[0])]
+    J_OG = [1-np.load(r'data\J_composers_Hz_depurado.npy')[array] for array in range(np.shape(Ns)[0])]
+    J_new = [Js[array] for array in range(np.shape(Ns)[0])]
 
     data2 = [array[~np.isnan(array)] for array in data2]
     Ns_data = [array[~np.isnan(array)] for array in Ns_data]
@@ -318,10 +322,10 @@ if __name__ == '__main__':
     #         if Ns_data[j][i]//2 >= 13920:
     #             Ns_data[j][i] = 27840
 
-    umbral = [[1-J_minus[1, np.where(J_minus[0] == (i)//2)[0]][0] for i in Ns_data[j]] for j in range(num_compositores)]
+    umbral = [[J_minus[1, np.where(J_minus[0] == (i)//2)[0]][0] for i in Ns_data[j]] for j in range(num_compositores)]
     # Aquí, asume que `puntos` es la lista con los num_compositores elementos
     # puntos1 = [J_minus[int(np.mean(Ns_data[j])) - 20] for j in range(num_compositores)]
-    puntos2 = [1-np.mean(np.array([J_minus[1, np.where(J_minus[0] == i//2)[0]] for i in Ns_data[j]])) for j in range(num_compositores)]
+    puntos2 = [np.mean(np.array([J_minus[1, np.where(J_minus[0] == i//2)[0]] for i in Ns_data[j]])) for j in range(num_compositores)]
     mediana = [np.median(array) for array in data2]
     print('mean',np.mean(puntos2))
     fig, ax = plt.subplots(figsize=(15, 10))
@@ -380,4 +384,5 @@ if __name__ == '__main__':
     # ax.spines['bottom'].set_position(('axes', -0.1))  # Ocultamos la espina inferior
     ax.set_xticklabels([f"{composer} {datos_composers[composer]['Birth_year']} " for i, composer in enumerate(datos_composers.keys())], rotation=90,fontsize=12)
     plt.grid(axis='y')
+    plt.tight_layout()
     plt.show()

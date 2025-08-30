@@ -19,7 +19,7 @@ def interpolador(subject, method, size):
     
     return x_new, data_interp
 
-J_null_matrix = np.load('Datos_J_min\S_null_continuo.npy')
+J_null_matrix = np.load(r'Datos_J_min\J_null_continuo.npy')
 x = J_null_matrix[0,:]
 J_min = J_null_matrix[1,:]
 J_mean = J_null_matrix[2,:]
@@ -50,11 +50,11 @@ puntos_labels = ['Detroit become human', 'Detroit become human', 'Webern_-_Varia
 puntos_colors = ['blue', 'blue', 'orange','orange','red','red','black','black','green','green','gray','gray']
 
 # Agregar los puntos a la gráfica
-sc = plt.scatter(puntos_x, puntos_y, c=puntos_colors, label='Puntos etiquetados', zorder=3)
+# sc = plt.scatter(puntos_x, puntos_y, c=puntos_colors, label='Puntos etiquetados', zorder=3)
 
 # Crear cursores interactivos con labels
-cursor = mplcursors.cursor(sc, hover=True)
-cursor.connect("add", lambda sel: sel.annotation.set_text(puntos_labels[sel.index]))
+# cursor = mplcursors.cursor(sc, hover=True)
+# cursor.connect("add", lambda sel: sel.annotation.set_text(puntos_labels[sel.index]))
 
 # Configurar ejes y leyenda
 plt.xlabel('N/2 tamaño de la serie')
