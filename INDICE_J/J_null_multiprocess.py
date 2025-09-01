@@ -360,29 +360,29 @@ def mejor_vector(p1, p2):
             min_idx = i
             d_og = d
     p2 = diffs[min_idx]
-    v1 = p1
-    v2 = p2
-    norm_v1 = np.sqrt(v1[0]**2 + v1[1]**2)
-    norm_v2 = np.sqrt(v2[0]**2 + v2[1]**2)
-    if norm_v1 == 0 or norm_v2 == 0:
-        angulo = 0.0
-    else:
-        v1n0 = v1[0] / norm_v1
-        v1n1 = v1[1] / norm_v1
-        v2n0 = v2[0] / norm_v2
-        v2n1 = v2[1] / norm_v2
-        dot = v1n0 * v2n0 + v1n1 * v2n1
-        if dot > 1.0: dot = 1.0
-        if dot < -1.0: dot = -1.0
-        angulo = np.arccos(dot)
-        cruz = v1[0] * v2[1] - v1[1] * v2[0]
-        if cruz > 0:
-            angulo = np.pi - angulo
-        elif cruz == 0 and angulo < 0:
-            angulo = np.pi
-        elif cruz < 0:
-            angulo += np.pi
-    return angulo
+    # v1 = p1
+    # v2 = p2
+    # norm_v1 = np.sqrt(v1[0]**2 + v1[1]**2)
+    # norm_v2 = np.sqrt(v2[0]**2 + v2[1]**2)
+    # if norm_v1 == 0 or norm_v2 == 0:
+    #     angulo = 0.0
+    # else:
+    #     v1n0 = v1[0] / norm_v1
+    #     v1n1 = v1[1] / norm_v1
+    #     v2n0 = v2[0] / norm_v2
+    #     v2n1 = v2[1] / norm_v2
+    #     dot = v1n0 * v2n0 + v1n1 * v2n1
+    #     if dot > 1.0: dot = 1.0
+    #     if dot < -1.0: dot = -1.0
+    #     angulo = np.arccos(dot)
+    #     cruz = v1[0] * v2[1] - v1[1] * v2[0]
+    #     if cruz > 0:
+    #         angulo = np.pi - angulo
+    #     elif cruz == 0 and angulo < 0:
+    #         angulo = np.pi
+    #     elif cruz < 0:
+    #         angulo += np.pi
+    return [p2[0] - 2*p1[0], p2[1] - 2*p1[1]]
 
 @njit
 def calcular_angulos(vectores):
@@ -419,7 +419,7 @@ def caminata_univariante(X, tau):
     ff2 = np.random.uniform(-np.pi, np.pi, X)
 
     n = len(ff1) - 1
-    vectores = np.empty(n)
+    vectores = np.empty((n, 2))
     for i in range(n):
         p1 = (ff1[i], ff2[i])
         p2 = (ff1[i+1], ff2[i+1])
@@ -454,11 +454,11 @@ def diff_S(d, angulos):
     return entropia_shannon(dif_angulos)
 
 def main(X):
-    angulos = caminata_univariante(X,tau = 1)
-    # angulos = calcular_angulos(vectores)
-    entropia = diff_S(d=1,angulos=angulos)
-    # J = indice_J(angulos)
-    return entropia
+    vectores = caminata_univariante(X,tau = 1)
+    angulos = calcular_angulos(vectores)
+    # entropia = diff_S(d=1,angulos=angulos)
+    J = indice_J(angulos)
+    return J
 
 def calcular_J_N(N):
     J_N_min = np.ones(10)
@@ -521,4 +521,4 @@ if __name__ == '__main__':
 
     J_null_continuo = np.vstack((interpolador_constante(Ns), Js_min_interp,Js_mean_interp,Js_std_interp))
 
-    np.save('Datos_J_min/S_null_continuo.npy' ,J_null_continuo)
+    np.save('Datos_J_min/J_OG_null_continuo.npy' ,J_null_continuo)

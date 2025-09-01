@@ -8,6 +8,7 @@ import pandas as pd
 import os
 import math
 from collections import Counter
+from funciones import interpolador
 
 
 @njit
@@ -59,7 +60,8 @@ def mejor_vector(p1, p2):
             angulo = np.pi
         elif cruz < 0:
             angulo += np.pi
-    return angulo
+    return [p2[0] - 2*p1[0], p2[1] - 2*p1[1]]
+    # return angulo
 
 
 
@@ -123,7 +125,7 @@ def caminata_univariante(X, tau, bivariante):
     ff2 = np.angle(np.fft.rfft(y1))
 
     n = len(ff1) - 1
-    vectores = np.empty(n)
+    vectores = np.empty((n,2)) #(n,2)
     for i in range(n):
         p1 = (ff1[i], ff2[i])
         p2 = (ff1[i+1], ff2[i+1])
@@ -282,13 +284,13 @@ if __name__ == '__main__':
         for y, serie in enumerate(composers[composer]):
             f = composers[composer][serie]
             random = np.random.uniform(0,1, size = len(f))
-            angulos = caminata_univariante(random,tau = 1,bivariante=False)
-            # angulos = calcular_angulos(vectores)
+            vectores = caminata_univariante(interpolador(f,'lineal',2),tau = 1,bivariante=False)
+            angulos = calcular_angulos(vectores)
             J, S = main(angulos=angulos, d=1)
-            Js[x,y] = S
+            Js[x,y] = J
             lenght = y
         print(composer)
-        # np.save(f'new_data/Ss/{birth_year}_{composer}_Ss.npy', Js[x,:lenght])
+        np.save(f'new_data/Js_interp2/{birth_year}_{composer}_Js.npy', Js[x,:lenght])
     # np.save('J_composers_Hz_depurado.npy', Js)
     
     
@@ -296,7 +298,7 @@ if __name__ == '__main__':
 
     num_compositores = 19
     Ns = np.load(r'data/Ns_depurado.npy') 
-    J_null_matrix = np.load(r'new_data\S_null_continuo.npy')
+    J_null_matrix = np.load(r'new_data\J_null_continuo.npy')
     J_minus = J_null_matrix[:2,:]
     # J_minus = np.load('data/J_minus_continuo.npy')
 
