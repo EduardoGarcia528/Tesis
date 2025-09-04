@@ -19,7 +19,7 @@ def interpolador(subject, method, size):
     
     return x_new, data_interp
 
-J_null_matrix = np.load(r'Datos_J_min\J_null_continuo.npy')
+J_null_matrix = np.load(r'new_data\S_gaussian_null_continuo.npy')
 x = J_null_matrix[0,:]
 J_min = J_null_matrix[1,:]
 J_mean = J_null_matrix[2,:]
