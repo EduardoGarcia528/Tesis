@@ -46,7 +46,7 @@ if __name__ == '__main__':
     # momento_2 = main_estocastico(M,N,dt)
 
 
-    plt.plot(T,momento_2)
+    plt.plot(T[1:],momento_2[:-1])
     plt.plot(T,2*T)
     plt.xlabel('t')
     plt.ylabel('momento 2')

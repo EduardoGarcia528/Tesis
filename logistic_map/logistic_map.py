@@ -28,7 +28,7 @@ def lyapunov_exponent_from_orbit(orbit, r):
 
 
 def plot_orbit_diagram(graficar=True, r_min = 2.99, r_max = 3.571, num_points_per_r=50000,
- num_iterations_discard=3000, num_iterations_display=5000):
+ num_iterations_discard=300, num_iterations_display=5000):
     
     r_values = []
     orbit_values = []
@@ -115,9 +115,13 @@ def feigenbaum(x):
         delta_n = (x[n] - x[n-1]) / (x[n+1] - x[n])
         print(f"Feigenbaum ratio for n={n}: {delta_n}")
 
+# Diagrama de órbitas y exponente de Lyapunov
+plot_orbit_diagram(graficar=True, r_min = 1.0, r_max = 4.0, num_points_per_r=1000)
+
+# Espacio de fases (Cobweb Plot)
+r = 4.0
 x = np.linspace(0, 1, 1000)
-# plt.plot(x, logistic_map(4.0, x))
-"""
+plt.plot(x, logistic_map(4.0, x))
 plt.plot(x, x, '--', label=r'$x(n+1)=x(n)$')
 xn = 0.1
 for i in range(100):
@@ -127,7 +131,18 @@ for i in range(100):
     # línea horizontal: (xn, x_next) -> (x_next, x_next)
     plt.plot([xn, x_next], [x_next, x_next], color='red', linewidth=1)
     xn = x_next
-"""
+plt.title("Logistic Map: Cobweb Plot")
+plt.xlabel("x(n)")
+plt.ylabel("x(n+1)")
+plt.xlim(0, 1)
+plt.ylim(0, 1)
+plt.legend()
+plt.grid()
+plt.show()
+
+
+# Sensibilidad a las condiciones iniciales
+r = 4.0
 for i in [0,10e-2,10e-3,10e-6,10e-8]:
     orbit = []
     x0 = 0.1 + i
@@ -144,15 +159,25 @@ plt.ylabel("x(n)")
 plt.yscale("log")
 plt.legend()
 plt.grid()
-# plt.xlim(0, 1)
-# plt.ylim(0, 1)
 plt.show()
 
-# x, lambd = plot_orbit_diagram()
-# arr = np.array(lambd)
-# peaks = np.where((arr[1:-1] > arr[:-2]) & (arr[1:-1] > arr[2:]))[0] + 1
-# x = np.array(x)
-# # print("Indices de los picos:", peaks)  
-# # print("Valores de los picos:", x[peaks])
 
-# feigenbaum(x[peaks])
+# Feigenbaum constants
+x, lambd = plot_orbit_diagram(graficar=False, r_min = 2.99, r_max = 3.571, num_points_per_r=50000,
+ num_iterations_discard=300, num_iterations_display=5000)
+
+arr = np.array(lambd)
+peaks = np.where((arr[1:-1] > arr[:-2]) & (arr[1:-1] > arr[2:]))[0] + 1
+x = np.array(x)
+
+# # print("Indices de los picos:", peaks)  
+# # print("Valores de re los picos:", x[peaks])
+
+feigenbaum(x[peaks])
+
+"""
+Feigenbaum ratio for n=2: 4.655803316180737
+Feigenbaum ratio for n=3: 4.664000000000044
+Feigenbaum ratio for n=4: 4.687499999998268
+Feigenbaum ratio for n=5: 4.705882352943028
+"""
