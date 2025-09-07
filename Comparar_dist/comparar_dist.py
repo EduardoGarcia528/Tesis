@@ -44,24 +44,37 @@ def compare_indices(X, Y, X_c, Y_c, n_perms=1000):
     return results
 
 import numpy as np
+import os
 
-# Semilla para reproducibilidad
-np.random.seed(42)
+composer = 'Handel'  
+for composer in ['Byrd', 'Buxtehude', 'Handel', 'Scarlatti', 'Bach', 'Haydn', 'Mozart', 'Beethoven', 'Schubert', 'Chopin', 'Schumann', 'Liszt', 'Alkan', 'Brahms', 'Saint', 'Tchaikovsky', 'Dvorak', 'Faure', 'Debussy']:
+    # Array X: índice de no linealidad (ejemplo con distribución normal)
+    X = []
+    folder_path = 'new_data/xi_index1'
+    for filename in os.listdir(folder_path):
+        if composer not in filename:
+            continue
+        arr = np.load(os.path.join(folder_path, filename))[:,1]
+        X.extend(arr)
 
-# Array X: índice de no linealidad (ejemplo con distribución normal)
-X = np.random.normal(loc=0.6, scale=0.15, size=100)
 
-# Array Y: índice J (ejemplo con correlación parcial con X + ruido)
-X = np.random.normal(loc=0.5, scale=0.15, size=100)
+    Y = []
+    folder_path = 'new_data/PEs'
+    for filename in os.listdir(folder_path):
+        if composer not in filename:
+            continue
+        arr = np.load(os.path.join(folder_path, filename))
+        Y.extend(arr)
+    X = np.array(X)
+    Y = np.array(Y)
+    X_c = 1.0
+    Y_c = 1.7
 
-# Y: muy parecido a X, con un poco de ruido
-Y = X + np.random.normal(loc=0.0, scale=0.05, size=100)
-# Umbrales arbitrarios
-X_c = 0.5
-Y_c = 0.5
+    # print("X:", X[:10])  # primeros 10 valores
+    print('')
+    print('')
+    # print("Y:", Y[:10])
+    print(composer)
+    results = compare_indices(X, Y, X_c, Y_c)
 
-print("X:", X[:10])  # primeros 10 valores
-print("Y:", Y[:10])
-results = compare_indices(X, Y, X_c, Y_c)
-
-print("\nResultados de la comparación: ", results)
+    print("\nResultados de la comparación: ", results)

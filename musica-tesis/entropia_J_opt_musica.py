@@ -38,30 +38,7 @@ def mejor_vector(p1, p2):
             min_idx = i
             d_og = d
     p2 = diffs[min_idx]
-    v1 = p1
-    v2 = p2
-    norm_v1 = np.sqrt(v1[0]**2 + v1[1]**2)
-    norm_v2 = np.sqrt(v2[0]**2 + v2[1]**2)
-    if norm_v1 == 0 or norm_v2 == 0:
-        angulo = 0.0
-    else:
-        v1n0 = v1[0] / norm_v1
-        v1n1 = v1[1] / norm_v1
-        v2n0 = v2[0] / norm_v2
-        v2n1 = v2[1] / norm_v2
-        dot = v1n0 * v2n0 + v1n1 * v2n1
-        if dot > 1.0: dot = 1.0
-        if dot < -1.0: dot = -1.0
-        angulo = np.arccos(dot)
-        cruz = v1[0] * v2[1] - v1[1] * v2[0]
-        if cruz > 0:
-            angulo = np.pi - angulo
-        elif cruz == 0 and angulo < 0:
-            angulo = np.pi
-        elif cruz < 0:
-            angulo += np.pi
     return [p2[0] - 2*p1[0], p2[1] - 2*p1[1]]
-    # return angulo
 
 
 

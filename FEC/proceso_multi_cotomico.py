@@ -30,13 +30,15 @@ def main(M,N,dt,franja,lam):
         for i in range(M): # particulas
             y_t.append(pasos_browniano(y0[i],dt,1))
             if franja[0] <= y0[i] <= franja[1]:
-                if np.random.rand() < lam*dt:
-                    if np.random.rand() < 0.5:
-                        x_t.append(x0[i] + 1)
-                    else:
-                        x_t.append(x0[i] - 1)
+                # if np.random.rand() < lam*dt:
+                if np.random.rand() < 0.5:
+                    x_t.append(x0[i] + 1)
                 else:
-                    x_t.append(x0[i])
+                    x_t.append(x0[i] - 1)
+                # else:
+                    # x_t.append(x0[i])
+            else:
+                x_t.append(x0[i])
                     
         momento_2.append(segundo_momento(x_t))
         y0 = y_t
@@ -49,12 +51,12 @@ if __name__ == '__main__':
     N = 1000
     M = 400000
     lam = 5    # tasa de cambio
-    franja = [-np.inf,np.inf]
+    franja = [-0.5,0.5]
     momento_2 = main(M,N,dt,franja,lam)
     # np.save("momento2_proceso_multi_cotomico.npy", momento_2)
 
     time = np.linspace(0.0,N*dt,N)
-    x2_theory = lam*time
+    x2_theory = np.sqrt(time)
 
     plt.figure(figsize=(8,5))
     plt.plot(time[1:], momento_2[:-1], label="Simulación")

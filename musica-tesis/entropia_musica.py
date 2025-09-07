@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 from collections import Counter, defaultdict
 from itertools import permutations
 import os
+import seaborn as sns
+from numba import njit
 import pandas as pd
 import copy
 
@@ -103,16 +105,63 @@ def extraer_dataset_musica():
     return composers_depurado_v2, datos_composers_depurado_v2
 
 
+# def permutation_entropy(arr, m=3, tau=1, base=np.e):
+#     n = len(arr)
+#     if n < m:
+#         return np.nan
+#     embedded = np.array([arr[i:i + m*tau:tau] for i in range(n - m*tau + 1)])
+#     ranks = np.argsort(embedded, axis=1)
+#     counts = Counter(tuple(r) for r in ranks)
+#     probs = np.array(list(counts.values())) / (n - m*tau + 1)
+#     PE = -np.sum(probs * np.log(probs) / np.log(base))
+#     return PE
+
+@njit
+def lehmer_code(perm):
+    """Codifica una permutación en un índice único usando Lehmer code"""
+    m = len(perm)
+    code = 0
+    factor = 1
+    for i in range(m-1, -1, -1):
+        c = 0
+        for j in range(i+1, m):
+            if perm[j] < perm[i]:
+                c += 1
+        code += c * factor
+        factor *= (m - i)
+    return code
+
+@njit
 def permutation_entropy(arr, m=3, tau=1, base=np.e):
     n = len(arr)
     if n < m:
         return np.nan
-    embedded = np.array([arr[i:i + m*tau:tau] for i in range(n - m*tau + 1)])
-    ranks = np.argsort(embedded, axis=1)
-    counts = Counter(tuple(r) for r in ranks)
-    probs = np.array(list(counts.values())) / (n - m*tau + 1)
-    PE = -np.sum(probs * np.log(probs) / np.log(base))
-    return PE
+
+    # Número total de permutaciones
+    factorial_m = 1
+    for i in range(2, m+1):
+        factorial_m *= i
+
+    counts = np.zeros(factorial_m, dtype=np.int64)
+
+    # Recorrer ventanas
+    for i in range(n - (m-1)*tau):
+        # Extraer subsecuencia
+        subseq = np.empty(m, dtype=np.float64)
+        for j in range(m):
+            subseq[j] = arr[i + j*tau]
+
+        # Obtener orden
+        idx = np.argsort(subseq)
+
+        # Convertir a índice único
+        code = lehmer_code(idx)
+
+        counts[code] += 1
+
+    probs = counts[counts > 0] / (n - (m-1)*tau)
+    H = -np.sum(probs * np.log(probs)) / np.log(base)
+    return H
 
 def conditional_entropy(arr, bins=None):
     arr = np.asarray(arr)
@@ -127,7 +176,7 @@ def conditional_entropy(arr, bins=None):
     Hxy = -np.sum(joint_hist*np.log(joint_hist))
     return Hxy - Hx
 
-def predictability_metrics(arr, m=3, tau=1, n_surr=100):
+def predictability_metrics(method,arr, m=3, tau=1, n_surr=100):
     arr = np.asarray(arr)
     states = len(np.unique(arr))
     
@@ -143,9 +192,12 @@ def predictability_metrics(arr, m=3, tau=1, n_surr=100):
     
     for _ in range(n_surr):
         surr = np.random.permutation(arr)
-        PE_surr.append(permutation_entropy(surr, m=m, tau=tau))
-        rate_surr.append(PE_surr[-1] / np.log(states))
-        CE_surr.append(conditional_entropy(surr, bins=states))
+        if method == 'PE':
+            PE_surr.append(permutation_entropy(surr, m=m, tau=tau))
+        elif method == 'CE':
+            CE_surr.append(conditional_entropy(surr, bins=states))
+        elif method == 'rate':
+            rate_surr.append(PE_surr[-1] / np.log(states))
     
     results = {
         'observed': {'PE': PE, 'rate': rate, 'CE': CE},
@@ -159,7 +211,7 @@ def plot_metrics(metrics):
     
     fig, ax = plt.subplots(1,3, figsize=(15,5))
     
-    metric_names = ['PE', 'rate', 'CE']
+    metric_names = ['PE']
     
     delta = []
     for name in metric_names:
@@ -181,25 +233,86 @@ def plot_metrics(metrics):
     plt.show()
 
 
+def test_hypothesis(null_distribution, observed_value, alpha=0.00, two_tailed=False, graficar=False):
+    """
+    Calcula p-value dado un evento observado y una distribución nula.
+    Grafica la distribución con el punto observado y el umbral de significancia.
+    
+    Parámetros:
+    null_distribution : array-like
+        Muestras simuladas bajo H0
+    observed_value : float
+        Valor observado a comparar
+    alpha : float
+        Nivel de significancia
+    two_tailed : bool
+        Si True, usa prueba bilateral; si False, unilateral
+    """
+    null_distribution = np.array(null_distribution)
+    
+    # Calcular p-value
+    if two_tailed:
+        extreme_count = np.sum(np.abs(null_distribution - np.mean(null_distribution)) 
+                               >= np.abs(observed_value - np.mean(null_distribution)))
+    else:
+        extreme_count = np.sum(null_distribution <= observed_value)
+        
+    p_value = extreme_count / len(null_distribution)
+    
+    # Decisión
+    reject = p_value <= alpha
+    
+    # Umbral crítico para graficar
+    lower_crit = np.percentile(null_distribution, 100 * (alpha/2)) if two_tailed else np.percentile(null_distribution, 100 * (alpha))
+    upper_crit = np.percentile(null_distribution, 100 * (1 - alpha/2)) if two_tailed else None
+    
+    # Gráfica
+    if graficar is True:
+        plt.figure(figsize=(8,5))
+        sns.histplot(null_distribution, kde=True, bins=30, color="skyblue", stat="density")
+        
+        # Región crítica
+        if two_tailed:
+            plt.axvline(lower_crit, color="red", linestyle="--", label=f"α/2 = {alpha/2}")
+            plt.axvline(upper_crit, color="red", linestyle="--")
+        else:
+            plt.axvline(lower_crit, color="red", linestyle="--", label=f"α = {alpha}")
+        
+        # Valor observado
+        plt.axvline(observed_value, color="black", linewidth=2, label=f"Valor observado = {observed_value:.3f}")
+        
+        plt.title("Test de Hipótesis con Distribución Nula")
+        plt.legend()
+        plt.show()
+    
+    return lower_crit, reject
 
 
 # ======================================================
 # 4. Ejemplo de uso
 # ======================================================
 
-if __name__ == "__main__":
-    # Ejemplo: melodía simple en MIDI
+if __name__ == '__main__':
+    # mp.freeze_support()
+
     composers, datos_composers = extraer_dataset_musica()
+
+    """"""
+    PEs = np.full((19,2160), np.nan)
+    PEs_null = np.full((19,2160), np.nan)
+    for x, composer in enumerate(composers.keys()):
+        birth_year = datos_composers[composer]['Birth_year']
+        for y, serie in enumerate(composers[composer]):
+            f = composers[composer][serie]
+            metrics = predictability_metrics('PE',np.array(f))
+            PEs[x,y] = metrics['observed']['PE']
+            null_dist = metrics['surrogates']['PE']
+            PEs_null[x,y] = test_hypothesis(null_dist, PEs[x,y], alpha=0.00, two_tailed=False, graficar=False)[0]
+            # plot_metrics(metrics)
+            lenght = y
+        print(composer)
+        np.save(f'new_data/PEs_null/{birth_year}_{composer}_PEs_null.npy', PEs_null[x,:lenght+1])
+        np.save(f'new_data/PEs/{birth_year}_{composer}_PEs.npy', PEs[x,:lenght+1])
+    # np.save('J_composers_Hz_depurado.npy', Js)
     
-    for notes in composers['Bach'].values():
-    # notes = composers['Bach']['Serie_1'] 
-        notes = [60, 62, 64, 65, 67, 69, 71, 72, 71, 69, 67, 65, 64, 62, 60] * 30  # Escala ascendente y descendente repetida
-    # Evaluar notas
-# Ejemplo de uso
-        metrics = predictability_metrics(np.array(notes))
-        plot_metrics(metrics)
-    
-    # Evaluar intervalos
-    intervals = np.diff(notes)
-    metrics = predictability_metrics(np.array(notes))
-    plot_metrics(metrics)
+    """"""
