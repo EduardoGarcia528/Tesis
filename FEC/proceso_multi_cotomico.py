@@ -3,69 +3,80 @@ import matplotlib.pyplot as plt
 from numba import njit
 
 @njit
-def pasos_browniano(x0,dt,D):
-    x1 = x0 + np.sqrt(2*D*dt)*np.random.normal(loc=0.0, scale=1.0, size=None)
+def simulate_brownian_FPT(x0=1.0, D=0.5, dt=1e-3, Tmax=100.0):
+    """
+    Simula trayectoria browniana paso a paso hasta el primer arribo a 0.
+    Devuelve el tiempo de primer arribo.
+    """
+    x = x0
+    t = 0.0
+    sqrt_2Ddt = np.sqrt(2*D*dt)
 
-    return x1
+    while t < Tmax:
+        dx = sqrt_2Ddt * np.random.randn()   # numba soporta np.random.randn
+        x += dx
+        t += dt
+        if x <= 0.0:   # primer arribo
+            return t
 
-@njit
-def segundo_momento(x_t):
-    n = len(x_t)
-    suma = 0.0
-    for i in range(n):
-        suma += x_t[i]*x_t[i]
-    momento2 = suma / n
-    return momento2
+    return Tmax  # si no llega en Tmax, truncamos
 
-@njit
-def main(M,N,dt,franja,lam):
-    y0 = [0.0]*M
-    x0 = [0.0]*M
-    momento_2 = []
-    for t in range(N): # N total
-        print(t)
-        y_t = []
-        x_t = []
-        
-        for i in range(M): # particulas
-            y_t.append(pasos_browniano(y0[i],dt,1))
-            if franja[0] <= y0[i] <= franja[1]:
-                # if np.random.rand() < lam*dt:
-                if np.random.rand() < 0.5:
-                    x_t.append(x0[i] + 1)
-                else:
-                    x_t.append(x0[i] - 1)
-                # else:
-                    # x_t.append(x0[i])
-            else:
-                x_t.append(x0[i])
-                    
-        momento_2.append(segundo_momento(x_t))
-        y0 = y_t
-        x0 = x_t
-    return momento_2
+def simulate_CTRW_with_FPT(M=5000, T=200.0, dt=0.01, x0=1.0, D=0.5, 
+                           step_sigma=1.0, seed=123, dt_brown=1e-3):
+    """
+    Simula CTRW donde los tiempos de espera provienen del FPT
+    de trayectorias brownianas explícitas.
+    """
+    rng = np.random.default_rng(seed)
+    times = np.arange(0.0, T+1e-12, dt)
+    msd = np.zeros_like(times)
 
-if __name__ == '__main__':
+    for m in range(M):
+        print(m)
+        t, x = 0.0, 0.0
+        jump_times = [0.0]
+        jump_positions = [0.0]
 
-    dt = 0.001
-    N = 1000
-    M = 400000
-    lam = 5    # tasa de cambio
-    franja = [-0.5,0.5]
-    momento_2 = main(M,N,dt,franja,lam)
-    # np.save("momento2_proceso_multi_cotomico.npy", momento_2)
+        while t < T:
+            tau = simulate_brownian_FPT(x0=x0, D=D, dt=dt_brown)
+            t_next = t + tau
+            if t_next > T:
+                break
+            dx = rng.normal(0, step_sigma)
+            x += dx
+            t = t_next
+            jump_times.append(t)
+            jump_positions.append(x)
 
-    time = np.linspace(0.0,N*dt,N)
-    x2_theory = np.sqrt(time)
+        # reconstrucción x(t) en malla uniforme
+        k = 0
+        x_curr = jump_positions[0]
+        t_next_jump = jump_times[1] if len(jump_times) > 1 else np.inf
+        for i, ti in enumerate(times):
+            while ti > t_next_jump and k < len(jump_times)-1:
+                k += 1
+                x_curr = jump_positions[k]
+                t_next_jump = jump_times[k+1] if (k+1)<len(jump_times) else np.inf
+            msd[i] += x_curr**2
 
-    plt.figure(figsize=(8,5))
-    plt.plot(time[1:], momento_2[:-1], label="Simulación")
-    plt.plot(time, x2_theory, 'r--', label="Solución analítica", linewidth=2,alpha=0.7)
-    plt.xlabel("t")
-    plt.ylabel(r"$\langle x^2(t) \rangle$")
-    plt.xscale('log')
-    plt.yscale('log')
-    plt.title("Segundo momento en el proceso dicotómico de difusión")
+    msd /= M
+    return times, msd
+
+if __name__ == "__main__":
+    times, msd = simulate_CTRW_with_FPT(M=2000, T=200.0, dt=0.1, 
+                                        x0=1.0, D=0.5, dt_brown=1e-3)
+
+    # Ajuste log-log
+    mask = times > 10
+    slope, intercept = np.polyfit(np.log(times[mask]), np.log(msd[mask]), 1)
+    print(f"Pendiente estimada ≈ {slope:.3f} (esperado: 0.5)")
+
+    # Graficar
+    plt.loglog(times[1:], msd[1:], label="MSD con FPT simulado")
+    t_ref, msd_ref = times[-1], msd[-1]
+    guide = msd_ref*(times[1:]/t_ref)**0.5
+    plt.loglog(times[1:], guide, '--', label=r'$\propto t^{1/2}$')
     plt.legend()
-    plt.grid(True)
+    plt.xlabel("t")
+    plt.ylabel(r"$\langle x^2(t)\rangle$")
     plt.show()
