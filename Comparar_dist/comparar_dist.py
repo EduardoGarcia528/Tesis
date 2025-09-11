@@ -9,7 +9,6 @@ def compare_indices(X, Y, X_c, Y_c, n_perms=1000):
     # 1. Correlaciones
     results["pearson"] = pearsonr(X, Y)[0]
     results["spearman"] = spearmanr(X, Y)[0]
-    results["kendall"] = kendalltau(X, Y)[0]
 
     # 2. Información mutua
     # discretización opcional
@@ -28,18 +27,14 @@ def compare_indices(X, Y, X_c, Y_c, n_perms=1000):
 
     # 3. Umbrales
     X_bin = X >= X_c
-    Y_bin = Y >= Y_c
+    Y_bin = Y <= Y_c
     table = np.zeros((2,2))
     for xb, yb in zip(X_bin, Y_bin):
         table[int(xb), int(yb)] += 1
-    chi2, p, _, _ = chi2_contingency(table)
-    results["contingency_table"] = table
-    results["chi2_pval"] = p
     results["agreement_percent"] = (table[0,0] + table[1,1]) / len(X)
 
     # 4. Distribuciones
     # results["wasserstein"] = wasserstein_distance(X, Y)
-    results["js"] = jensenshannon(np.histogram(X, bins)[0], np.histogram(Y, bins)[0])
 
     return results
 
@@ -47,7 +42,8 @@ import numpy as np
 import os
 
 composer = 'Handel'  
-for composer in ['Byrd', 'Buxtehude', 'Handel', 'Scarlatti', 'Bach', 'Haydn', 'Mozart', 'Beethoven', 'Schubert', 'Chopin', 'Schumann', 'Liszt', 'Alkan', 'Brahms', 'Saint', 'Tchaikovsky', 'Dvorak', 'Faure', 'Debussy']:
+agreement_porcentage = np.zeros(19)
+for i,composer in enumerate(['Byrd', 'Buxtehude', 'Handel', 'Scarlatti', 'Bach', 'Haydn', 'Mozart', 'Beethoven', 'Schubert', 'Chopin', 'Schumann', 'Liszt', 'Alkan', 'Brahms', 'Saint', 'Tchaikovsky', 'Dvorak', 'Faure', 'Debussy']):
     # Array X: índice de no linealidad (ejemplo con distribución normal)
     X = []
     folder_path = 'new_data/xi_index1'
@@ -68,7 +64,7 @@ for composer in ['Byrd', 'Buxtehude', 'Handel', 'Scarlatti', 'Bach', 'Haydn', 'M
     X = np.array(X)
     Y = np.array(Y)
     X_c = 1.0
-    Y_c = 1.7
+    Y_c = 1.776
 
     # print("X:", X[:10])  # primeros 10 valores
     print('')
@@ -76,5 +72,8 @@ for composer in ['Byrd', 'Buxtehude', 'Handel', 'Scarlatti', 'Bach', 'Haydn', 'M
     # print("Y:", Y[:10])
     print(composer)
     results = compare_indices(X, Y, X_c, Y_c)
+    agreement_porcentage[i] = results['agreement_percent']
 
     print("\nResultados de la comparación: ", results)
+print(agreement_porcentage)
+np.save(r'new_data\agreement_percent', agreement_porcentage)

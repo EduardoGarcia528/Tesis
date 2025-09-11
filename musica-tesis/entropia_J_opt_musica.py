@@ -267,7 +267,7 @@ if __name__ == '__main__':
             Js[x,y] = J
             lenght = y
         print(composer)
-        np.save(f'new_data/Js_interp2/{birth_year}_{composer}_Js.npy', Js[x,:lenght])
+        np.save(f'new_data/Js_interp2/{birth_year}_{composer}_Js.npy', Js[x,:lenght+1])
     # np.save('J_composers_Hz_depurado.npy', Js)
     
     
