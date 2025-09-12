@@ -161,7 +161,8 @@ def permutation_entropy(arr, m=3, tau=1, base=np.e):
 
     probs = counts[counts > 0] / (n - (m-1)*tau)
     H = -np.sum(probs * np.log(probs)) / np.log(base)
-    return H
+    H_norm = H / np.log(factorial_m) * np.log(base)
+    return H_norm
 
 def conditional_entropy(arr, bins=None):
     arr = np.asarray(arr)
@@ -307,7 +308,7 @@ if __name__ == '__main__':
             metrics = predictability_metrics('PE',np.array(f))
             PEs[x,y] = metrics['observed']['PE']
             null_dist = metrics['surrogates']['PE']
-            PEs_null[x,y] = test_hypothesis(null_dist, PEs[x,y], alpha=0.00, two_tailed=False, graficar=False)[0]
+            PEs_null[x,y] = test_hypothesis(null_dist, PEs[x,y], alpha=0.0, two_tailed=False, graficar=False)[0]
             # plot_metrics(metrics)
             lenght = y
         print(composer)
