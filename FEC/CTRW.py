@@ -37,7 +37,7 @@ def main(M, N, dt, a, D_y=1.0, step_std=1.0):
             y_new = pasos_browniano(y_old, dt, D=D_y)
 
             # cruce de umbral (primer arribo) 
-            if (y_old < a) and (y_new >= a):
+            if y_new >= a:
                 # salto en x con varianza finita
                 if np.random.rand() < 0.5:
                     x[i] += step_std
@@ -55,13 +55,13 @@ def main(M, N, dt, a, D_y=1.0, step_std=1.0):
 
 
 if __name__ == '__main__':
-    dt = 0.01
-    N = 50000
-    M = 6000
+    dt = 0.001
+    N = 100000
+    M = 9000
 
-    momento_2 = main(M, N, dt, a = 0.01)
-    np.save('CTRW5.npy',momento_2)
-    # momento_2 = np.load('CTRW4.npy')
+    momento_2 = main(M, N, dt, a = 1.4)
+    # np.save('CTRW5.npy',momento_2)
+    # momento_2 = np.load('CTRW5.npy')
 
     time = np.linspace(0.0, N*dt, N)
     x2_theory = np.sqrt(time)  # comportamiento esperado
@@ -70,7 +70,7 @@ if __name__ == '__main__':
 
     plt.figure(figsize=(8,5))
     plt.loglog(time[1:], momento_2[1:], label="Simulación")
-    plt.loglog(time[1:], 10**fitline, 'r--', label=r'$\propto t^{1/2}$', linewidth=2, alpha=0.7)
+    plt.loglog(time[1:], time[1:]**(1/2), 'r--', label=r'$\propto t^{1/2}$', linewidth=2, alpha=0.7)
     plt.xlabel("t")
     plt.ylabel(r"$\langle x^2(t) \rangle$")
     print(coef)
