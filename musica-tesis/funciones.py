@@ -161,8 +161,6 @@ def remove_consecutive_duplicates(data, tolerance=1e-1):
     Returns:
         list: Array con duplicados consecutivos removidos.
     """
-    if not data:
-        return []
 
     result = [data[0]]  # Comenzamos con el primer elemento
     for i in range(1, len(data)):

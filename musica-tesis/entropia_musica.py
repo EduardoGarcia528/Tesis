@@ -5,6 +5,7 @@ from itertools import permutations
 import os
 import seaborn as sns
 from numba import njit
+from funciones import remove_consecutive_duplicates
 import pandas as pd
 import copy
 
@@ -177,7 +178,7 @@ def conditional_entropy(arr, bins=None):
     Hxy = -np.sum(joint_hist*np.log(joint_hist))
     return Hxy - Hx
 
-def predictability_metrics(method,arr, m=3, tau=1, n_surr=100):
+def predictability_metrics(method,arr, m, tau, n_surr=100):
     arr = np.asarray(arr)
     states = len(np.unique(arr))
     
@@ -302,18 +303,22 @@ if __name__ == '__main__':
     PEs = np.full((19,2160), np.nan)
     PEs_null = np.full((19,2160), np.nan)
     for x, composer in enumerate(composers.keys()):
+        if composer != 'Bach':
+            continue
         birth_year = datos_composers[composer]['Birth_year']
+        print(composer)
         for y, serie in enumerate(composers[composer]):
             f = composers[composer][serie]
-            metrics = predictability_metrics('PE',np.array(f))
+            f= remove_consecutive_duplicates(f, tolerance=0)
+            metrics = predictability_metrics('PE',np.array(f),m=10, tau=1)
             PEs[x,y] = metrics['observed']['PE']
             null_dist = metrics['surrogates']['PE']
-            PEs_null[x,y] = test_hypothesis(null_dist, PEs[x,y], alpha=0.0, two_tailed=False, graficar=False)[0]
+            PEs_null[x,y] = test_hypothesis(null_dist, PEs[x,y], alpha=0.0, two_tailed=False, graficar=True)[0]
             # plot_metrics(metrics)
             lenght = y
         print(composer)
-        np.save(f'new_data/PEs_null/{birth_year}_{composer}_PEs_null.npy', PEs_null[x,:lenght+1])
-        np.save(f'new_data/PEs/{birth_year}_{composer}_PEs.npy', PEs[x,:lenght+1])
+        # np.save(f'new_data/PEs_null_10/{birth_year}_{composer}_PEs_null.npy', PEs_null[x,:lenght+1])
+        # np.save(f'new_data/PEs_10/{birth_year}_{composer}_PEs.npy', PEs[x,:lenght+1])
     # np.save('J_composers_Hz_depurado.npy', Js)
     
     """"""
