@@ -151,7 +151,7 @@ def plot_orbit_diagram(graficar, a_min, a_max,num_points_per_a):
 
 
 def feigenbaum(x):
-    for n in range(2, 10):
+    for n in range(1, 2):
         delta_n = (x[n] - x[n-1]) / (x[n+1] - x[n])
         print(f"Feigenbaum ratio for n={n}: {delta_n}")
 
@@ -159,18 +159,26 @@ def feigenbaum(x):
 if __name__ == "__main__":
 
     #Graficar atractor de Henon
-    # x, y = henon_map(a=1.4, b=0.3, x0=0.1, y0=0.1,n_trans=10000, n_points=100000)
-    # plot_henon_map(x[1:], x[:-1])
+    x, y = henon_map(a=1.4, b=0.3, x0=0.1, y0=0.1,n_trans=10000, n_points=100_000)
+    plot_henon_map(x[1:], x[:-1])
 
     # #Diagrama de bifurcacion
-    # a_array, lyapunov_values = plot_orbit_diagram(graficar=True, a_min = 1.0, a_max = 1.4,num_points_per_a=1000)
+    a_array, lyapunov_values = plot_orbit_diagram(graficar=True, a_min = 1.0, a_max = 1.4,num_points_per_a=1000)
 
 
     # Feigenbaum constants
-    a_array, lyapunov_values = plot_orbit_diagram(graficar=True, a_min = 0.35, a_max = 1.0579,num_points_per_a=50_000)
+    # a_array, lyapunov_values = plot_orbit_diagram(graficar=True, a_min = 0.35, a_max = 1.03,num_points_per_a=100_000)
+    # np.save('henon_bifurcation_data.npy', (a_array, lyapunov_values))
+    a_array, lyapunov_values = np.load('henon_bifurcation_data.npy', allow_pickle=True)
     arr = np.array(lyapunov_values)
     peaks = np.where((arr[1:-1] > arr[:-2]) & (arr[1:-1] > arr[2:]))[0] + 1
     x = np.array(a_array)
+    peaks = peaks[arr[peaks] >= -0.3]
     # # print("Indices de los picos:", peaks)  
     # # print("Valores de re los picos:", x[peaks])
     feigenbaum(x[peaks])
+
+"""
+Feigenbaum ratio for n=1: 4.807236354655469
+Real value: 4.6692016
+"""
