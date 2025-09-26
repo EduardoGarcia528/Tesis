@@ -26,7 +26,6 @@ msd_record = np.zeros(n_steps)
 # Cada caminante empieza con el sitio '0' en su historial.
 #history = [set([0]) for _ in range(m)]
 history = [[0] for _ in range(m)]
-print(np.shape(history))
 
 brownian_step = np.sqrt(2*dt)
 
@@ -92,6 +91,7 @@ print(f"Número promedio de sitios únicos visitados: {avg_unique_sites:.2f}")
 plt.style.use('seaborn-v0_8-whitegrid')
 fig, axs = plt.subplots(1, 2, figsize=(16, 6))
 
+np.save("msd_simulation_prueba.npy", msd_record)
 # --- Gráfico 1: Desplazamiento Cuadrático Medio (MSD) ---
 axs[0].plot(times, msd_record, label='MSD Simulado')
 # Para comparación, una línea recta que representa difusión normal (MSD ~ t)
