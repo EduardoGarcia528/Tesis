@@ -5,7 +5,7 @@ import re
 import importlib
 import funciones
 importlib.reload(funciones)
-from funciones import main, entropia_shannon
+from funciones import main, entropia_shannon, extract_melody_grow, juntar_y_ordenar
 import xml.etree.ElementTree as ET
 import subprocess
 from music21 import stream, note, chord, meter, tempo, duration, instrument, clef, expressions, converter, environment
@@ -356,7 +356,12 @@ acorde = np.array([
 array_complete = np.array((ostinato,))
 
 partitura = r'data\humdrum-data-numpy\beethoven\piano\sonata\sonata14-3'
-array_complete = extraer_partitura_npy(partitura)
+array_complete = extraer_partitura_npy(partitura) 
+array_junto = juntar_y_ordenar(array_complete[0],array_complete[1])
+
+melodia, serie1d = extract_melody_grow(array_junto, silence_value=-1.0, seed_threshold=56.0, neighbor_semitones=6.0)
+array_complete = np.array((melodia,))
+
 
 mxl_file ='partitura.xml'
 tempo = 120
