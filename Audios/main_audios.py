@@ -6,6 +6,9 @@ import importlib
 import funciones
 importlib.reload(funciones)
 from funciones import main, entropia_shannon, extract_melody_grow, juntar_y_ordenar
+import funciones2
+importlib.reload(funciones2)
+from funciones2 import randomize_rhythm_per_bar_with_rests
 import xml.etree.ElementTree as ET
 import subprocess
 from music21 import stream, note, chord, meter, tempo, duration, instrument, clef, expressions, converter, environment
@@ -357,6 +360,17 @@ array_complete = np.array((ostinato,))
 
 partitura = r'data\humdrum-data-numpy\beethoven\piano\sonata\sonata14-3'
 array_complete = extraer_partitura_npy(partitura) 
+
+def permutar_penultima_columna(arr):
+    arr = arr.copy()  # para no modificar el original
+    penultima = arr[:, -2]  # extrae la penúltima columna
+    np.random.shuffle(penultima)  # permuta en su lugar
+    arr[:, -2] = penultima  # asigna de nuevo
+    return arr
+array_complete[0] = randomize_rhythm_per_bar_with_rests(array_complete[0])
+array_complete[1] = randomize_rhythm_per_bar_with_rests(array_complete[1])
+# array_complete[0] = permutar_penultima_columna(array_complete[0])
+# array_complete[1] = permutar_penultima_columna(array_complete[1])
 # array_junto = juntar_y_ordenar(array_complete[0],array_complete[1])
 
 # melodia, serie1d = extract_melody_grow(array_junto, silence_value=-1.0, seed_threshold=56.0, neighbor_semitones=6.0)

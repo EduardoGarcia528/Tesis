@@ -206,7 +206,7 @@ if __name__ == "__main__":
     fig, axes = plot_pe_from_wav(
        "partitura-copia.wav",
         permutation_entropy_fn=permutation_entropy,
-        m=6,
+        m=7,
         tau=1,
         win=44100,      # puedes probar 4096 si quieres ventanas un poco más largas
         hop=5512,       # empieza aquí; si tu máquina aguanta, baja a 128 o 64
