@@ -357,10 +357,10 @@ array_complete = np.array((ostinato,))
 
 partitura = r'data\humdrum-data-numpy\beethoven\piano\sonata\sonata14-3'
 array_complete = extraer_partitura_npy(partitura) 
-array_junto = juntar_y_ordenar(array_complete[0],array_complete[1])
+# array_junto = juntar_y_ordenar(array_complete[0],array_complete[1])
 
-melodia, serie1d = extract_melody_grow(array_junto, silence_value=-1.0, seed_threshold=56.0, neighbor_semitones=6.0)
-array_complete = np.array((melodia,))
+# melodia, serie1d = extract_melody_grow(array_junto, silence_value=-1.0, seed_threshold=56.0, neighbor_semitones=6.0)
+# array_complete = np.array((melodia,))
 
 
 mxl_file ='partitura.xml'
