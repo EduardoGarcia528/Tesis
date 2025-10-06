@@ -106,16 +106,7 @@ def extraer_dataset_musica():
     return composers_depurado_v2, datos_composers_depurado_v2
 
 
-# def permutation_entropy(arr, m=3, tau=1, base=np.e):
-#     n = len(arr)
-#     if n < m:
-#         return np.nan
-#     embedded = np.array([arr[i:i + m*tau:tau] for i in range(n - m*tau + 1)])
-#     ranks = np.argsort(embedded, axis=1)
-#     counts = Counter(tuple(r) for r in ranks)
-#     probs = np.array(list(counts.values())) / (n - m*tau + 1)
-#     PE = -np.sum(probs * np.log(probs) / np.log(base))
-#     return PE
+from numba import njit
 
 @njit
 def lehmer_code(perm):
@@ -133,37 +124,49 @@ def lehmer_code(perm):
     return code
 
 @njit
-def permutation_entropy(arr, m=3, tau=1, base=np.e):
+def stable_argsort_by_value_then_index(x):
+    m = x.shape[0]
+    idx = np.arange(m)
+    # insertion sort por clave (valor, índice)
+    for i in range(1, m):
+        key = idx[i]
+        j = i - 1
+        while j >= 0:
+            a = x[idx[j]]
+            b = x[key]
+            if (a > b) or (a == b and idx[j] > key):  # (valor) y luego (índice)
+                idx[j+1] = idx[j]
+                j -= 1
+            else:
+                break
+        idx[j+1] = key
+    return idx
+
+@njit
+def permutation_entropy(arr, m=3, tau=1):
     n = len(arr)
     if n < m:
         return np.nan
-
-    # Número total de permutaciones
-    factorial_m = 1
-    for i in range(2, m+1):
-        factorial_m *= i
-
-    counts = np.zeros(factorial_m, dtype=np.int64)
-
-    # Recorrer ventanas
-    for i in range(n - (m-1)*tau):
-        # Extraer subsecuencia
-        subseq = np.empty(m, dtype=np.float64)
+    # m!:
+    fact = 1
+    for k in range(2, m+1):
+        fact *= k
+    counts = np.zeros(fact, dtype=np.int64)
+    denom = n - (m-1)*tau
+    for i in range(denom):
+        subseq = np.empty(m, np.float64)
         for j in range(m):
             subseq[j] = arr[i + j*tau]
-
-        # Obtener orden
-        idx = np.argsort(subseq)
-
-        # Convertir a índice único
-        code = lehmer_code(idx)
-
+        idx = stable_argsort_by_value_then_index(subseq)
+        code = lehmer_code(idx)      # tu misma función
         counts[code] += 1
+    # entropía normalizada (independiente de base)
+    probs = counts[counts > 0] / denom
+    n_prohibidos = fact - len(probs)
+    H = -np.sum(probs * np.log(probs))
+    Hnorm = H / np.log(fact)
+    return Hnorm
 
-    probs = counts[counts > 0] / (n - (m-1)*tau)
-    H = -np.sum(probs * np.log(probs)) / np.log(base)
-    H_norm = H / np.log(factorial_m) * np.log(base)
-    return H_norm
 
 def conditional_entropy(arr, bins=None):
     arr = np.asarray(arr)
