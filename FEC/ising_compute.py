@@ -65,6 +65,13 @@ def simulate_ising(L, p, time_steps, BJ):
     print("ya")
     return magnetizacion, energia
 
+
+
+def binder_cumulant(m_series):
+    m2 = np.mean(m_series**2)
+    m4 = np.mean(m_series**4)
+    return 1.0 - m4 / (3.0 * m2 * m2)
+
 if __name__ == "__main__":
     L = 100
     p = 0.75
@@ -73,9 +80,25 @@ if __name__ == "__main__":
     # T = 3.0
     BJ = 1.0 / T
 
-    magnetizaciones, energias = simulate_ising(L, p, time_steps, BJ)
-    np.save("magnetizaciones.npy", magnetizaciones[200_000:])
-    np.save("energias.npy", energias[200_000:])
+    # magnetizaciones, energias = simulate_ising(L, p, time_steps, BJ)
+
+    Tc = 2.269185314213
+    T_coarse = np.linspace(1.5, 3.5, 20)
+    T_fine = np.linspace(Tc - 0.05, Tc + 0.05, 25)
+    T_list = np.unique(np.concatenate([T_coarse, T_fine]))
+
+
+    for L, tamaño in zip([256, 128, 64, 32, 16],['256', '128', '64', '32', '16']):
+        U_4_L = np.empty(len(T_list))
+        for i,T in enumerate(T_list):
+            BJ = 1.0 / T
+            magnetizaciones, energias = simulate_ising(L, p, time_steps, BJ)
+            U_4_L[i] = binder_cumulant(magnetizaciones)
+        np.save('ising/U_4_'+tamaño+'.npy', U_4_L)
+
+    
+    # np.save("magnetizaciones.npy", magnetizaciones[200_000:])
+    # np.save("energias.npy", energias[200_000:])
 
     plt.figure(figsize=(10, 5))
     plt.subplot(1, 2, 1)
