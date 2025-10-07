@@ -125,10 +125,10 @@ if __name__ == "__main__":
 
 
     # xs = logistic_series(r=r, x0=x0, N=N, burnin=burnin)
-    xs = np.random.rand(N)
+    # xs = np.random.rand(N)
     # xs, ys = henon_map(a=1.4, b= 0.3, n_points=10_000_000)
 
-    # t,xs,ys,zs = lorenz_rk4(10_000_000)
+    t,xs,ys,zs = lorenz_rk4(10_000_000)
 
 
     # Etiquetas por cuartiles (frecuencias iguales)
