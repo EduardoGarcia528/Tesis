@@ -390,7 +390,7 @@ def compute_lyap_from_txt(
     # Estima tau si no lo diste
     if tau is None:
         tau = _acf_tau_guess(data, max_lag=min(200, len(data)//10))
-        print('tau',tau)
+        # print('tau',tau)
 
     # Normaliza (opcional pero ayuda)
     dstd = data.std()
@@ -432,23 +432,16 @@ def compute_lyap_from_txt(
 
 # --------- Ejemplos de uso ----------
 # 1) Archivo con columnas: tiempo, señal
-# X = []
-# x = 0.4
-# r = 3.56994
-# for _ in range(2000):
-#     x = r*x*(1-x)
-# for _ in range(2000):
-#     x = r*x*(1-x)
-#     X.append(x)
-# np.savetxt('caos_logistic.txt', X)
-res = compute_lyap_from_txt("series/El_nino.txt", time_col=0, col=1)
-
-"""
-76
-9
-95
-90
-"""
+X = []
+x = 0.4
+r = 3.56994
+for _ in range(2000):
+    x = r*x*(1-x)
+for _ in range(2000):
+    x = r*x*(1-x)
+    X.append(x)
+np.savetxt('caos_logistic.txt', X)
+res = compute_lyap_from_txt("caos_logistic.txt", time_col=0, col=1)
 
 # 2) Archivo con solo la señal (sin tiempo) y tú sabes dt=0.01
 # res = compute_lyap_from_txt("mi_array.txt", dt=0.01)
