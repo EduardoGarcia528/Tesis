@@ -1,4 +1,5 @@
 import numpy as np
+from numba import njit
 import matplotlib.pyplot as plt
 
 # Logistic
@@ -8,6 +9,71 @@ def logistic_series(r, x0, N, burnin):
     for i in range(N + burnin - 1):
         x[i+1] = r * x[i] * (1.0 - x[i])
     return x[burnin:]  
+
+#Henon
+@njit
+def henon_map(a, n_points, n_trans=1000, b=0.3, x0=0.1, y0=0.1):
+    x, y = x0, y0
+    # Transitorio
+    for _ in range(n_trans):
+        x, y = 1 - a * x * x + y, b * x
+
+    # Iteraciones para graficar
+    xs = []
+    ys = []
+    for _ in range(n_points):
+        x, y = 1 - a * x * x + y, b * x
+        xs.append(x)
+        ys.append(y)
+
+    return xs, ys
+
+def lorenz_rhs(x, y, z, sigma=10.0, rho=30.0, beta=8/3):
+    dx = sigma * (y - x)
+    dy = x * (rho - z) - y
+    dz = x * y - beta * z
+    return dx, dy, dz
+
+
+def lorenz_rk4(N, dt=0.011, x0=1.0, y0=1.0, z0=1.0,
+               sigma=10.0, rho=30.0, beta=8/3):
+    """
+    Integración del sistema de Lorenz con Runge-Kutta 4 (paso fijo).
+    Devuelve: t, x, y, z (arrays de longitud N+1).
+    """
+    t = np.arange(N+1) * dt
+    x = np.empty(N+1); y = np.empty(N+1); z = np.empty(N+1)
+    x[0], y[0], z[0] = x0, y0, z0
+
+    for i in range(N):
+        k1x, k1y, k1z = lorenz_rhs(x[i], y[i], z[i], sigma, rho, beta)
+
+        k2x, k2y, k2z = lorenz_rhs(
+            x[i] + 0.5*dt*k1x,
+            y[i] + 0.5*dt*k1y,
+            z[i] + 0.5*dt*k1z,
+            sigma, rho, beta
+        )
+
+        k3x, k3y, k3z = lorenz_rhs(
+            x[i] + 0.5*dt*k2x,
+            y[i] + 0.5*dt*k2y,
+            z[i] + 0.5*dt*k2z,
+            sigma, rho, beta
+        )
+
+        k4x, k4y, k4z = lorenz_rhs(
+            x[i] + dt*k3x,
+            y[i] + dt*k3y,
+            z[i] + dt*k3z,
+            sigma, rho, beta
+        )
+
+        x[i+1] = x[i] + (dt/6.0)*(k1x + 2*k2x + 2*k3x + k4x)
+        y[i+1] = y[i] + (dt/6.0)*(k1y + 2*k2y + 2*k3y + k4y)
+        z[i+1] = z[i] + (dt/6.0)*(k1z + 2*k2z + 2*k3z + k4z)
+
+    return t, x, y, z
 
 # Binning 
 def bins_equal_freq_4(arr):
@@ -57,9 +123,14 @@ if __name__ == "__main__":
     burnin = 2000
     alpha = 0.5
 
-    # Serie logística
-    xs = logistic_series(r=r, x0=x0, N=N, burnin=burnin)
-    # xs = np.random.rand(N)
+
+    # xs = logistic_series(r=r, x0=x0, N=N, burnin=burnin)
+    xs = np.random.rand(N)
+    # xs, ys = henon_map(a=1.4, b= 0.3, n_points=10_000_000)
+
+    # t,xs,ys,zs = lorenz_rk4(10_000_000)
+
+
     # Etiquetas por cuartiles (frecuencias iguales)
     labels = bins_equal_freq_4(xs)
     print(len(labels[np.where(labels == 0)]))
