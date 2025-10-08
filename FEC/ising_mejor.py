@@ -137,7 +137,7 @@ if __name__ == "__main__":
     T_list   = np.unique(np.concatenate([T_coarse, T_fine]))
 
     # parámetros por tamaño (más sweeps para L grande)
-    sizes = [16, 32, 64, 128]
+    sizes = [256]
     sweeps_eq_base = 2000     # puedes subir a 1e4 en Tc
     sweeps_mc_base = 20000    # mediciones por T (sweeps), sube si necesitas
     block_per_L    = {16:100, 32:200, 64:400, 128:800}  # tamaño de bloque (sweeps)
