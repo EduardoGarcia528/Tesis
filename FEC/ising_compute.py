@@ -29,8 +29,8 @@ def metropolis(red, time_steps,BJ, energy):
     energia = np.zeros(time_steps)
     M = np.sum(red)
     for t in range(time_steps):
-        if t in [time_steps//4, time_steps//2, 3*time_steps//4]:
-            print(t)
+        # if t in [time_steps//4, time_steps//2, 3*time_steps//4]:
+            # print(t)
         x = np.random.randint(0,Lx)
         y = np.random.randint(0,Ly)
         spin_i = red[x,y]
@@ -62,7 +62,7 @@ def simulate_ising(L, p, time_steps, BJ):
     energy = get_energy(red)
     # BJ = 1.0 / T # Kb = 1, T en unidades de J, entonces BJ = 1/T
     magnetizacion, energia = metropolis(red, time_steps, BJ, energy)
-    print("ya")
+    # print("ya")
     return magnetizacion, energia
 
 
@@ -90,6 +90,7 @@ if __name__ == "__main__":
 
     for L, tamaño in zip([256, 128, 64, 32, 16],['256', '128', '64', '32', '16']):
         U_4_L = np.empty(len(T_list))
+        print(L)
         for i,T in enumerate(T_list):
             BJ = 1.0 / T
             magnetizaciones, energias = simulate_ising(L, p, time_steps, BJ)
