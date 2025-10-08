@@ -6,6 +6,7 @@ plt.style.use(['science', 'notebook', 'grid'])
 from scipy.ndimage import convolve, generate_binary_structure
 
 def red_inicial(L, p):
+    np.random.seed(72) 
     U = np.random.random((L,L))
     red = np.zeros((L,L), dtype=np.int32)
     red[U >= p] = 1
@@ -72,13 +73,25 @@ def binder_cumulant(m_series):
     m4 = np.mean(m_series**4)
     return 1.0 - m4 / (3.0 * m2 * m2)
 
+def block_average(series, block_size):
+
+    series = np.asarray(series)
+    n_blocks = len(series) // block_size
+    series = series[:n_blocks * block_size]  # cortar exceso
+    blocks = series.reshape(n_blocks, block_size)
+    return np.mean(blocks, axis=1)
+
+
+
+
 if __name__ == "__main__":
-    L = 100
-    p = 0.75
-    time_steps  = 10_200_000
+    L = 20
+    p = 0.5
+    time_steps  = 40_200_000
     T = 2.269  #T critico ~ 2.269
-    # T = 3.0
+    T = 1.0
     BJ = 1.0 / T
+    eq_cut = int(0.5 * time_steps)
 
     # magnetizaciones, energias = simulate_ising(L, p, time_steps, BJ)
 
@@ -89,12 +102,15 @@ if __name__ == "__main__":
 
 
     for L, tamaño in zip([256, 128, 64, 32, 16],['256', '128', '64', '32', '16']):
+    # for L, tamaño in zip([10, 20, 30, 40, 50],['10', '20', '30', '40', '50']):
         U_4_L = np.empty(len(T_list))
         print(L)
         for i,T in enumerate(T_list):
             BJ = 1.0 / T
             magnetizaciones, energias = simulate_ising(L, p, time_steps, BJ)
-            U_4_L[i] = binder_cumulant(magnetizaciones)
+            mg = block_average(magnetizaciones[eq_cut:], 1000)
+            U_4_L[i] = binder_cumulant(mg)
+            # U_4_L[i] = binder_cumulant(np.abs(magnetizaciones[eq_cut:]))
         np.save('ising/U_4_'+tamaño+'.npy', U_4_L)
 
     
@@ -103,16 +119,19 @@ if __name__ == "__main__":
 
     plt.figure(figsize=(10, 5))
     plt.subplot(1, 2, 1)
-    plt.plot(magnetizaciones[200_000:])
+    plt.plot(magnetizaciones[:])
     plt.title('Magnetización vs Tiempo')
     plt.xlabel('Tiempo')
     plt.ylabel('Magnetización')
 
     plt.subplot(1, 2, 2)
-    plt.plot(energias[200_000:])
+    plt.plot(energias[:])
     plt.title('Energía vs Tiempo')
     plt.xlabel('Tiempo')
     plt.ylabel('Energía')
 
     plt.tight_layout()
+    plt.show()
+
+    plt.hist(magnetizaciones)
     plt.show()
