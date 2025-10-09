@@ -79,13 +79,10 @@ def lorenz_rk4(N, dt=0.011, x0=1.0, y0=1.0, z0=1.0,
 def bins_equal_freq_4(arr):
 
     n = len(arr)
-    order = np.argsort(arr, kind='mergesort')
-    rank = np.empty(n, dtype=np.int64)
-    rank[order] = np.arange(n, dtype=np.int64)
-    print(rank[order])
-    labels = (rank * 4) // n
-    labels = np.clip(labels, 0, 3).astype(np.int8)
+    qs = np.quantile(arr, [0.25, 0.5, 0.75], method="linear")
+    labels = np.searchsorted(qs, xs, side="left")  # 0,1,2,3
     return labels
+
 
 # 3) Juego del caos para 4 vértices
 def chaos_game_4(labels, alpha=0.5, vertices=None, start=(0.5, 0.5)):
@@ -96,10 +93,10 @@ def chaos_game_4(labels, alpha=0.5, vertices=None, start=(0.5, 0.5)):
     """
     if vertices is None:
         # Asociaremos: 0->(0,0), 1->(1,0), 2->(1,1), 3->(0,1)
-        vertices = np.array([[0.0, 0.0],
+        vertices = np.array([[0.0, 1.0],
                              [1.0, 0.0],
                              [1.0, 1.0],
-                             [0.0, 1.0]], dtype=np.float64)
+                             [0.0, 0.0]], dtype=np.float64)
 
     pts = np.empty((len(labels), 2), dtype=np.float64)
     x, y = float(start[0]), float(start[1])
