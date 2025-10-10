@@ -125,8 +125,8 @@ if __name__ == "__main__":
     # xs = np.random.rand(N)
     # xs, ys = henon_map(a=1.4, b= 0.3, n_points=10_000_000)
 
-    t,xs,ys,zs = lorenz_rk4(10_000_000)
-
+    # t,xs,ys,zs = lorenz_rk4(10_000_000)
+    xs = np.loadtxt('series/temp_madison.txt')
 
     # Etiquetas por cuartiles (frecuencias iguales)
     labels = bins_equal_freq_4(xs)
@@ -139,7 +139,7 @@ if __name__ == "__main__":
 
     # Plot
     fig, ax = plt.subplots(figsize=(6.5, 6.5), dpi=120)
-    ax.scatter(points[:, 0], points[:, 1], s=0.2, linewidths=0, alpha=0.8)
+    ax.scatter(points[:, 0], points[:, 1], s=0.2, linewidths=0.2, alpha=1.0)
     ax.set_aspect('equal', adjustable='box')
     ax.set_xticks([]); ax.set_yticks([])
     ax.set_title("Juego del caos (4 vértices) desde serie logística con bins por cuartiles")
