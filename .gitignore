@@ -4,6 +4,7 @@
 Ritmos/data/humdrum-data
 Ritmos/data/humdrum-data-numpy
 Audios/data
+*.wav
 INDICE_J/new_data
 DFA/new_data
 Comparar_dist/new_data
