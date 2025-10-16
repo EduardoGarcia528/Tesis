@@ -164,7 +164,7 @@ def plot_PSD(time_series):
 
 if __name__ == "__main__":
 
-    source = "pink"     
+    source = "red"     
     N = 300_000         
     fs = 1.0            
     file_txt = None     
