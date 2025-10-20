@@ -4,6 +4,70 @@ import matplotlib.pyplot as plt
 from scipy.signal import welch, get_window
 from scipy.stats import linregress
 
+
+from numba import njit
+import numpy as np
+
+
+@njit
+def lehmer_code(perm):
+    """Codifica una permutación en un índice único usando Lehmer code"""
+    m = len(perm)
+    code = 0
+    factor = 1
+    for i in range(m-1, -1, -1):
+        c = 0
+        for j in range(i+1, m):
+            if perm[j] < perm[i]:
+                c += 1
+        code += c * factor
+        factor *= (m - i)
+    return code
+
+@njit
+def stable_argsort_by_value_then_index(x):
+    m = x.shape[0]
+    idx = np.arange(m)
+    # insertion sort por clave (valor, índice)
+    for i in range(1, m):
+        key = idx[i]
+        j = i - 1
+        while j >= 0:
+            a = x[idx[j]]
+            b = x[key]
+            if (a > b) or (a == b and idx[j] > key):  # (valor) y luego (índice)
+                idx[j+1] = idx[j]
+                j -= 1
+            else:
+                break
+        idx[j+1] = key
+    return idx
+
+@njit
+def permutation_entropy(arr, m=3, tau=1):
+    n = len(arr)
+    if n < m:
+        return np.nan
+    # m!:
+    fact = 1
+    for k in range(2, m+1):
+        fact *= k
+    counts = np.zeros(fact, dtype=np.int64)
+    denom = n - (m-1)*tau
+    for i in range(denom):
+        subseq = np.empty(m, np.float64)
+        for j in range(m):
+            subseq[j] = arr[i + j*tau]
+        idx = stable_argsort_by_value_then_index(subseq)
+        code = lehmer_code(idx)      # tu misma función
+        counts[code] += 1
+    # entropía normalizada (independiente de base)
+    probs = counts[counts > 0] / denom
+    n_prohibidos = fact - len(probs)
+    H = -np.sum(probs * np.log(probs))
+    Hnorm = H / np.log(fact)
+    return Hnorm
+
 # 1) Ruido de colores (shaping en frecuencia)
 
 def _noise_psd(N, psd=lambda f: 1.0):
@@ -164,8 +228,8 @@ def plot_PSD(time_series):
 
 if __name__ == "__main__":
 
-    source = "red"     
-    N = 300_000         
+    source = "white"     
+    N = 500_000         
     fs = 1.0            
     file_txt = None     
 
@@ -183,6 +247,25 @@ if __name__ == "__main__":
         x = np.random.rand(N)
     else:
         x = generate_colored_noise(source, N)
+    for color in ["white", "pink", "brown", "blue", "violet"]:
+        if color == "white":
+            x = np.random.rand(N)
+        else:
+            x = generate_colored_noise(color, N)
+        ms = [permutation_entropy(x, m=m, tau=1) for m in range(2, 10)]
+        mx = np.arange(2, 10)
+        if color == "white":
+            plt.plot(mx, ms, 'o-', label = f'{color} noise', color= 'black')
+        else:
+            plt.plot(mx, ms, 'o-', label = f'{color} noise', color = color)
+        plt.legend()
+        plt.xlabel('Orden m')
+        plt.ylabel('PE')
+        plt.ylim(0, 1)
+        plt.title(f'Permutation Entropy vs Orden m')
+        plt.grid(True)
+    plt.show()
+
     # ---------- JUEGO DEL CAOS ----------
     labels = bins_equal_freq_4(x)
     pts = chaos_game_4(labels, alpha=alpha)
