@@ -5,7 +5,7 @@ from itertools import permutations
 import os
 import seaborn as sns
 from numba import njit
-from funciones import remove_consecutive_duplicates
+from funciones import remove_consecutive_duplicates, permutation_entropy
 import pandas as pd
 import copy
 
@@ -104,68 +104,6 @@ def extraer_dataset_musica():
     print(" # de compositores restantes: ", len(composers_depurado_v2))
 
     return composers_depurado_v2, datos_composers_depurado_v2
-
-
-from numba import njit
-
-@njit
-def lehmer_code(perm):
-    """Codifica una permutación en un índice único usando Lehmer code"""
-    m = len(perm)
-    code = 0
-    factor = 1
-    for i in range(m-1, -1, -1):
-        c = 0
-        for j in range(i+1, m):
-            if perm[j] < perm[i]:
-                c += 1
-        code += c * factor
-        factor *= (m - i)
-    return code
-
-@njit
-def stable_argsort_by_value_then_index(x):
-    m = x.shape[0]
-    idx = np.arange(m)
-    # insertion sort por clave (valor, índice)
-    for i in range(1, m):
-        key = idx[i]
-        j = i - 1
-        while j >= 0:
-            a = x[idx[j]]
-            b = x[key]
-            if (a > b) or (a == b and idx[j] > key):  # (valor) y luego (índice)
-                idx[j+1] = idx[j]
-                j -= 1
-            else:
-                break
-        idx[j+1] = key
-    return idx
-
-@njit
-def permutation_entropy(arr, m=3, tau=1):
-    n = len(arr)
-    if n < m:
-        return np.nan
-    # m!:
-    fact = 1
-    for k in range(2, m+1):
-        fact *= k
-    counts = np.zeros(fact, dtype=np.int64)
-    denom = n - (m-1)*tau
-    for i in range(denom):
-        subseq = np.empty(m, np.float64)
-        for j in range(m):
-            subseq[j] = arr[i + j*tau]
-        idx = stable_argsort_by_value_then_index(subseq)
-        code = lehmer_code(idx)      # tu misma función
-        counts[code] += 1
-    # entropía normalizada (independiente de base)
-    probs = counts[counts > 0] / denom
-    n_prohibidos = fact - len(probs)
-    H = -np.sum(probs * np.log(probs))
-    Hnorm = H / np.log(fact)
-    return Hnorm
 
 
 def conditional_entropy(arr, bins=None):
@@ -302,7 +240,18 @@ if __name__ == '__main__':
 
     composers, datos_composers = extraer_dataset_musica()
 
-    """"""
+    for i, serie in enumerate(composers['Bach'].keys()):
+        if i != 18:
+            continue
+        print(serie)
+        f = composers['Bach'][serie]
+        # f = remove_consecutive_duplicates(f, tolerance=0)
+        metrics = predictability_metrics('PE',np.array(np.abs(np.diff(f))),m=3, tau=1)
+        print("PE observado:", metrics['observed']['PE'])
+        null_dist = metrics['surrogates']['PE']
+        lower_crit, reject = test_hypothesis(null_dist, metrics['observed']['PE'], alpha=0.0, two_tailed=False, graficar=True)
+        print(f"Rechazar H0: {reject} (umbral crítico: {lower_crit})")
+    """
     PEs = np.full((19,2160), np.nan)
     PEs_null = np.full((19,2160), np.nan)
     for x, composer in enumerate(composers.keys()):
@@ -320,8 +269,8 @@ if __name__ == '__main__':
             # plot_metrics(metrics)
             lenght = y
         print(composer)
-        # np.save(f'new_data/PEs_null_10/{birth_year}_{composer}_PEs_null.npy', PEs_null[x,:lenght+1])
-        # np.save(f'new_data/PEs_10/{birth_year}_{composer}_PEs.npy', PEs[x,:lenght+1])
+        np.save(f'new_data/PEs_null_10/{birth_year}_{composer}_PEs_null.npy', PEs_null[x,:lenght+1])
+        np.save(f'new_data/PEs_absdiff/{birth_year}_{composer}_PEs.npy', PEs[x,:lenght+1])
     # np.save('J_composers_Hz_depurado.npy', Js)
     
-    """"""
+    """

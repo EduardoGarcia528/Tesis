@@ -229,7 +229,7 @@ def plot_PSD(time_series):
 if __name__ == "__main__":
 
     source = "white"     
-    N = 500_000         
+    N = 7000         
     fs = 1.0            
     file_txt = None     
 
@@ -247,7 +247,9 @@ if __name__ == "__main__":
         x = np.random.rand(N)
     else:
         x = generate_colored_noise(source, N)
-    for color in ["white", "pink", "brown", "blue", "violet"]:
+    # for color in ["white", "pink", "brown", "blue", "violet"]:
+    for N in [100,800,1000, 10000, 20000]:
+        color = 'white'
         if color == "white":
             x = np.random.rand(N)
         else:
@@ -255,7 +257,7 @@ if __name__ == "__main__":
         ms = [permutation_entropy(x, m=m, tau=1) for m in range(2, 10)]
         mx = np.arange(2, 10)
         if color == "white":
-            plt.plot(mx, ms, 'o-', label = f'{color} noise', color= 'black')
+            plt.plot(mx, ms, 'o-', label = f'{color} noise, N = {N}')
         else:
             plt.plot(mx, ms, 'o-', label = f'{color} noise', color = color)
         plt.legend()

@@ -8,6 +8,10 @@ import math
 from typing import Tuple, List, Dict, Any
 from collections import Counter
 
+import numpy as np
+from scipy.interpolate import PchipInterpolator
+from numba import njit
+
 def interpolador(subject, method, size):
     # data = np.array([int(line.strip()) for line in subject.to_numpy()])  # Si lo obtienes de un DataFrame
     data = subject
@@ -24,34 +28,6 @@ def interpolador(subject, method, size):
     
     return data_interp
 
-def interpolador_constante(subject):
-    # data = np.array([int(line.strip()) for line in subject.to_numpy()])  # Si lo obtienes de un DataFrame
-    x = np.arange(2)
-    data_interp = np.array([])
-    diferencias =np.abs(np.diff(subject))
-    if (np.max(diferencias) - np.min(diferencias)) <= 1e-5:
-        return subject
-    diferencias_sin_0 = diferencias[diferencias != 0]
-    diferencias = np.round(diferencias/np.min(diferencias_sin_0))
-    for i in range(len(subject)-1):
-        data = subject[i:i+2]
-        if diferencias[i] == 0:
-            data_interp = np.concatenate((data_interp,data[:-1]))
-            continue
-        size = int(diferencias[i])- 1
-        # Crear 'size' puntos equidistantes
-        x_new = np.linspace(0, 1, size + 2)
-        interp_step = np.interp(x_new, x, data)
-        data_interp = np.concatenate((data_interp,interp_step[:-1]))
-    data_interp = np.concatenate((data_interp,np.array([data[-1]])))
-
-    return data_interp
-
-def generar_uniforme_centrada(n, varianza):
-    # Calcular el límite superior e inferior de la distribución uniforme
-    limite = np.sqrt(varianza) # varianza*3
-    # Generar n números aleatorios con distribución uniforme entre -limite y limite
-    return np.random.uniform(-limite, limite, n)
 
 def brownian_bridge(t0, tT, x0, xT, n_steps):
     t = np.linspace(t0, tT, n_steps)
@@ -75,17 +51,6 @@ def interpolador_estocastico(s_0_discreto, n_steps):
     return X_list
 
 def remove_consecutive_duplicates(data, tolerance=1e-1):
-    """
-    Remueve duplicados consecutivos en los datos con un margen de tolerancia.
-
-    Args:
-        data (list or array): Array de datos a procesar.
-        tolerance (float): Margen de tolerancia para considerar valores similares.
-
-    Returns:
-        list: Array con duplicados consecutivos removidos.
-    """
-
     result = [data[0]]  # Comenzamos con el primer elemento
     for i in range(1, len(data)):
         if abs(data[i] - data[i - 1]) > tolerance:
@@ -93,20 +58,70 @@ def remove_consecutive_duplicates(data, tolerance=1e-1):
 
     return np.array(result)
 
-def derivada_index(array):
-    array = np.asarray(array)
-    derivada = np.abs(np.diff(array))  # Calcula la diferencia entre puntos subsecuentes
-    return derivada
 
-def remover_duplicados(array):
-    resultado = []
-    vistos = set()
-    for x in array:
-        if x not in vistos:
-            resultado.append(x)
-            vistos.add(x)
-    return resultado
+# PE
 
+@njit
+def lehmer_code(perm):
+    """Codifica una permutación en un índice único usando Lehmer code"""
+    m = len(perm)
+    code = 0
+    factor = 1
+    for i in range(m-1, -1, -1):
+        c = 0
+        for j in range(i+1, m):
+            if perm[j] < perm[i]:
+                c += 1
+        code += c * factor
+        factor *= (m - i)
+    return code
+
+@njit
+def stable_argsort_by_value_then_index(x):
+    m = x.shape[0]
+    idx = np.arange(m)
+    # insertion sort por clave (valor, índice)
+    for i in range(1, m):
+        key = idx[i]
+        j = i - 1
+        while j >= 0:
+            a = x[idx[j]]
+            b = x[key]
+            if (a > b) or (a == b and idx[j] > key):  # (valor) y luego (índice)
+                idx[j+1] = idx[j]
+                j -= 1
+            else:
+                break
+        idx[j+1] = key
+    return idx
+
+@njit
+def permutation_entropy(arr, m=3, tau=1):
+    n = len(arr)
+    if n < m:
+        return np.nan
+    # m!:
+    fact = 1
+    for k in range(2, m+1):
+        fact *= k
+    counts = np.zeros(fact, dtype=np.int64)
+    denom = n - (m-1)*tau
+    for i in range(denom):
+        subseq = np.empty(m, np.float64)
+        for j in range(m):
+            subseq[j] = arr[i + j*tau]
+        idx = stable_argsort_by_value_then_index(subseq)
+        code = lehmer_code(idx)      # tu misma función
+        counts[code] += 1
+    # entropía normalizada (independiente de base)
+    probs = counts[counts > 0] / denom
+    n_prohibidos = fact - len(probs)
+    H = -np.sum(probs * np.log(probs))
+    Hnorm = H / np.log(fact)
+    return Hnorm
+
+
+### INDICE J
 
 @njit
 def distancia(p1, p2):
@@ -136,6 +151,7 @@ def mejor_vector(p1, p2):
             d_og = d
     p2 = diffs[min_idx]
     return [p2[0] - 2*p1[0], p2[1] - 2*p1[1]]
+
 
 @njit
 def calcular_angulos(vectores):
@@ -167,14 +183,18 @@ def calcular_angulos(vectores):
         angulos[i] = angulo
     return angulos
 
-def caminata_univariante(X, tau):
-    x1 = X[tau:]
-    y1 = X[:-tau]
+def caminata_univariante(X, tau, bivariante):
+    if bivariante is False:
+        x1 = X[tau:]
+        y1 = X[:-tau]
+    else:
+        x1 = X
+        y1 = bivariante
     ff1 = np.angle(np.fft.rfft(x1))
     ff2 = np.angle(np.fft.rfft(y1))
 
     n = len(ff1) - 1
-    vectores = np.empty((n, 2))
+    vectores = np.empty((n,2)) #(n,2)
     for i in range(n):
         p1 = (ff1[i], ff2[i])
         p2 = (ff1[i+1], ff2[i+1])
@@ -182,84 +202,55 @@ def caminata_univariante(X, tau):
 
     return vectores
 
-def caminata_bivariante(X, Y):
-    x1 = X
-    y1 = Y
-    ff1 = np.angle(np.fft.rfft(x1))
-    ff2 = np.angle(np.fft.rfft(y1))
-
-    n = len(ff1) - 1
-    vectores = np.empty((n, 2))
-    for i in range(n):
-        p1 = (ff1[i], ff2[i])
-        p2 = (ff1[i+1], ff2[i+1])
-        vectores[i] = mejor_vector(p1, p2)
-
-    return vectores
-
-def indice_J(angulos):
+def indice_J(seriex, seriey, tau = 1):
+    vectores = caminata_univariante(seriex,tau,bivariante=seriey)
+    angulos = calcular_angulos(vectores)
     e = np.exp(angulos * 1j)
     e1 = np.sum(e) / len(angulos)
     J = 1.0 - np.abs(e1.real)
     return J
 
-def entropia_shannon(x, bins=100):
-    x = np.array(x, dtype=float)   # fuerza a convertir a float
+# Entropia de Shannon
+
+def entropia_shannon(x, discreto, bins=100):
+    x = np.asarray(x)
     x = x[np.isfinite(x)]
     if x.size == 0:
         return np.nan
-    hist, _ = np.histogram(x, bins=bins, density=True)
-    hist = hist[hist > 0]
-    if hist.size == 0:
-        return np.nan
-    p = hist / hist.sum()
-    H = -np.sum(p * np.log2(p))
-    return H / np.log2(bins)
 
-def entropia_permutacion(x, m=4, tau=1):
-    n = len(x)
-    if n < (m - 1) * tau + 1:
-        return np.nan
-
-    patrones = []
-    for i in range(n - (m - 1) * tau):
-        ventana = x[i:i + tau * m:tau]
-        orden = tuple(np.argsort(ventana))
-        patrones.append(orden)
-
-    cuenta = Counter(patrones)
-    total = sum(cuenta.values())
-    p = np.array(list(cuenta.values())) / total
-    H = -np.sum(p * np.log2(p))
-    H_norm = H / np.log2(math.factorial(m))  # normalización
+    if discreto:
+        # Caso discreto: cada valor entero o categoría tiene su probabilidad exacta
+        valores_unicos, cuentas = np.unique(x, return_counts=True)
+        p = cuentas / cuentas.sum()
+        if len(p) <= 1:
+            return 0.0
+        H = -np.sum(p * np.log2(p))
+        H_norm = H / np.log2(len(valores_unicos))
+    else:
+        # Caso continuo: estimar densidad mediante histograma
+        try:
+            hist, _ = np.histogram(x, bins=bins, density=True)
+        except Exception:
+            return np.nan
+        hist = hist[hist > 0]
+        if hist.size == 0:
+            return np.nan
+        p = hist / hist.sum()
+        H = -np.sum(p * np.log2(p))
+        H_norm = H / np.log2(bins)
+    
     return H_norm
 
-def diff_S(d, angulos):
-    if d == 0:
-        return entropia_permutacion(angulos)
-    for _ in range(d):
-        angulos = np.diff(angulos)
 
-    return entropia_permutacion(angulos)
+def remover_duplicados(array):
+    resultado = []
+    vistos = set()
+    for x in array:
+        if x not in vistos:
+            resultado.append(x)
+            vistos.add(x)
+    return resultado
 
-def main(serie,d,bivariante):
-    if bivariante == False:
-        vectores = caminata_univariante(serie,tau = 1)
-    else:
-        print("Bivariante")
-        vectores = caminata_bivariante(serie,bivariante)
-    angulos = calcular_angulos(vectores)
-    # plt.plot(angulos[:20_000], '.')
-    # plt.title('Angulos alpha')
-    # plt.xlabel('n')
-    # plt.ylabel('ángulo')
-    # plt.show()
-    entropia = diff_S(d,angulos=angulos)
-    print(d)
-    J = indice_J(angulos)
-    if not np.isfinite(entropia):
-        entropia = 0
-    return J, entropia
 
 def juntar_y_ordenar(arr1, arr2):
     """

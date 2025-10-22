@@ -1,3 +1,9 @@
+"""
+Con funciones2.py están todas las funciones que toma la matriz
+de notas y realiza la aleatorización por compás, añadiendo silencios
+donde sea necesario para completar el compás.
+
+"""
 import numpy as np
 from fractions import Fraction
 from typing import Optional

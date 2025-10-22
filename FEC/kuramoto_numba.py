@@ -130,30 +130,32 @@ if __name__ == "__main__":
     K_fine = np.linspace(Kc - 0.05, Kc + 0.05, 25)
     K_list = np.unique(np.concatenate([K_coarse, K_fine]))
 
-    # # for N, tamaño in zip([500, 400, 300, 200, 100],['500', '400', '300', '200', '100']):
-    # for N, tamaño in zip([600],['600']):
-    #     omega = np.random.normal(0.0, sigma, N)
-    #     theta0 = np.random.uniform(0.0, 2*np.pi, N)
-    #     nsteps = int(tmax / dt)
-    #     U_4_N = np.empty(len(K_list))
-    #     print(N)
-    #     for i,K in enumerate(K_list):
-    #         print("k")
-    #         R_values, theta_final = kuramoto_sim(theta0, omega, K, dt, nsteps)
-    #         U_4_N[i] = binder_cumulant(R_values[100_000:])
-    #     np.save('kuramoto/U_4_'+tamaño+'.npy', U_4_N)
+    for N, tamaño in zip([600, 500, 400, 300, 200, 100],['600', '500', '400', '300', '200', '100']):
+        omega = np.random.normal(0.0, sigma, N)
+        theta0 = np.random.uniform(0.0, 2*np.pi, N)
+        nsteps = int(tmax / dt)
+        U_4_N = np.empty(len(K_list))
+        print(N)
+        for i,K in enumerate(K_list):
+            print("k")
+            R_values, theta_final = kuramoto_sim_rk4(theta0, omega, K, dt, nsteps)
+            U_4_N[i] = binder_cumulant(R_values[100_000:])
+        np.save('kuramoto/U_4_'+tamaño+'.npy', U_4_N)
 
 
 
-    # omega = np.random.normal(0.0, sigma, N)
-    # theta0 = np.random.uniform(0.0, 2*np.pi, N)
-    # nsteps = int(tmax / dt)
-    # R_means = np.empty(len(K_list))
-    # for i,K in enumerate(K_list):
-    #     print(K)
-    #     R_values, theta_final = kuramoto_sim(theta0, omega, K, dt, nsteps)
-    #     R_means[i] = np.std(R_values[100_000:])
-    # np.save('kuramoto/R_std_N'+str(N)+'.npy', R_means)
+    omega = np.random.normal(0.0, sigma, N)
+    theta0 = np.random.uniform(0.0, 2*np.pi, N)
+    nsteps = int(tmax / dt)
+    R_means = np.empty(len(K_list))
+    R_stds = np.empty(len(K_list))
+    for i,K in enumerate(K_list):
+        print(K)
+        R_values, theta_final = kuramoto_sim_rk4(theta0, omega, K, dt, nsteps)
+        R_means[i] = np.mean(R_values[100_000:])
+        R_stds[i] = np.std(R_values[100_000:])
+    np.save('kuramoto/R_mean_N'+str(N)+'.npy', R_means)
+    np.save('kuramoto/R_std_N'+str(N)+'.npy', R_stds)
 
 
     # R_values = np.load('kuramoto/kuramoto_1.npy')
