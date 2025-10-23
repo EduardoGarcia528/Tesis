@@ -108,12 +108,12 @@ def binder_cumulant(m_series):
 
 if __name__ == "__main__":
     # Parámetros
-    N = 100               # número de osciladores
+    N = 500               # número de osciladores
     dt = 0.01             # paso de integración
-    tmax = 50.0         # tiempo total
+    tmax = 10_000.0         # tiempo total
     sigma = 1.0           # desviación estándar de ω_i
     Kc = 2 * sigma * np.sqrt(2/np.pi)  # umbral teórico para g(ω) ~ N(0, σ^2)
-    K = 5.0                # acoplamiento en el umbral
+    K = 2.0                # acoplamiento en el umbral
 
 
     # Inicialización
@@ -137,7 +137,6 @@ if __name__ == "__main__":
         U_4_N = np.empty(len(K_list))
         print(N)
         for i,K in enumerate(K_list):
-            print("k")
             R_values, theta_final = kuramoto_sim_rk4(theta0, omega, K, dt, nsteps)
             U_4_N[i] = binder_cumulant(R_values[100_000:])
         np.save('kuramoto/U_4_'+tamaño+'.npy', U_4_N)
@@ -161,7 +160,7 @@ if __name__ == "__main__":
     # R_values = np.load('kuramoto/kuramoto_1.npy')
     t = np.linspace(0.0, tmax, nsteps, endpoint=False)[:]
     plt.figure(figsize=(8, 4))
-    plt.plot(R_values[:5000], lw=1)
+    plt.plot(R_values[100_000:], lw=1)
     plt.xlabel("Tiempo")
     plt.ylim(0, 1)
     plt.ylabel("Parámetro de orden R(t)")
