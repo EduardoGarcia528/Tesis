@@ -7,7 +7,8 @@ from scipy.stats import linregress
 
 from numba import njit
 import numpy as np
-
+import seaborn as sns
+sns.set_style("whitegrid")
 
 @njit
 def lehmer_code(perm):
@@ -247,24 +248,23 @@ if __name__ == "__main__":
         x = np.random.rand(N)
     else:
         x = generate_colored_noise(source, N)
-    # for color in ["white", "pink", "brown", "blue", "violet"]:
-    for N in [100,800,1000, 10000, 20000]:
-        color = 'white'
+    for color in ["white", "pink", "brown", "blue", "violet"]:
+    # for i,N in enumerate([100,800,1000, 10000, 20000]):
         if color == "white":
             x = np.random.rand(N)
         else:
             x = generate_colored_noise(color, N)
-        ms = [permutation_entropy(x, m=m, tau=1) for m in range(2, 10)]
-        mx = np.arange(2, 10)
+        ms = [permutation_entropy(x, m=m, tau=1) for m in range(2, 7)]
+        mx = np.arange(2, 7)
         if color == "white":
-            plt.plot(mx, ms, 'o-', label = f'{color} noise, N = {N}')
+            plt.plot(mx, ms, 'o-', label = f'{color} noise', color = 'black')
         else:
             plt.plot(mx, ms, 'o-', label = f'{color} noise', color = color)
         plt.legend()
         plt.xlabel('Orden m')
         plt.ylabel('PE')
-        plt.ylim(0, 1)
-        plt.title(f'Permutation Entropy vs Orden m')
+        plt.ylim(0.5, 1)
+        # plt.title(f'Permutation Entropy vs Orden m')
         plt.grid(True)
     plt.show()
 
