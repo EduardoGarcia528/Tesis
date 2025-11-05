@@ -5,7 +5,7 @@ from itertools import permutations
 import os
 import seaborn as sns
 from numba import njit
-from funciones import remove_consecutive_duplicates, permutation_entropy
+from funciones import remove_consecutive_duplicates, permutation_entropy, entropia_shannon
 import pandas as pd
 import copy
 
@@ -125,12 +125,12 @@ def predictability_metrics(method,arr, m, tau, n_surr=100):
     
     # Observado
     PE = permutation_entropy(arr, m=m, tau=tau)
-    rate = PE / np.log(states)
+    shannon = entropia_shannon(arr, discreto = True)
     CE = conditional_entropy(arr, bins=states)
     
     # Sustitutos
     PE_surr = []
-    rate_surr = []
+    shannon_surr = []
     CE_surr = []
     
     for _ in range(n_surr):
@@ -139,12 +139,13 @@ def predictability_metrics(method,arr, m, tau, n_surr=100):
             PE_surr.append(permutation_entropy(surr, m=m, tau=tau))
         elif method == 'CE':
             CE_surr.append(conditional_entropy(surr, bins=states))
-        elif method == 'rate':
-            rate_surr.append(PE_surr[-1] / np.log(states))
+        elif method == 'shannon':
+            surr = np.random.randint(0, 128, size=len(arr))
+            shannon_surr.append(entropia_shannon(surr, True))
     
     results = {
-        'observed': {'PE': PE, 'rate': rate, 'CE': CE},
-        'surrogates': {'PE': PE_surr, 'rate': rate_surr, 'CE': CE_surr}
+        'observed': {'PE': PE, 'shannon': shannon, 'CE': CE},
+        'surrogates': {'PE': PE_surr, 'shannon': shannon_surr, 'CE': CE_surr}
     }
     return results
 
@@ -240,37 +241,35 @@ if __name__ == '__main__':
 
     composers, datos_composers = extraer_dataset_musica()
 
-    for i, serie in enumerate(composers['Bach'].keys()):
-        if i != 18:
-            continue
-        print(serie)
-        f = composers['Bach'][serie]
-        # f = remove_consecutive_duplicates(f, tolerance=0)
-        metrics = predictability_metrics('PE',np.array(np.abs(np.diff(f))),m=3, tau=1)
-        print("PE observado:", metrics['observed']['PE'])
-        null_dist = metrics['surrogates']['PE']
-        lower_crit, reject = test_hypothesis(null_dist, metrics['observed']['PE'], alpha=0.0, two_tailed=False, graficar=True)
-        print(f"Rechazar H0: {reject} (umbral crítico: {lower_crit})")
-    """
+    # for i, serie in enumerate(composers['Bach'].keys()):
+    #     if i != 18:
+    #         continue
+    #     print(serie)
+    #     f = composers['Bach'][serie]
+    #     # f = remove_consecutive_duplicates(f, tolerance=0)
+    #     metrics = predictability_metrics('PE',np.array(np.abs(np.diff(f))),m=3, tau=1)
+    #     print("PE observado:", metrics['observed']['PE'])
+    #     null_dist = metrics['surrogates']['PE']
+    #     lower_crit, reject = test_hypothesis(null_dist, metrics['observed']['PE'], alpha=0.0, two_tailed=False, graficar=True)
+    #     print(f"Rechazar H0: {reject} (umbral crítico: {lower_crit})")
+    
     PEs = np.full((19,2160), np.nan)
     PEs_null = np.full((19,2160), np.nan)
     for x, composer in enumerate(composers.keys()):
-        if composer != 'Bach':
-            continue
         birth_year = datos_composers[composer]['Birth_year']
-        print(composer)
+        # print(composer)
         for y, serie in enumerate(composers[composer]):
             f = composers[composer][serie]
             f= remove_consecutive_duplicates(f, tolerance=0)
-            metrics = predictability_metrics('PE',np.array(f),m=10, tau=1)
-            PEs[x,y] = metrics['observed']['PE']
-            null_dist = metrics['surrogates']['PE']
-            PEs_null[x,y] = test_hypothesis(null_dist, PEs[x,y], alpha=0.0, two_tailed=False, graficar=True)[0]
+            metrics = predictability_metrics('shannon',np.array(f),m=4, tau=1)
+            PEs[x,y] = metrics['observed']['shannon']
+            null_dist = metrics['surrogates']['shannon']
+            PEs_null[x,y] = test_hypothesis(null_dist, PEs[x,y], alpha=0.0, two_tailed=False, graficar=False)[0]
             # plot_metrics(metrics)
             lenght = y
         print(composer)
-        np.save(f'new_data/PEs_null_10/{birth_year}_{composer}_PEs_null.npy', PEs_null[x,:lenght+1])
-        np.save(f'new_data/PEs_absdiff/{birth_year}_{composer}_PEs.npy', PEs[x,:lenght+1])
+        np.save(f'new_data/shannon_null/{birth_year}_{composer}_shannon_null.npy', PEs_null[x,:lenght+1])
+        np.save(f'new_data/shannon/{birth_year}_{composer}_shannon.npy', PEs[x,:lenght+1])
     # np.save('J_composers_Hz_depurado.npy', Js)
     
-    """
+    
