@@ -132,7 +132,7 @@ if __name__ == "__main__":
 
     for K in np.linspace(0.5, 2.5,20):
         R_values, theta_final = kuramoto_sim_rk4(theta0, omega, K, dt, nsteps)
-        np.save(f"kuramoto/R_values/R_{k}.npy", R_values[:])
+        np.save(f"kuramoto/R_values/R_{K}.npy", R_values[:])
 
 
 
