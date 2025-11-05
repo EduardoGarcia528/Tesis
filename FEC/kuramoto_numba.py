@@ -130,7 +130,7 @@ if __name__ == "__main__":
     K_fine = np.linspace(Kc - 0.05, Kc + 0.05, 25)
     K_list = np.unique(np.concatenate([K_coarse, K_fine]))
 
-    for K in np.linspace(0.5, 2.5,20):
+    for K in np.linspace(2.5, 3.5,10):
         R_values, theta_final = kuramoto_sim_rk4(theta0, omega, K, dt, nsteps)
         np.save(f"kuramoto/R_values/R_{K}.npy", R_values[:])
 

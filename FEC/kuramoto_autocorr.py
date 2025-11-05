@@ -155,8 +155,6 @@ def integrated_autocorr_time(acf, dt=1.0, window='automatic'):
 def analyze_R(R_t, dt=1.0, tau_max_time=None):
     """
     - R_t: serie R(t).
-    - n_drop: puntos a descartar (transitorio) si lo especificas.
-    - frac_drop: fracción a descartar si no usas n_drop.
     - tau_max_time: τ_max en unidades de tiempo (no en índices).
     """
     R_ss = R_t

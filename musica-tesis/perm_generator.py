@@ -227,21 +227,21 @@ from PEs_PDFs import plot_patterns_to_pdf
 # 1) Todos los patrones de m=4, duraciones medias = 5 ventanas, poco ruido:
 x, seq, pats = simulate_op_smm(N=5000, m=3, mean_durations=5, noise=1e-3, seed=7)
 
-for n in range(3,7):
+for k in range(3,7):
     PEs = []
-    print(n)
+    x2, seq2, pats2 = simulate_op_smm(N=50000, m=k, mean_durations=1, noise=0, seed=7)
+    print(k)
     for m in range(3,7):
-        x2, seq2, pats2 = simulate_op_smm(N=50000, m=m, mean_durations=1, noise=0, seed=7)
         # plt.plot(x2, marker = '.')
         # plt.title(f"Simulación OP-SMM (N={len(x2)}, m={m})")
         # plt.show()
         # print(m)
-        PE = permutation_entropy(x2, m=n, tau = 1)
+        PE = permutation_entropy(x2, m=m, tau = 1)
         # Supón que ya tienes tu serie 'x' en un np.array
-        if m == 3:
+        if k == 3:
             res = plot_patterns_to_pdf(
-                arr=x2, m=n, tau=1,
-                pdf_path=f"patrones_m5_tau2{n}.pdf",
+                arr=x2, m=m, tau=1,
+                pdf_path=f"patrones_m5_tau2{m}.pdf",
                 show_top=None,          # o p.ej. 30 para las 30 más frecuentes
                 sort_by="freq",         # "freq" para ordenar por prob. desc, "code" por índice Lehmer
                 normalize=True,
@@ -249,7 +249,7 @@ for n in range(3,7):
                 dpi=200
             )
         PEs.append(PE)
-    np.save(f"PEs/PEs_op_smm{n}.npy", np.array(PEs))
+    np.save(f"PEs/PEs_op_smm{k}.npy", np.array(PEs))
 
 plt.style.use(['science', 'notebook', 'grid'])
 
