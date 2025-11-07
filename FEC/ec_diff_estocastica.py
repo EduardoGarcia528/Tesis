@@ -42,8 +42,8 @@ if __name__ == '__main__':
     N = 100_000
     M = 10000
     T = np.linspace(0.0,N*dt,N)
-    momento_2 = np.load("momento_2.npy")
-    # momento_2 = main_estocastico(M,N,dt)
+    # momento_2 = np.load("momento_2.npy")
+    momento_2 = main_estocastico(M,N,dt)
 
 
     plt.plot(T[1:],momento_2[:-1])
