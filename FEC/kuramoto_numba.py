@@ -135,7 +135,7 @@ if __name__ == "__main__":
     #     np.save(f"kuramoto/R_values/R_{K}.npy", R_values[:])
 
 
-
+    print("hola")
     for N, tamaño in zip([600, 500, 400, 300, 200, 100],['600', '500', '400', '300', '200', '100']):
         omega = np.random.normal(0.0, sigma, N)
         theta0 = np.random.uniform(0.0, 2*np.pi, N)
