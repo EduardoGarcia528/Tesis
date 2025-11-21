@@ -104,7 +104,7 @@ def kuramoto_sim_rk4(theta0, omega, K, dt, nsteps):
 def binder_cumulant(m_series):
     m2 = np.mean(m_series**2)
     m4 = np.mean(m_series**4)
-    return 1.0 - m4 / (3.0 * m2 * m2)
+    return 1.0 - m4 / (2.0 * m2 * m2)
 
 if __name__ == "__main__":
     # Parámetros
@@ -121,7 +121,7 @@ if __name__ == "__main__":
     theta0 = np.random.uniform(0.0, 2*np.pi, N)
     nsteps = int(tmax / dt)
 
-    R_values, theta_final = kuramoto_sim_rk4(theta0, omega, K, dt, nsteps)
+    # R_values, theta_final = kuramoto_sim_rk4(theta0, omega, K, dt, nsteps)
 
     # np.save("kuramoto/kuramoto_2.npy", R_values[100_000:])
 
@@ -130,22 +130,22 @@ if __name__ == "__main__":
     K_fine = np.linspace(Kc - 0.05, Kc + 0.05, 25)
     K_list = np.unique(np.concatenate([K_coarse, K_fine]))
 
-    for K in np.linspace(2.5, 3.5,10):
-        R_values, theta_final = kuramoto_sim_rk4(theta0, omega, K, dt, nsteps)
-        np.save(f"kuramoto/R_values/R_{K}.npy", R_values[:])
+    # for K in np.linspace(2.5, 3.5,10):
+    #     R_values, theta_final = kuramoto_sim_rk4(theta0, omega, K, dt, nsteps)
+    #     np.save(f"kuramoto/R_values/R_{K}.npy", R_values[:])
 
 
 
-    # for N, tamaño in zip([600, 500, 400, 300, 200, 100],['600', '500', '400', '300', '200', '100']):
-    #     omega = np.random.normal(0.0, sigma, N)
-    #     theta0 = np.random.uniform(0.0, 2*np.pi, N)
-    #     nsteps = int(tmax / dt)
-    #     U_4_N = np.empty(len(K_list))
-    #     print(N)
-    #     for i,K in enumerate(K_list):
-    #         R_values, theta_final = kuramoto_sim_rk4(theta0, omega, K, dt, nsteps)
-    #         U_4_N[i] = binder_cumulant(R_values[100_000:])
-    #     np.save('kuramoto/U_4_'+tamaño+'.npy', U_4_N)
+    for N, tamaño in zip([600, 500, 400, 300, 200, 100],['600', '500', '400', '300', '200', '100']):
+        omega = np.random.normal(0.0, sigma, N)
+        theta0 = np.random.uniform(0.0, 2*np.pi, N)
+        nsteps = int(tmax / dt)
+        U_4_N = np.empty(len(K_list))
+        print(N)
+        for i,K in enumerate(K_list):
+            R_values, theta_final = kuramoto_sim_rk4(theta0, omega, K, dt, nsteps)
+            U_4_N[i] = binder_cumulant(R_values[100_000:])
+        np.save('kuramoto/U_4_'+tamaño+'.npy', U_4_N)
 
 
 
