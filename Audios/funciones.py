@@ -407,3 +407,46 @@ def extract_melody_grow(
     melody_series = melody_series[melody_series > silence_value]
 
     return out, melody_series
+
+
+import numpy as np
+from typing import Tuple
+
+def extract_melody_simple(arr: np.ndarray,
+                          silence_value: float = -1.0) -> Tuple[np.ndarray, np.ndarray]:
+    """
+    Extrae la melodía principal seleccionando la nota más aguda en cada onset.
+    Todas las demás notas del mismo onset se convierten en silencio.
+    
+    Input:
+        arr: matriz Nx5 con columnas [onset, offset, dur, midi, compas]
+    
+    Output:
+        melody_matrix: misma matriz pero con solo la melodía (resto = silence_value)
+        melody_series: array 1D con la secuencia MIDI de la melodía sin silencios
+    """
+
+    out = arr.copy()
+
+    # Obtener lista de onsets únicos (globales)
+    unique_onsets = np.unique(out[:, 0])
+
+    for onset in unique_onsets:
+        # Filas con ese onset
+        idxs = np.where(out[:, 0] == onset)[0]
+        pitches = out[idxs, 3]
+
+        # Selección indiscriminada: nota más aguda
+        # (si hubiera silencios ya codificados, seguirán siendo menor)
+        rel_max = np.argmax(pitches)
+        keep_abs = idxs[rel_max]
+
+        # Silenciar las demás filas
+        for r in idxs:
+            if r != keep_abs:
+                out[r, 3] = silence_value
+
+    # Extraer serie 1D de la melodía
+    melody_series = out[out[:, 3] != silence_value, 3]
+
+    return out, melody_series

@@ -5,7 +5,7 @@ import re
 import importlib
 import funciones
 importlib.reload(funciones)
-from funciones import main, entropia_shannon, extract_melody_grow, juntar_y_ordenar
+from funciones import entropia_shannon, extract_melody_grow, juntar_y_ordenar, extract_melody_simple
 import funciones2
 importlib.reload(funciones2)
 from funciones2 import randomize_rhythm_per_bar_with_rests
@@ -250,7 +250,7 @@ def process_wav(archivo_wav, segundo2, minuto2 = 0.0):
     plt.plot(t_muestra, muestra)
     plt.xlabel('Tiempo')
     plt.ylabel('Amplitud')
-    plt.title(f'Muestra de la señal S = {main(muestra,d=1,bivariante=False)}')
+    # plt.title(f'Muestra de la señal S = {main(muestra,d=1,bivariante=False)}')
 
     plt.tight_layout()
     plt.show() 
@@ -358,7 +358,8 @@ acorde = np.array([
 
 array_complete = np.array((ostinato,))
 
-partitura = r'data\humdrum-data-numpy\beethoven\piano\sonata\sonata14-3'
+partitura = r'data\humdrum-data-numpy\beethoven\piano\sonata\sonata14-1'
+# partitura = r'data\opus-27-no-2-moonlight-sonata-1st-movement.mxl'
 array_complete = extraer_partitura_npy(partitura) 
 
 def permutar_penultima_columna(arr):
@@ -367,14 +368,17 @@ def permutar_penultima_columna(arr):
     np.random.shuffle(penultima)  # permuta en su lugar
     arr[:, -2] = penultima  # asigna de nuevo
     return arr
-array_complete[0] = randomize_rhythm_per_bar_with_rests(array_complete[0])
-array_complete[1] = randomize_rhythm_per_bar_with_rests(array_complete[1])
+# array_complete[0] = randomize_rhythm_per_bar_with_rests(array_complete[0])
+# array_complete[1] = randomize_rhythm_per_bar_with_rests(array_complete[1])
 # array_complete[0] = permutar_penultima_columna(array_complete[0])
 # array_complete[1] = permutar_penultima_columna(array_complete[1])
-# array_junto = juntar_y_ordenar(array_complete[0],array_complete[1])
+array_junto = juntar_y_ordenar(array_complete[0],array_complete[1])
 
-# melodia, serie1d = extract_melody_grow(array_junto, silence_value=-1.0, seed_threshold=56.0, neighbor_semitones=6.0)
-# array_complete = np.array((melodia,))
+melodia, serie1d = extract_melody_grow(array_junto, silence_value=-1.0, seed_threshold=56.0, neighbor_semitones=6.0)
+# melodia, serie1d = extract_melody_simple(array_complete[1], silence_value=-1.0)
+array_complete = np.array((melodia,))
+print(serie1d)
+np.save('moonlight1st_melodia1d.npy', np.array(serie1d))
 
 
 mxl_file ='partitura.xml'
