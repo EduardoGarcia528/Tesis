@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from numba import njit
 
 def simulate_diffusion_with_reset(
     x0=1.0,
@@ -7,13 +8,9 @@ def simulate_diffusion_with_reset(
     r=0.5,
     dt=1e-3,
     t_max=50.0,
-    random_state=None
+    random_state=None,
+    first_passage=False
 ):
-    """
-    Simula una trayectoria 1D de difusión con reseteo:
-        dx = sqrt(2D) dW
-        reset a x0 con tasa r (Poisson)
-    """
     rng = np.random.default_rng(random_state)
     n_steps = int(t_max / dt)
     t = np.linspace(0.0, t_max, n_steps + 1)
@@ -27,13 +24,15 @@ def simulate_diffusion_with_reset(
         # Paso difusivo
         x_trial = x[i] + sqrt_2Ddt * rng.normal()
 
-        # Checar reseteo (aprox. Poisson: prob ~ r dt)
+        # Checar reseteo 
         if rng.random() < r * dt:
             x[i + 1] = x0
         else:
             x[i + 1] = x_trial
-
-    return t, x
+        if first_passage == True and x[i + 1] <= 0.0:
+            return (i + 1)*dt            
+    if first_passage == False:
+        return x
 
 def estimate_stationary_distribution(
     x0=1.0,
@@ -44,7 +43,7 @@ def estimate_stationary_distribution(
     n_bins=80,
     random_state=None
 ):
-    t, x = simulate_diffusion_with_reset(
+    x = simulate_diffusion_with_reset(
         x0=x0, D=D, r=r, dt=dt, t_max=t_max, random_state=random_state
     )
 
@@ -60,11 +59,18 @@ def estimate_stationary_distribution(
 
     return centers, hist, p_theory
 
+import numpy as np
+
+def compute_msd(X, X0):
+    disp = X - X0  
+    msd = np.mean(disp**2, axis = 0)
+    return msd
+
 
 
 if __name__ == "__main__":
     # Ejemplo de trayectoria
-    t, x = simulate_diffusion_with_reset(
+    x = simulate_diffusion_with_reset(
         x0=1.0, D=1.0, r=0.5, dt=1e-3, t_max=100.0, random_state=123
     )
 
@@ -76,16 +82,13 @@ if __name__ == "__main__":
     plt.title("Difusión 1D con reseteo estocástico")
     plt.tight_layout()
     plt.show()
-    plt.hist(x, bins=50, density=True)
-    plt.show()
-
 
     x0 = 1.0
     D = 1.0
     r = 0.5
 
     centers, hist, p_theory = estimate_stationary_distribution(
-        x0=x0, D=D, r=r, dt=1e-3, t_max=10000.0,
+        x0=x0, D=D, r=r, dt=1e-3, t_max=100.0,
         n_bins=1000, random_state=123
     )
 
@@ -96,6 +99,69 @@ if __name__ == "__main__":
     plt.xlabel("x")
     plt.ylabel("p(x)")
     plt.title("Distribución estacionaria con reseteo")
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
+
+    x0 = [0.3, 0.4, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0]
+    MFPT = []
+    # for x0_i in x0:
+    #     print(x0_i)
+    #     times = []
+    #     for i in range(5000):
+    #         T = simulate_diffusion_with_reset(
+    #             x0=x0_i, D=D, r=r, dt=1e-3, t_max=10_000,
+    #             first_passage=True)
+    #         if T is not None:
+    #             times.append(T)
+    #     mfpt_num = np.mean(times)
+    #     MFPT.append(mfpt_num)
+    # np.save("mfpt_reset.npy", np.array([x0, MFPT]))
+    x0, MFPT = np.load("mfpt_reset.npy")
+
+    x0_theory = np.linspace(0.1, 3.0, 1000)
+    alpha0 = np.sqrt(r / D)
+    mfpt_theory = (np.exp(alpha0 * x0_theory) - 1) / r
+
+    plt.figure()
+    plt.plot(x0, MFPT, 'o', label="MFPT numérico")
+    plt.plot(x0_theory, mfpt_theory, '-', label="MFPT teórico")
+    plt.xlabel("Posición inicial $x_0$")
+    plt.ylabel("MFPT")
+    plt.title("Tiempo promedio de primer paso con reseteo")
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
+
+    r_0, MFPT = np.load("mfpt_reset_r.npy")
+    # r_0 = [0, 0.01,0.03, 0.05, 0.1, 0.2, 0.5,1.0, 2.5, 15.0]
+    # for r_i in [100.0]:
+    #     print(r_i)
+    #     times = []
+    #     for i in range(5000):
+    #         T = simulate_diffusion_with_reset(
+    #             x0=1.0, D=D, r=r_i, dt=1e-3, t_max=10_000,
+    #             first_passage=True)
+    #         if T is not None:
+    #             times.append(T)
+    #     if len(times) < 2000:
+    #         mfpt_num = np.nan
+    #     else:
+    #         mfpt_num = np.mean(times)
+    #     MFPT = np.concatenate( (MFPT, [mfpt_num]) )
+    #     r_0 = np.concatenate( (r_0, [r_i]) )
+    # np.save("mfpt_reset_r.npy", np.array([r_0, MFPT]))
+
+    r0_theory = np.linspace(0.0, 15.0, 2000)
+    alpha0 = np.sqrt(r0_theory / D)
+    mfpt_theory = (np.exp(alpha0) - 1) / r0_theory
+
+    plt.figure()
+    plt.plot(r_0, MFPT, 'o', label="MFPT numérico")
+    plt.plot(r0_theory, mfpt_theory, '-', label="MFPT teórico")
+    plt.xlabel("Tasa $r$")
+    plt.ylabel("MFPT")
+    plt.title("Tiempo promedio de primer paso con reseteo")
     plt.legend()
     plt.tight_layout()
     plt.show()
