@@ -135,7 +135,7 @@ if __name__ == "__main__":
 
     r_0, MFPT = np.load("mfpt_reset_r.npy")
     # r_0 = [0, 0.01,0.03, 0.05, 0.1, 0.2, 0.5,1.0, 2.5, 15.0]
-    # for r_i in [100.0]:
+    # for r_i in [20.0]:
     #     print(r_i)
     #     times = []
     #     for i in range(5000):
@@ -152,7 +152,7 @@ if __name__ == "__main__":
     #     r_0 = np.concatenate( (r_0, [r_i]) )
     # np.save("mfpt_reset_r.npy", np.array([r_0, MFPT]))
 
-    r0_theory = np.linspace(0.0, 15.0, 2000)
+    r0_theory = np.linspace(0.001, 100.0, 2000)
     alpha0 = np.sqrt(r0_theory / D)
     mfpt_theory = (np.exp(alpha0) - 1) / r0_theory
 
@@ -166,3 +166,45 @@ if __name__ == "__main__":
     plt.tight_layout()
     plt.show()
 
+    from mpl_toolkits.axes_grid1.inset_locator import inset_axes, mark_inset
+
+    r0_theory = np.linspace(0.000000001, 100.0, 2000) 
+    alpha0 = np.sqrt(r0_theory / D)
+    mfpt_theory = (np.exp(alpha0) - 1) / r0_theory
+
+    plt.figure(figsize=(7,4))
+    ax = plt.gca()
+
+    # --- Gráfica principal ---
+    ax.plot(r_0, MFPT, 'o', label="MFPT numérico")
+    ax.plot(r0_theory, mfpt_theory, '-', label="MFPT teórico")
+    ax.set_xlim(-0.1, 3.0)
+    ax.set_ylim(0,15.0)
+    ax.set_xlabel("Tasa $r$")
+    ax.set_ylabel("MFPT")
+    ax.set_title("Tiempo promedio de primer paso con reseteo")
+    ax.legend()
+
+    # --- INSET ---
+    ax_inset = inset_axes(ax, width="35%", height="35%", loc="upper right")
+
+    # mismos datos
+    ax_inset.plot(r0_theory, mfpt_theory, '-', color="C1")
+    ax_inset.plot(r_0, MFPT, '.', color="C0")
+
+    # límites para el zoom
+    ax_inset.set_xlim(-10.0, 100.0)
+
+    # ajusta automáticamente el eje y según los datos en ese rango
+    mask = (r0_theory >= 0) & (r0_theory <= 3.0)
+    ax_inset.set_ylim(0, 220.0)
+    # ax_inset.set_ylim(mfpt_theory[mask].min()-1, mfpt_theory[mask].max())
+
+    # ticks más simples
+    ax_inset.tick_params(axis='both', labelsize=8)
+
+    # rectángulo que marca la zona del zoom (opcional)
+    # mark_inset(ax, ax_inset, loc1=2, loc2=4, fc="none", ec="0.6")
+
+    plt.tight_layout()
+    plt.show()
