@@ -68,10 +68,10 @@ if __name__ == '__main__':
 
 
     # Calcula MSD (usando la función que hicimos antes)
-    msd, _ = msd_ensemble_numba(N, M, dt = dt, q=q, b= b)
+    # msd, _ = msd_ensemble_numba(N, M, dt = dt, q=q, b= b)
     t = np.arange(0, N) * dt
-    np.save("msd_boyer_q_espina_8.npy", msd)
-    # msd = np.load("msd_boyer_q_8.npy")
+    # np.save("msd_boyer_q_espina_8.npy", msd)
+    msd = np.load("msd_boyer_q_8.npy")
     m, b = np.polyfit(np.log(t[1:]), msd[1:], 1)
     # --- Graficar ---
     plt.figure(figsize=(8, 5))
