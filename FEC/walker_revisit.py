@@ -139,19 +139,19 @@ if __name__ == "__main__":
     T = 10000
     n_traj = 5000
     q = 0.2
-    alpha = 1.5
+    alpha = 2.0
     beta = 1.0
     p = 0.5
     # t, msd = simulate_ensemble_msd(
         # T=T, n_traj=n_traj, q=q, alpha=alpha, beta=beta, p=p, seed=123)
-    # np.save("msd_beta_binomial_3.npy", msd)
-    msd = np.load("msd_beta_binomial_1_5.npy")
+    # np.save("msd_beta_binomial_1_2.npy", msd)
+    msd = np.load("msd_beta_binomial_2.npy")
     t = np.arange(0, len(msd))
     # msd_theory = ((1 - q) / q) * (np.log(q*t) + 0.577215664902)  # Constante de Euler-Mascheroni
     msd_theory = np.log(q*t)*alpha*(1-q)/(q) + alpha*(alpha-1)*(1-q)/(t*q**2)
     import matplotlib.pyplot as plt
     plt.plot(t, msd, label=f"q={q}, α={alpha}, β={beta}")
-    plt.plot(t, msd_theory, lw=2, ls='--', label="Teoría (α=1, β=1)")
+    plt.plot(t, msd_theory, lw=2, ls='--', label=f"Teoría (α={alpha}, β=1)")
     plt.xlabel("Tiempo t")
     plt.ylabel("MSD ⟨x(t)²⟩")
     plt.xscale("log")

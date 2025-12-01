@@ -225,7 +225,9 @@ import scienceplots
 from PEs_PDFs import plot_patterns_to_pdf
 
 # 1) Todos los patrones de m=4, duraciones medias = 5 ventanas, poco ruido:
-x, seq, pats = simulate_op_smm(N=5000, m=3, mean_durations=5, noise=1e-3, seed=7)
+x, seq, pats = simulate_op_smm(N=5000, m=3, mean_durations=None, noise=0.0, seed=7)
+plt.plot(x, marker = '.')
+plt.show()
 
 for k in range(3,7):
     PEs = []

@@ -632,6 +632,27 @@ def preprocess_wav_for_dfa(path, mode='wave', fs_target=2000,  # para onda cruda
     else:
         return x, fs
 
+def run_dfa_from_file(array,binlog=False, method='DFA', Result='H', graph=True):
+    time_series = array
+    if Result == 'H':
+        grado_polinomio = 1
+        xi = False
+    elif Result == 'xi':
+        grado_polinomio = 4
+        xi = True
+    else:
+        raise ValueError("Opción no válida. Use 'xi' o 'H'.")
+    xi_index = main(time_series, method=method, binlog=binlog, grado_polinomio=grado_polinomio, N_surrogates=100, graficar=graph, xi = xi)
+    if Result == 'H':
+        print(f'Exponente(s) de Hurst: {xi_index}')
+        return xi_index
+        # beta, r2, slope, intercept, (f, Pxx) = plot_psd_beta(time_series, fs_used, fmin=None, fmax=None, bins_per_decade=12)
+        # print(f'Exponente Beta del PSD: {beta}, R²: {r2}')
+    if Result == 'xi':
+        print(f'Índice de no linealidad: {xi_index}')
+        return xi_index
+
+
 if __name__ == "__main__":
     # Ejemplo de uso
     archivo = input("Ingrese el tipo de archivo (.csv, .npy, .wav): ")
