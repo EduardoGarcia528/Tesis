@@ -104,24 +104,76 @@ def kuramoto_sim_rk4(theta0, omega, K, dt, nsteps):
 def binder_cumulant(m_series):
     m2 = np.mean(m_series**2)
     m4 = np.mean(m_series**4)
-    return 1.0 - m4 / (2.0 * m2 * m2)
+    return 1.0 - m4 / (3.0 * m2 * m2)
 
 if __name__ == "__main__":
-    # Parámetros
-    N = 500               # número de osciladores
-    dt = 0.01             # paso de integración
-    tmax = 10_000.0         # tiempo total
-    sigma = 1.0           # desviación estándar de ω_i
-    Kc = 2 * sigma * np.sqrt(2/np.pi)  # umbral teórico para g(ω) ~ N(0, σ^2)
-    K = 2.0                # acoplamiento en el umbral
+    # ========= Parámetros globales =========
+    sigma = 1.0                           # desviación estándar de ω_i
+    Kc = 2 * sigma * np.sqrt(2/np.pi)     # umbral teórico para g(ω) ~ N(0, σ^2)
 
+    # Tamaños de sistema (puedes agregar 6400, 12800 si tu compu aguanta)
+    N_list = [200, 400, 800, 1600, 3200]
 
-    # Inicialización
-    omega = np.random.normal(0.0, sigma, N)
-    theta0 = np.random.uniform(0.0, 2*np.pi, N)
+    # Rango de K alrededor de Kc
+    K_values = np.linspace(1.2, 2.0, 21)  # incluye Kc ~ 1.596
+
+    # Tiempo de integración
+    dt = 0.02
+    tmax = 2000.0                         # como en el paper: Nt = 4e4 pasos aprox.
     nsteps = int(tmax / dt)
 
-    # R_values, theta_final = kuramoto_sim_rk4(theta0, omega, K, dt, nsteps)
+    # Transitorio a descartar (por ejemplo, mitad de la simulación)
+    n_transient = 5_000
+
+    # Número de realizaciones de desorden (muestras) por (N, K)
+    n_realizations = 200                  # sube o baja según paciencia/cómputo
+
+    # Diccionario para guardar B^{(2)}(K, N)
+    B2_results = {}
+
+    # ========= Loop principal sobre N y K =========
+    rng = np.random.default_rng(seed=12345)  # RNG para reproducibilidad
+
+    for N in N_list:
+        print(f"Simulando N = {N}")
+        B2_vs_K = np.zeros_like(K_values, dtype=float)
+
+        for ik, K in enumerate(K_values):
+            b_samples = np.zeros(n_realizations, dtype=float)
+
+            for s in range(n_realizations):
+                # Frecuencias naturales ~ N(0, sigma^2), desorden quenched por muestra
+                omega = rng.normal(loc=0.0, scale=sigma, size=N)
+                # Condiciones iniciales de las fases
+                theta0 = rng.uniform(0.0, 2.0*np.pi, size=N)
+
+                # Integra Kuramoto con RK4
+                R_values, _ = kuramoto_sim_rk4(theta0, omega, K, dt, nsteps)
+
+                # Descarta el transitorio
+                R_ss = R_values[n_transient:]
+
+                # Binder por muestra: b_s = 1 - <R^4> / (3 <R^2>^2)
+                b_samples[s] = binder_cumulant(R_ss)
+
+            # B^{(2)}(K, N) = promedio sobre muestras de b_s
+            B2_vs_K[ik] = b_samples.mean()
+        np.save(f'kuramoto/bindersN/B2_vs_K_{int(N)}.npy',B2_vs_K)
+
+        B2_results[N] = B2_vs_K
+
+    # ========= Gráfica tipo Fig. 5: B^{(2)} vs K =========
+    plt.figure(figsize=(6, 4))
+    for N in N_list:
+        plt.plot(K_values, B2_results[N], marker='o', ms=3, lw=1, label=f"N={N}")
+
+    plt.axvline(Kc, linestyle='--', alpha=0.7, label=r"$K_c$")
+    plt.xlabel(r"Acoplamiento $K$")
+    plt.ylabel(r"$B_{\Delta}^{(2)}$")
+    plt.title(r"Cumulante de Binder $B_{\Delta}^{(2)}$ vs $K$")
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
 
     # np.save("kuramoto/kuramoto_2.npy", R_values[100_000:])
 
