@@ -1,36 +1,27 @@
 import numpy as np
-from music21 import stream, note, chord, converter
+from music21 import stream, note, chord
+from typing import List, Tuple
 
-def unique_rows_ordered(a):
-    # 1. Eliminar filas donde col0 == col1
-    mask = a[:, 0] != a[:, 1]
-    a = a[mask]
-
-    b = np.ascontiguousarray(a)
-    dtype = np.dtype((np.void, b.dtype.itemsize * b.shape[1]))
-    _, idx = np.unique(b.view(dtype), return_index=True)
-    return a[np.sort(idx)]
-
-def process_notes_by_voice(mxl_file, start_measure=1, verbose=True):
+def process_notes_by_voice(m21_data, start_measure=1, verbose=True):
     """
     Procesa una partitura de music21 y devuelve una lista de matrices,
     una por cada voz (part) del .mxl.
 
     Incluye notas, acordes y silencios (rests).
 
-    Columnas de cada matriz (por voz):
+    Columnas de cada matriz (por voz), compatibles con generador_partitura:
         0: onset_local   (origen 0.0 en cada compás)
         1: offset_local  (onset_local + duration)
-        2: interonset_interval_global (diferencia de onsets globales consecutivos)
-        3: duration      (en negras)
-        4: midi value    (nota: pitch.ps, silencio: -1.0)
-        5: #measure      (numeración ajustada con start_measure)
+        2: duration      (en negras, igual a quarterLength original)
+        3: midi value    (nota: pitch.ps, silencio: -1.0)
+        4: #measure      (numeración ajustada con start_measure)
+        5: timeSignature (string, por ejemplo '4/4', '3/8', etc.)
     """
-    m21_data = converter.parse(mxl_file)
+
     # ------------------------------------------------------------
     # 1. Info de compases (time signatures) usando la primera voz
     # ------------------------------------------------------------
-    time_sigs = []
+    time_sigs: List[Tuple[int, str]] = []
 
     if len(m21_data.parts) > 0:
         for meas in m21_data.parts[0].getElementsByClass(stream.Measure):
@@ -38,6 +29,8 @@ def process_notes_by_voice(mxl_file, start_measure=1, verbose=True):
                 m_num = (meas.number or 0) + (start_measure - 1)
                 time_sigs.append((m_num, meas.timeSignature.ratioString))
 
+    # Ordenar y comprimir cambios de compás (solo para imprimir)
+    time_sigs.sort(key=lambda x: x[0])
     if verbose:
         if not time_sigs:
             print("No se encontraron indicaciones de compás.")
@@ -53,6 +46,18 @@ def process_notes_by_voice(mxl_file, start_measure=1, verbose=True):
                     print(f"Cambio de compás en el compás {m_num}: {ts}")
             else:
                 print("No hay cambios de tipo de compás en la pieza.")
+
+    # Función auxiliar: dado un número de compás, devolver el time sig (persistente)
+    def get_timesig_for_measure(m: float) -> str:
+        if not time_sigs:
+            return "NA"
+        current_ts = time_sigs[0][1]
+        for m_num, ts in time_sigs:
+            if m >= m_num:
+                current_ts = ts
+            else:
+                break
+        return current_ts
 
     # ------------------------------------------------------------
     # 2. Procesar cada voz por separado
@@ -72,7 +77,7 @@ def process_notes_by_voice(mxl_file, start_measure=1, verbose=True):
         # Recorremos notas, acordes y silencios
         for n in part.flatten().notesAndRests:
             global_start = float(n.offset)
-            duration = float(n.quarterLength)
+            duration = float(n.quarterLength)  # usamos quarterLength tal como viene
 
             try:
                 measure_number = (n.measureNumber or 0) + (start_measure - 1)
@@ -81,7 +86,7 @@ def process_notes_by_voice(mxl_file, start_measure=1, verbose=True):
 
             measure_start_global = measure_start_offsets.get(measure_number, 0.0)
 
-            # Onset / offset locales dentro del compás
+            # Onset / offset locales dentro del compás (también tal cual)
             local_start = global_start - measure_start_global
             local_offset = local_start + duration
 
@@ -89,12 +94,11 @@ def process_notes_by_voice(mxl_file, start_measure=1, verbose=True):
             if getattr(n, "isRest", False) or isinstance(n, note.Rest):
                 midi_val = -1.0
                 notes_rows.append([
-                    measure_number,   # 0
-                    global_start,     # 1 (onset global)
-                    local_start,      # 2 (onset local)
-                    local_offset,     # 3 (offset local)
-                    duration,         # 4
-                    midi_val          # 5
+                    measure_number,   # 0 measure
+                    local_start,      # 1 onset_local
+                    local_offset,     # 2 offset_local
+                    duration,         # 3 duration
+                    midi_val          # 4 midi
                 ])
 
             # Acorde
@@ -103,7 +107,6 @@ def process_notes_by_voice(mxl_file, start_measure=1, verbose=True):
                     midi_val = float(p.ps)
                     notes_rows.append([
                         measure_number,
-                        global_start,
                         local_start,
                         local_offset,
                         duration,
@@ -115,55 +118,45 @@ def process_notes_by_voice(mxl_file, start_measure=1, verbose=True):
                 midi_val = float(n.pitch.ps)
                 notes_rows.append([
                     measure_number,
-                    global_start,
                     local_start,
                     local_offset,
                     duration,
                     midi_val
                 ])
 
-        # Si la voz no tiene eventos, devolvemos matriz vacía
+        # Si la voz no tiene eventos, matriz vacía
         if not notes_rows:
-            all_parts_matrices.append(np.zeros((0, 6), dtype=float))
+            all_parts_matrices.append(np.zeros((0, 6), dtype=object))
             continue
 
         notes_arr = np.array(notes_rows, dtype=float)
-        # columnas: 0=measure, 1=onset_global, 2=onset_local, 3=offset_local,
-        #           4=duration, 5=midi
+        # columnas: 0=measure, 1=onset_local, 2=offset_local,
+        #           3=duration, 4=midi
 
-        # Ordenar por compás y onset_global
+        # Ordenar por compás y onset_local
         order = np.lexsort((notes_arr[:, 1], notes_arr[:, 0]))
         notes_arr = notes_arr[order]
 
-        # --------------------------------------------------------
-        # 3. Interonset interval (IOI) global
-        # --------------------------------------------------------
-        global_onsets = notes_arr[:, 1]
-        ioi_global = np.zeros(len(global_onsets))
-        if len(global_onsets) > 1:
-            ioi_global[1:] = np.diff(global_onsets)
-
-        # --------------------------------------------------------
-        # 4. Matriz final: onset_local, offset_local, IOI_global,
-        #                  duration, midi, measure
-        # --------------------------------------------------------
-        onset_local_col  = notes_arr[:, 2]
-        offset_local_col = notes_arr[:, 3]
-        duration_col     = notes_arr[:, 4]
-        midi_col         = notes_arr[:, 5]
         measure_col      = notes_arr[:, 0]
+        onset_local_col  = notes_arr[:, 1]
+        offset_local_col = notes_arr[:, 2]
+        duration_col     = notes_arr[:, 3]
+        midi_col         = notes_arr[:, 4]
 
-        out_matrix = np.column_stack(
-            (onset_local_col, offset_local_col,
-             duration_col, midi_col, measure_col)
+        # Columna de time signature por fila (persistente entre cambios)
+        ts_col = np.array(
+            [get_timesig_for_measure(m) for m in measure_col],
+            dtype=object
         )
 
+        # Matriz final por voz (dtype=object porque mezclamos floats y strings)
+        numeric = np.column_stack(
+            (onset_local_col, offset_local_col,
+             duration_col, midi_col, measure_col)
+        ).astype(object)
 
-        all_parts_matrices.append(unique_rows_ordered(out_matrix))
+        out_matrix = np.column_stack((numeric, ts_col))
+
+        all_parts_matrices.append(out_matrix)
 
     return all_parts_matrices
-
-# array_complete = process_notes_by_voice(r"data/chopin-ballade-no-1-in-g-minor-op-23.mxl", start_measure=0)
-# np.set_printoptions(suppress=True)
-# # print(array_complete[0][2047:2050,:])  
-# print(array_complete[0][np.where(array_complete[0][:,-1] == 8.),:])  

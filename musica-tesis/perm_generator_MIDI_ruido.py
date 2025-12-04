@@ -80,17 +80,19 @@ vocab_do_mayor = np.concatenate((f - 12,  # una octava abajo
                                  f + 12 * 2,
                                  f + 12 * 3))
 
-N = 10_000  # longitud de la melodía
+N = 800  # longitud de la melodía
 
 # Ruido browniano ~ 1/f^2 (β=2)
 mel_brown = generate_midi_melody(beta=2.0, N=N,
                                  vocab=vocab_do_mayor,
                                  random_state=0)
 mel_brown = remove_consecutive_duplicates(mel_brown)
-xi = run_dfa_from_file(mel_brown.astype(float) ,'False',"DFA","xi",True)
-print(xi)
+# xi = run_dfa_from_file(mel_brown.astype(float) ,'False',"DFA","xi",True)
+print(len(mel_brown))
 # mel_brown = iaaft(mel_brown, 1)[0,:]
+np.save('mel_brown.npy',mel_brown)
 plt.plot(mel_brown, marker = '.')
+plt.xlim(0,100)
 plt.show()
 
 

@@ -225,13 +225,21 @@ import scienceplots
 from PEs_PDFs import plot_patterns_to_pdf
 
 # 1) Todos los patrones de m=4, duraciones medias = 5 ventanas, poco ruido:
-x, seq, pats = simulate_op_smm(N=5000, m=3, mean_durations=None, noise=0.0, seed=7)
+x, seq, pats = simulate_op_smm(N=1000000, m=6, mean_durations=None, noise=0.0, seed=7)
+res = plot_patterns_to_pdf(
+arr=x, m=6, tau=1,
+pdf_path=f"patrones.pdf",
+show_top=None,          # o p.ej. 30 para las 30 más frecuentes
+sort_by="freq",         # "freq" para ordenar por prob. desc, "code" por índice Lehmer
+normalize=True,
+title=None,
+dpi=200
+)
 plt.plot(x, marker = '.')
 plt.show()
 
 for k in range(3,7):
     PEs = []
-    x2, seq2, pats2 = simulate_op_smm(N=50000, m=k, mean_durations=1, noise=0, seed=7)
     print(k)
     for m in range(3,7):
         # plt.plot(x2, marker = '.')

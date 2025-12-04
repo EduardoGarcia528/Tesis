@@ -119,7 +119,7 @@ if __name__ == "__main__":
 
     # Tiempo de integración
     dt = 0.02
-    tmax = 2000.0                         # como en el paper: Nt = 4e4 pasos aprox.
+    tmax = 800.0                         # como en el paper: Nt = 4e4 pasos aprox.
     nsteps = int(tmax / dt)
 
     # Transitorio a descartar (por ejemplo, mitad de la simulación)
@@ -139,6 +139,7 @@ if __name__ == "__main__":
         B2_vs_K = np.zeros_like(K_values, dtype=float)
 
         for ik, K in enumerate(K_values):
+            print(K)
             b_samples = np.zeros(n_realizations, dtype=float)
 
             for s in range(n_realizations):
