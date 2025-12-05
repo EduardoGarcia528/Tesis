@@ -112,7 +112,8 @@ if __name__ == "__main__":
     Kc = 2 * sigma * np.sqrt(2/np.pi)     # umbral teórico para g(ω) ~ N(0, σ^2)
 
     # Tamaños de sistema (puedes agregar 6400, 12800 si tu compu aguanta)
-    N_list = [200, 400, 800, 1600, 3200]
+    # N_list = [400, 1600, 3200]
+    N_list= [4000,5000]
 
     # Rango de K alrededor de Kc
     K_values = np.linspace(1.2, 2.0, 21)  # incluye Kc ~ 1.596
@@ -166,6 +167,7 @@ if __name__ == "__main__":
     # ========= Gráfica tipo Fig. 5: B^{(2)} vs K =========
     plt.figure(figsize=(6, 4))
     for N in N_list:
+        # B2_results = np.load(f'kuramoto/bindersN\B2_vs_K_{int(N)}.npy')
         plt.plot(K_values, B2_results[N], marker='o', ms=3, lw=1, label=f"N={N}")
 
     plt.axvline(Kc, linestyle='--', alpha=0.7, label=r"$K_c$")
