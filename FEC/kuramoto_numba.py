@@ -113,7 +113,7 @@ if __name__ == "__main__":
 
     # Tamaños de sistema (puedes agregar 6400, 12800 si tu compu aguanta)
     # N_list = [400, 1600, 3200]
-    N_list= [4000,5000]
+    N_list= [400,1600,3200,4000,5000]
 
     # Rango de K alrededor de Kc
     K_values = np.linspace(1.2, 2.0, 21)  # incluye Kc ~ 1.596
@@ -135,40 +135,40 @@ if __name__ == "__main__":
     # ========= Loop principal sobre N y K =========
     rng = np.random.default_rng(seed=12345)  # RNG para reproducibilidad
 
-    for N in N_list:
-        print(f"Simulando N = {N}")
-        B2_vs_K = np.zeros_like(K_values, dtype=float)
+    # for N in N_list:
+    #     print(f"Simulando N = {N}")
+    #     B2_vs_K = np.zeros_like(K_values, dtype=float)
 
-        for ik, K in enumerate(K_values):
-            print(K)
-            b_samples = np.zeros(n_realizations, dtype=float)
+    #     for ik, K in enumerate(K_values):
+    #         print(K)
+    #         b_samples = np.zeros(n_realizations, dtype=float)
 
-            for s in range(n_realizations):
-                # Frecuencias naturales ~ N(0, sigma^2), desorden quenched por muestra
-                omega = rng.normal(loc=0.0, scale=sigma, size=N)
-                # Condiciones iniciales de las fases
-                theta0 = rng.uniform(0.0, 2.0*np.pi, size=N)
+    #         for s in range(n_realizations):
+    #             # Frecuencias naturales ~ N(0, sigma^2), desorden quenched por muestra
+    #             omega = rng.normal(loc=0.0, scale=sigma, size=N)
+    #             # Condiciones iniciales de las fases
+    #             theta0 = rng.uniform(0.0, 2.0*np.pi, size=N)
 
-                # Integra Kuramoto con RK4
-                R_values, _ = kuramoto_sim_rk4(theta0, omega, K, dt, nsteps)
+    #             # Integra Kuramoto con RK4
+    #             R_values, _ = kuramoto_sim_rk4(theta0, omega, K, dt, nsteps)
 
-                # Descarta el transitorio
-                R_ss = R_values[n_transient:]
+    #             # Descarta el transitorio
+    #             R_ss = R_values[n_transient:]
 
-                # Binder por muestra: b_s = 1 - <R^4> / (3 <R^2>^2)
-                b_samples[s] = binder_cumulant(R_ss)
+    #             # Binder por muestra: b_s = 1 - <R^4> / (3 <R^2>^2)
+    #             b_samples[s] = binder_cumulant(R_ss)
 
-            # B^{(2)}(K, N) = promedio sobre muestras de b_s
-            B2_vs_K[ik] = b_samples.mean()
-        np.save(f'kuramoto/bindersN/B2_vs_K_{int(N)}.npy',B2_vs_K)
+    #         # B^{(2)}(K, N) = promedio sobre muestras de b_s
+    #         B2_vs_K[ik] = b_samples.mean()
+    #     np.save(f'kuramoto/bindersN/B2_vs_K_{int(N)}.npy',B2_vs_K)
 
-        B2_results[N] = B2_vs_K
+    #     B2_results[N] = B2_vs_K
 
     # ========= Gráfica tipo Fig. 5: B^{(2)} vs K =========
     plt.figure(figsize=(6, 4))
     for N in N_list:
-        # B2_results = np.load(f'kuramoto/bindersN\B2_vs_K_{int(N)}.npy')
-        plt.plot(K_values, B2_results[N], marker='o', ms=3, lw=1, label=f"N={N}")
+        B2_results = np.load(f'kuramoto/bindersN\B2_vs_K_{int(N)}.npy')
+        plt.plot(K_values, B2_results, marker='o', ms=3, lw=1, label=f"N={N}")
 
     plt.axvline(Kc, linestyle='--', alpha=0.7, label=r"$K_c$")
     plt.xlabel(r"Acoplamiento $K$")
