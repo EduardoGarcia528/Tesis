@@ -1,12 +1,12 @@
 import numpy as np
 from typing import List, Tuple
 
-def extract_melody_multi_voices(voices: List[np.ndarray]):
+def extract_melody_multi_voices(voices: List[np.ndarray], del_repeats = True):
     """
     Extrae la melodía de varias voces.
 
-    voices: lista de arrays (uno por voz), cada uno de forma Nx5:
-        [onset, offset, dur, midi, compas]
+    voices: lista de arrays (uno por voz), cada uno de forma Nx6:
+        [onset, offset, dur, midi, compas, tipo de compas]
 
     Regla:
       - Por compás, se elige una voz que actúa como melodía:
@@ -62,6 +62,26 @@ def extract_melody_multi_voices(voices: List[np.ndarray]):
             mask = (A[:, 0] != A[:, 1]) & \
                 (A[:, 2] != 0.0) 
             A = A[mask]
+            # A las notas que se repitan en todo los onsets, convertirlas a silencio
+            if del_repeats:
+                for target in np.unique(A[:,3]):
+                    missing = []
+                    for g in np.unique(A[:,0]):
+                        mask_g = (A[:, 0] == g)
+                        if not np.any(A[:,3][mask_g] == target):
+                            missing.append(k)
+                    all_ok = (len(missing) == 0)
+                    if all_ok:
+                        mask_cambiar = (A[:, 3] == target)
+                        A[mask_cambiar, 3] = -1.0
+            
+            # Si solo hay una nota sola en el primer onset, cambiarla por un silencio
+            # pos_idx = np.nonzero(A[:,3] > 0.0)[0]
+            # if pos_idx.size == 1:
+            #     i = pos_idx[0]
+            #     if A[:,0][i] == np.min(A[:,0]) and A[:,2][i] == np.max(A[:,1]):
+            #         A[i,3] = -1.0
+
             # Cambiar midi por -1 si por lo menos una nota
             for g in np.unique(A[:,0]):
                 mask_g = (A[:, 0] == g)

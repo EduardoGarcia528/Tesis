@@ -223,16 +223,18 @@ def mxl_to_wav(archivo_xml = 'partitura.xml'):
 from mxl_to_numpy import process_notes_by_voice # Nx6
 from regla_simple_multivoz import extract_melody_multi_voices # Nx6
 
+num = '14'
 # partitura = r'data/moonlight_sonata_3rd_movement.mxl'
 partitura = r'data/violin-concerto-in-d-minor-op-47-jean-sibelius-sibelius-violin-concerto-piano-and-violin.mxl'
 partitura = r'data/fur-elise-violin.mxl'
+partitura = f'data/new_scores/{num}.mxl'
 score = converter.parse(partitura)
 
 array_complete = process_notes_by_voice(score, start_measure=1) #mkl
+print(len(array_complete))
 
-
-melodia, serie1d = extract_melody_multi_voices(array_complete)
-np.save('data/furelise.npy',serie1d)
+melodia, serie1d = extract_melody_multi_voices(array_complete,del_repeats=False)
+np.save(f'data/new_scores/melodies/{num}.npy',serie1d)
 # v = np.load('data\mel_brown.npy')[:450]
 # print(len(serie1d))
 # mask = melodia[:, 3] > 0        # True en las filas donde la col col_idx es positiva
@@ -248,13 +250,13 @@ np.save('data/furelise.npy',serie1d)
 # mask = melodia[:, 4] == 22.0
 # print(melodia[mask])
 
-plt.plot(serie1d)
+plt.plot(serie1d, marker = '.')
 plt.xlabel('t')
 plt.ylabel('MIDI')
 plt.show()
 mxl_file = 'partitura.xml'
 
-generador_partitura([melodia],tempo=80) # Nx6
+generador_partitura([melodia],tempo=120) # Nx6
 
 archivo_wav = mxl_to_wav(mxl_file)
 
