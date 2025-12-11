@@ -146,9 +146,11 @@ if __name__ == "__main__":
     alpha = 1.0
     beta = 1.0
     p = 0.5
-    # t, msd = simulate_ensemble_msd(
-    #     T=T, n_traj=n_traj, q=q, alpha=alpha, beta=beta, p=p, seed=123)
-    # np.save(f"alpha_1/msd_beta_binomial_{str(beta)[0]}_{str(beta)[-1]}.npy", msd)
+    # for alpha,q in zip([0.2, 0.5,2.0],[0.2,0.2,0.7]):
+    #     print(alpha,q)
+    #     t, msd = simulate_ensemble_msd(
+    #         T=T, n_traj=n_traj, q=q, alpha=alpha, beta=beta, p=p, seed=123)
+    #     np.save(f"betha_1/msd_beta_binomial_{str(alpha)[0]}_{str(alpha)[-1]}_{str(q)[-1]}.npy", msd)
     for alpha in [1.2,1.5,1.7,2.0,3.0]:
         msd = np.load(f"betha_1/msd_beta_binomial_{str(alpha)[0]}_{str(alpha)[-1]}.npy")
         t = np.arange(0, len(msd))

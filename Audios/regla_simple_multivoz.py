@@ -1,7 +1,7 @@
 import numpy as np
 from typing import List, Tuple
 
-def extract_melody_multi_voices(voices: List[np.ndarray], del_repeats = True):
+def extract_melody_multi_voices(voices: List[np.ndarray], del_repeats = True, del_loners=True):
     """
     Extrae la melodía de varias voces.
 
@@ -76,11 +76,12 @@ def extract_melody_multi_voices(voices: List[np.ndarray], del_repeats = True):
                         A[mask_cambiar, 3] = -1.0
             
             # Si solo hay una nota sola en el primer onset, cambiarla por un silencio
-            # pos_idx = np.nonzero(A[:,3] > 0.0)[0]
-            # if pos_idx.size == 1:
-            #     i = pos_idx[0]
-            #     if A[:,0][i] == np.min(A[:,0]) and A[:,2][i] == np.max(A[:,1]):
-            #         A[i,3] = -1.0
+            if del_loners:
+                pos_idx = np.nonzero(A[:,3] > 0.0)[0]
+                if pos_idx.size == 1:
+                    i = pos_idx[0]
+                    if A[:,0][i] == np.min(A[:,0]) and A[:,2][i] != np.max(A[:,1]):
+                        A[i,3] = -1.0
 
             # Cambiar midi por -1 si por lo menos una nota
             for g in np.unique(A[:,0]):
