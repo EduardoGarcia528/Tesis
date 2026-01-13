@@ -146,13 +146,14 @@ if __name__ == "__main__":
     alpha = 1.0
     beta = 1.0
     p = 0.5
-    # for alpha,q in zip([0.2, 0.5,2.0],[0.2,0.2,0.7]):
+    # for alpha,q in zip([2.5, 2.3,0.7],[0.2,0.2,0.2]):
     #     print(alpha,q)
     #     t, msd = simulate_ensemble_msd(
     #         T=T, n_traj=n_traj, q=q, alpha=alpha, beta=beta, p=p, seed=123)
-    #     np.save(f"betha_1/msd_beta_binomial_{str(alpha)[0]}_{str(alpha)[-1]}_{str(q)[-1]}.npy", msd)
-    for alpha in [1.2,1.5,1.7,2.0,3.0]:
-        msd = np.load(f"betha_1/msd_beta_binomial_{str(alpha)[0]}_{str(alpha)[-1]}.npy")
+    #     np.save(f"betha_1/msd_beta_binomial_{str(alpha)[0]}_{str(alpha)[-1]}.npy", msd)
+        # np.save(f"betha_1/msd_beta_binomial_{str(alpha)[0]}_{str(alpha)[-1]}_{str(q)[0]}{str(q)[-1]}.npy", msd)
+    for alpha in [1.2,1.5]:
+        msd = np.load(f"betha_1/msd_beta_binomial_{str(alpha)[0]}_{str(alpha)[-1]}_v2.npy")
         t = np.arange(0, len(msd))
         # msd_theory = ((1 - q) / q) * (np.log(q*t) + 0.577215664902)  # Constante de Euler-Mascheroni
         msd_theory = np.log(q*t)*alpha*(1-q)/(q) + alpha*(alpha-1)*(1-q)/(t*q**2)
