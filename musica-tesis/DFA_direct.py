@@ -536,6 +536,7 @@ def main(time_series, method, binlog=False, grado_polinomio=4, N_surrogates=100,
     if graficar:
         plt.xlabel('log(s)', fontsize=8)
         plt.ylabel('log(F(s))', fontsize=8)
+        plt.ylim(0.6,2.2)
         plt.title(r'DFA ($\alpha$'+ f'={coeficientes[0]:.4f} )', fontsize=8)
         plt.legend(loc=0, fontsize=7)
         plt.show()
