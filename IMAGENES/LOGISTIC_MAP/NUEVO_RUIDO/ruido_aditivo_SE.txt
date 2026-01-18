@@ -1,0 +1,143 @@
+"""
+MULTIPLE
+"""
+
+import numpy as np
+import matplotlib.pyplot as plt
+from funciones import indice_J, permutation_entropy, angulos_alpha, entropia_shannon
+
+
+def logistic_map(r, x):
+    return r * x * (1 - x)
+
+
+def ruido_uniforme(size, var):
+    # Ruido blanco uniforme centrado con varianza ~ var
+    a = np.sqrt(3 * var)
+    return np.random.uniform(-a, a, size)
+
+
+def bifurcacion_con_J(
+    r_min=3.0,
+    r_max=4.0,
+    resolucion_r=300,
+    longitud_serie=2000,
+    iter_descartar=4000,
+    tipo_ruido="iterativo",  # "iterativo" o "aditivo"
+    graficar=True
+):
+    medida_por_ruido = []
+    ruidos = [1e-10,1e-8,1e-7,1e-6,1e-5,1e-4]
+    colores = ['gray','#2ECC71','purple', '#FFD700','#1ABC9C','#E91E63']
+    for var_ruido in [0]:
+        medida_por_iteracion = []
+        for _ in range(1):
+            r_vals_plot = []
+            x_vals_plot = []
+
+            r_vals_J = []
+            J_vals = []
+
+            for r in np.linspace(r_min, r_max, resolucion_r):
+                if r == 3.0:
+                    continue
+                x = 0.6
+
+                # --- Transitorio ---
+                for _ in range(iter_descartar):
+                    x = np.clip(x, 0, 1)
+                    x = logistic_map(r, x)
+                    if tipo_ruido == "iterativo":
+                        x += ruido_uniforme(1, var_ruido)[0]
+
+                # --- Serie ---
+                serie = np.empty(longitud_serie)
+                for i in range(longitud_serie):
+                    x = np.clip(x, 0, 1)
+                    x = logistic_map(r, x)
+                    if tipo_ruido == "iterativo":
+                        x += ruido_uniforme(1, var_ruido)[0]
+                    serie[i] = x
+
+                if tipo_ruido == "aditivo":
+                    serie += ruido_uniforme(longitud_serie, var_ruido)
+
+                # Guardar para bifurcación
+                r_vals_plot.extend([r] * longitud_serie)
+                x_vals_plot.extend(serie)
+
+                # # Índice J
+                # J = indice_J(serie,False)
+                # J = permutation_entropy(serie, m=5)
+                angulos = angulos_alpha(serie,False) 
+                J = entropia_shannon(angulos,False)
+                r_vals_J.append(r)
+                J_vals.append(J)
+            # medida_por_iteracion.append(J_vals)
+        # medida_por_ruido.append(np.mean(medida_por_iteracion, axis=0))
+        # np.save(f'data/RUIDOS/aditivo_shannon/S_por_ruido_{str(var_ruido)}.npy', np.mean(medida_por_iteracion, axis=0))
+        # print(var_ruido)
+    # J_vals = np.mean(np.load(f'data/ruidos_promedios/J_por_ruido_{str(var_ruido)}.npy'),axis = 0)
+
+    if graficar:
+        fig, ax1 = plt.subplots(figsize=(10, 6))
+
+        # Bifurcación
+        ax1.plot(r_vals_plot, x_vals_plot, ',', alpha=0.5)
+        ax1.set_xlabel('r')
+        ax1.set_ylabel('x')
+        ax1.set_xlim(r_min, r_max)
+        ax1.set_ylim(0, 1)
+
+        fig.tight_layout()  
+        major_ticks_x = np.linspace(3, 4, 6)  # 0.0, 0.2, ..., 1.0
+        minor_ticks_x = np.linspace(3, 4, 21)  # Ticks secundarios
+
+        major_ticks_y = np.linspace(0, 1, 6)  # -1, -0.5, 0, 0.5, 1.0
+        minor_ticks_y = np.linspace(0, 1, 21)  # Ticks secundarios
+
+        # Configurar los ticks del eje X
+        plt.xticks(major_ticks_x)  # Solo etiquetar los ticks principales
+        plt.gca().set_xticks(minor_ticks_x, minor=True)  # Agregar ticks menores sin etiquetas
+
+        # Configurar los ticks del eje Y
+        plt.yticks(major_ticks_y)  # Solo etiquetar los ticks principales
+        plt.gca().set_yticks(minor_ticks_y, minor=True)  # Agregar ticks menores sin etiquetas
+
+        # Activar la cuadrícula
+        plt.grid(which='major', linestyle='-', linewidth=0.5, alpha=0.5)  # Para ticks principales
+        plt.grid(which='minor', linestyle='-', linewidth=0.5, alpha=0.5)  # Para ticks secundarios
+
+
+        # Índice J
+        # ax2 = ax1.twinx()
+        ax1.plot(r_vals_J, J_vals, color='black', alpha = 1, label = 'SE sin ruido')
+        for i,var_ruido in enumerate(ruidos):
+            medida_por_ruido.append(np.load(f'data/RUIDOS/aditivo_shannon/S_por_ruido_{str(var_ruido)}.npy'))
+            ax1.plot(r_vals_J, medida_por_ruido[i], color=colores[i] , alpha = 1, label= f'Varianza = {var_ruido}')
+            # ax1.annotate(f'Varianza = {ruido}', xy=(r_vals_J[len(r_vals_J)//4], medida_por_ruido[i][len(r_vals_J)//4]), xytext=(10, medida_por_ruido[i][-1]),
+                        #  textcoords='offset points', ha='left', va='center')
+
+        ax1.set_ylabel('SE', rotation = 360)
+        # ax2.set_yscale('log')
+        # ax2.set_xscale('log')
+        ax1.tick_params(axis='y')
+
+        ax1.legend(loc='lower left')
+        plt.title(
+            f"Mapa logístico + shannon entropy (alphas)\n"
+            f"Ruido {tipo_ruido}, varianza variable"
+        )
+        plt.show()
+
+    return np.array(r_vals_J), np.array(J_vals), np.array(r_vals_plot), np.array(x_vals_plot)
+
+
+r_J, J, r_bif, x_bif = bifurcacion_con_J(
+    r_min=3.0,
+    r_max=4.0,
+    resolucion_r=300,
+    longitud_serie=5000,
+    iter_descartar=1000,
+    tipo_ruido="aditivo",  # o "aditivo"
+    graficar=True)
