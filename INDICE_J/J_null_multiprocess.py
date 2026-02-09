@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import multiprocessing as mp
 from funciones import mejor_vector, calcular_angulos, permutation_entropy, entropia_shannon, interpolador, interpolador_constante
-
+from gamma_4 import correlation_integrals, gamma_index_jacobs, gamma
 
 def caminata_aleatoria(N):
     ff1 = np.random.uniform(-np.pi, np.pi, N)
@@ -19,10 +19,11 @@ def caminata_aleatoria(N):
 def main(X):
     vectores = caminata_aleatoria(X)
     angulos = calcular_angulos(vectores)
-    e = np.exp(angulos * 1j)
-    e1 = np.sum(e) / len(angulos)
-    J = 1.0 - np.abs(e1.real)
-    return J
+    # e = np.exp(angulos * 1j)
+    # e1 = np.sum(e) / len(angulos)
+    # J = 1.0 - np.abs(e1.real)
+    C, _ = gamma_index_jacobs(angulos,6)
+    return C[-1]
 
 def calcular_J_N(N):
     J_N_min = np.ones(20)
@@ -57,8 +58,9 @@ if __name__ == '__main__':
     N3 = np.arange(2000, 10000, 500)
     N4 = np.arange(10000, 100000, 10000)
     N5 = np.arange(100000, 200000, 20000)
-    N6 = np.array([500_000,1000000])
-    Ns = np.concatenate((N0, N1, N2, N3, N4, N5))
+    N6 = np.array([500_000, 1000000])
+    # Ns = np.concatenate((N0, N1, N2, N3, N4, N5))
+    Ns = np.concatenate((N0, N1, N2))
 
     # Usa multiprocessing para calcular J_min en paralelo
     with mp.Pool(processes=mp.cpu_count()) as pool:

@@ -230,7 +230,7 @@ def angulos_alpha(seriex, seriey, tau = 1):
 
 # Entropia de Shannon
 
-def entropia_shannon(x, discreto, bins=100):
+def entropia_shannon(x, discreto, bins=None):
     x = np.asarray(x)
     x = x[np.isfinite(x)]
     if x.size == 0:
@@ -247,8 +247,10 @@ def entropia_shannon(x, discreto, bins=100):
     else:
         # Caso continuo: estimar densidad mediante histograma
         try:
+            bins = 1 + int(np.log2(len(x)))  # Sturges
             hist, _ = np.histogram(x, bins=bins, density=True)
         except Exception:
+            print("error: retorna nan")
             return np.nan
         hist = hist[hist > 0]
         if hist.size == 0:
@@ -258,3 +260,4 @@ def entropia_shannon(x, discreto, bins=100):
         H_norm = H / np.log2(bins)
     
     return H_norm
+
