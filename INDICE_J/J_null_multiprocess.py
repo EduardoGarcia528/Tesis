@@ -22,8 +22,10 @@ def main(X):
     # e = np.exp(angulos * 1j)
     # e1 = np.sum(e) / len(angulos)
     # J = 1.0 - np.abs(e1.real)
-    C, _ = gamma_index_jacobs(angulos,6)
-    return C[-1]
+    # C, g = gamma_index_jacobs(angulos,3)
+    # H = entropia_shannon(angulos,False)
+    PE = permutation_entropy(angulos,m=8,tau=1)
+    return PE
 
 def calcular_J_N(N):
     J_N_min = np.ones(20)
@@ -32,7 +34,7 @@ def calcular_J_N(N):
     for i in range(20):
         subjects = np.zeros(100)
         for j in range(100):
-            subjects[j] = main(N=N)
+            subjects[j] = main(X=N)
             # entropia_shannon(np.diff(angulos))
 
         J_N_min[i] = np.min(subjects)
@@ -55,13 +57,13 @@ if __name__ == '__main__':
     N0 = np.arange(10, 20, 1)
     N1 = np.arange(20, 100, 5)
     N2 = np.arange(100, 2000, 100)
-    N3 = np.arange(2000, 10000, 500)
+    N3 = np.arange(2000, 10000, 1000)
     N4 = np.arange(10000, 100000, 10000)
     N5 = np.arange(100000, 200000, 20000)
     N6 = np.array([500_000, 1000000])
     # Ns = np.concatenate((N0, N1, N2, N3, N4, N5))
-    Ns = np.concatenate((N0, N1, N2))
-
+    Ns = np.concatenate((N0, N1, N2)) 
+ 
     # Usa multiprocessing para calcular J_min en paralelo
     with mp.Pool(processes=mp.cpu_count()) as pool:
         resultados = pool.map(calcular_J_N, Ns)
@@ -77,19 +79,19 @@ if __name__ == '__main__':
     for i, der in enumerate(derivadas):
         Js_min_interp = np.concatenate((
             Js_min_interp,
-            interpolador(J_min[i:i+2], 'lineal', der - 1)[1][1:]
+            interpolador(J_min[i:i+2], 'lineal', der - 1)[1:]
         ))
         Js_mean_interp = np.concatenate((
             Js_mean_interp,
-            interpolador(J_mean[i:i+2], 'lineal', der - 1)[1][1:]
+            interpolador(J_mean[i:i+2], 'lineal', der - 1)[1:]
         ))
         Js_std_interp = np.concatenate((
             Js_std_interp,
-            interpolador(J_std[i:i+2], 'lineal', der - 1)[1][1:]
+            interpolador(J_std[i:i+2], 'lineal', der - 1)[1:]
         ))
 
     print(len(interpolador_constante(Ns)), len(Js_min_interp))
 
     J_null_continuo = np.vstack((interpolador_constante(Ns), Js_min_interp,Js_mean_interp,Js_std_interp))
 
-    np.save('new_data/J_null_continuo.npy' ,J_null_continuo)
+    np.save('new_data/PE_null.npy' ,J_null_continuo)

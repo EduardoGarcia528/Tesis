@@ -1,6 +1,8 @@
 import numpy as np
 from numba import njit
 
+# maxd te da maxd+2 valores de C, el primero es C[0] = 1.0, el ultimo es C[maxd+1]
+# max_gamma te da max_gamma valores de g, el primero es g[0] = gamma(C,1), el ultimo es g[max_gamma-1] = gamma(C,max_gamma)
 
 @njit
 def correlation_integrals(x, max_d, eps):
@@ -34,7 +36,7 @@ def correlation_integrals(x, max_d, eps):
 def gamma(C, j):
     return 1.0 - (C[j] ** 2) / (C[j - 1] * C[j + 1])
 
-def gamma_index_jacobs(data, max_gamma, mu = 5.0):
+def gamma_index_jacobs(data, max_gamma, mu = 5.0): 
     max_d = max_gamma + 1
     C = correlation_integrals(data, max_d, np.std(data) / mu)
     g = np.zeros(max_gamma)
