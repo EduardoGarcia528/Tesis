@@ -171,6 +171,7 @@ for filename in os.listdir(folder):
 
         plt.plot(melodia, label="Original")
         plt.plot(markov_melody, label="Markov k="+str(k))
+        plt.xlim(0,500)
         plt.title(f"Melody Comparison: {filename} (k={k})")
         plt.legend()
         plt.savefig(r"D:/La formula secreta de la cangreburger/Documentos/uaem/octavo semestre/Tesis/Audios/data/new_scores/images/"+f"{filename}_time_series_k_3.png")
