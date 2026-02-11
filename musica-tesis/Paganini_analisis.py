@@ -147,8 +147,9 @@ def plot_comparison(meas_orig, meas_markov, filename, maxlag):
     axs[0,0].legend(loc="upper right", fontsize=8)
     fig.suptitle(filename, fontsize=14)
     plt.tight_layout()
-    # plt.savefig(r"D:/La formula secreta de la cangreburger/Documentos/uaem/octavo semestre/Tesis/Audios/data/new_scores/images/"+f"{filename}_comparison_k_1.png")
-    plt.show()
+    plt.savefig(r"D:/La formula secreta de la cangreburger/Documentos/uaem/octavo semestre/Tesis/Audios/data/new_scores/images/"+f"{filename}_comparison_k_3.png")
+    # plt.show()
+    plt.close()
 
 
 folder = r"D:/La formula secreta de la cangreburger/Documentos/uaem/octavo semestre/Tesis/Audios/data/new_scores/melodies"
@@ -172,7 +173,9 @@ for filename in os.listdir(folder):
         plt.plot(markov_melody, label="Markov k="+str(k))
         plt.title(f"Melody Comparison: {filename} (k={k})")
         plt.legend()
-        plt.show()
+        plt.savefig(r"D:/La formula secreta de la cangreburger/Documentos/uaem/octavo semestre/Tesis/Audios/data/new_scores/images/"+f"{filename}_time_series_k_3.png")
+        # plt.show()
+        plt.close()
 
         meas_orig = compute_measures(melodia, maxlag=20)
         meas_markov = compute_measures(markov_melody, maxlag=20)
