@@ -223,7 +223,7 @@ def mxl_to_wav(archivo_xml = 'partitura.xml'):
 from mxl_to_numpy import process_notes_by_voice # Nx6
 from regla_simple_multivoz import extract_melody_multi_voices # Nx6
 
-num = '25'
+num = '1'
 # partitura = r'data/moonlight_sonata_3rd_movement.mxl'
 partitura = r'data/violin-concerto-in-d-minor-op-47-jean-sibelius-sibelius-violin-concerto-piano-and-violin.mxl'
 partitura = r'data/fur-elise-violin.mxl'
@@ -258,7 +258,7 @@ plt.plot(serie1d, marker = '.')
 plt.xlabel('t')
 plt.ylabel('MIDI')
 plt.show()
-np.save(f'data/new_scores/melodies/{num}.npy',serie1d)
+# np.save(f'data/new_scores/melodies/{num}.npy',serie1d)
 mxl_file = 'partitura.xml'
 
 generador_partitura([melodia],tempo=120) # Nx6

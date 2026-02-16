@@ -230,7 +230,7 @@ def angulos_alpha(seriex, seriey, tau = 1):
 
 # Entropia de Shannon
 
-def entropia_shannon(x, discreto, bins=100):
+def entropia_shannon(x, discreto, bins=None):
     x = np.asarray(x)
     x = x[np.isfinite(x)]
     if x.size == 0:
