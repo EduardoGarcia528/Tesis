@@ -260,3 +260,43 @@ def entropia_shannon(x, discreto, bins=None):
         H_norm = H / np.log2(bins)
     
     return H_norm
+
+#Ruido de Colores 
+
+def colored_noise(N, color="white", fs=1.0, seed=None, normalize=True):
+    if seed is not None:
+        np.random.seed(seed)
+
+    # Mapeo color → beta
+    beta_map = {
+        "violet": -2, "violeta": -2,
+        "blue": -1, "azul": -1,
+        "white": 0, "blanco": 0,
+        "pink": 1, "rosa": 1,
+        "brown": 2, "cafe": 2, "café": 2
+    }
+
+    if color not in beta_map:
+        raise ValueError("Color no reconocido")
+
+    beta = beta_map[color]
+
+    # Frecuencias positivas
+    freqs = np.fft.rfftfreq(N, d=1/fs)
+    freqs[0] = freqs[1]  # evitar división por cero
+
+    # Ruido blanco en frecuencia (fase aleatoria)
+    phases = np.exp(2j * np.pi * np.random.rand(len(freqs)))
+
+    # Amplitud espectral ∝ 1/f^{beta/2}
+    amplitude = 1.0 / (freqs ** (beta / 2.0))
+
+    spectrum = amplitude * phases
+
+    # Transformada inversa
+    x = np.fft.irfft(spectrum, n=N)
+
+    if normalize:
+        x = (x - np.mean(x)) / np.std(x)
+
+    return x
