@@ -38,7 +38,7 @@ def correlation_integrals(x, max_d, eps):
 
 
 def gamma(C, j):
-    return 1.0 - (C[j] ** 2) / (C[j - 1] * C[j + 1])
+    return 1-(C[j] ** 2) / (C[j - 1] * C[j + 1])
 
 def gamma_index_jacobs(data, max_gamma, mu = 5.0):
     max_d = max_gamma + 1
