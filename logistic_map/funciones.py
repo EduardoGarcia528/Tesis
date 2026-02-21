@@ -247,7 +247,8 @@ def entropia_shannon(x, discreto, bins=None):
     else:
         # Caso continuo: estimar densidad mediante histograma
         try:
-            bins = 1 + int(np.log2(len(x)))  # Sturges
+            if bins is None:
+                bins = 1 + int(np.log2(len(x)))  # Sturges
             hist, _ = np.histogram(x, bins=bins, density=True)
         except Exception:
             print("error: retorna nan")
@@ -300,3 +301,64 @@ def colored_noise(N, color="white", fs=1.0, seed=None, normalize=True):
         x = (x - np.mean(x)) / np.std(x)
 
     return x
+
+def random_array(vocabulario, N, q, m, seed=None):
+    """
+    Genera una serie de tiempo discreta de longitud N a partir de un vocabulario finito.
+    
+    Dinámica:
+    - Con probabilidad q: repite m veces el último valor agregado (persistencia).
+    - Con probabilidad (1-q): elige un valor distinto al último del vocabulario.
+    
+    Parámetros
+    ----------
+    vocabulario : array-like
+        Conjunto finito de valores posibles (por ejemplo notas MIDI, enteros, etc.)
+    N : int
+        Longitud deseada de la serie
+    q : float
+        Probabilidad de repetir el último valor m veces (0 <= q <= 1)
+    m : int
+        Número de repeticiones cuando ocurre persistencia (m >= 1)
+    seed : int o None
+        Semilla para reproducibilidad
+    
+    Retorna
+    -------
+    np.ndarray
+        Serie de tiempo discreta de longitud N
+    """
+    rng = np.random.default_rng(seed)
+    vocabulario = np.array(vocabulario)
+    
+    if len(vocabulario) == 0:
+        raise ValueError("El vocabulario no puede estar vacío.")
+    if not (0 <= q <= 1):
+        raise ValueError("q debe estar entre 0 y 1.")
+    if m < 1:
+        raise ValueError("m debe ser >= 1.")
+    
+    # Inicialización: primer símbolo completamente aleatorio
+    serie = [rng.choice(vocabulario)]
+    
+    while len(serie) < N:
+        u = rng.random()
+        
+        if u < q:
+            # Repetir el último valor m veces (truncando si se excede N)
+            ultimo = serie[-1]
+            repeticiones = min(m, N - len(serie))
+            serie.extend([ultimo] * repeticiones)
+        else:
+            # Elegir un valor distinto al último
+            ultimo = serie[-1]
+            candidatos = vocabulario[vocabulario != ultimo]
+            
+            # Si el vocabulario tiene un solo elemento, necesariamente se repite
+            if len(candidatos) == 0:
+                serie.append(ultimo)
+            else:
+                nuevo = rng.choice(candidatos)
+                serie.append(nuevo)
+    
+    return np.array(serie)

@@ -247,7 +247,8 @@ def entropia_shannon(x, discreto, bins=None):
     else:
         # Caso continuo: estimar densidad mediante histograma
         try:
-            bins = 1 + int(np.log2(len(x)))  # Sturges
+            if bins is None:
+                bins = 1 + int(np.log2(len(x)))  # Sturges
             hist, _ = np.histogram(x, bins=bins, density=True)
         except Exception:
             print("error: retorna nan")
@@ -261,3 +262,177 @@ def entropia_shannon(x, discreto, bins=None):
     
     return H_norm
 
+#Ruido de Colores 
+
+def colored_noise(N, color="white", fs=1.0, seed=None, normalize=True):
+    if seed is not None:
+        np.random.seed(seed)
+
+    # Mapeo color → beta
+    beta_map = {
+        "violet": -2, "violeta": -2,
+        "blue": -1, "azul": -1,
+        "white": 0, "blanco": 0,
+        "pink": 1, "rosa": 1,
+        "brown": 2, "cafe": 2, "café": 2
+    }
+
+    if color not in beta_map:
+        raise ValueError("Color no reconocido")
+
+    beta = beta_map[color]
+
+    # Frecuencias positivas
+    freqs = np.fft.rfftfreq(N, d=1/fs)
+    freqs[0] = freqs[1]  # evitar división por cero
+
+    # Ruido blanco en frecuencia (fase aleatoria)
+    phases = np.exp(2j * np.pi * np.random.rand(len(freqs)))
+
+    # Amplitud espectral ∝ 1/f^{beta/2}
+    amplitude = 1.0 / (freqs ** (beta / 2.0))
+
+    spectrum = amplitude * phases
+
+    # Transformada inversa
+    x = np.fft.irfft(spectrum, n=N)
+
+    if normalize:
+        x = (x - np.mean(x)) / np.std(x)
+
+    return x
+
+def random_array(vocabulario, N, q, l, seed=None):
+    """
+    Genera una serie de tiempo discreta de longitud N a partir de un vocabulario finito.
+    
+    Dinámica:
+    - Con probabilidad q: repite m veces el último valor agregado (persistencia).
+    - Con probabilidad (1-q): elige un valor distinto al último del vocabulario.
+    
+    Parámetros
+    ----------
+    vocabulario : array-like
+        Conjunto finito de valores posibles (por ejemplo notas MIDI, enteros, etc.)
+    N : int
+        Longitud deseada de la serie
+    q : float
+        Probabilidad de repetir el último valor m veces (0 <= q <= 1)
+    l : int
+        Número de repeticiones cuando ocurre persistencia (l >= 1)
+    seed : int o None
+        Semilla para reproducibilidad
+    
+    Retorna
+    -------
+    np.ndarray
+        Serie de tiempo discreta de longitud N
+    """
+    rng = np.random.default_rng(seed)
+    vocabulario = np.array(vocabulario)
+    
+    if len(vocabulario) == 0:
+        raise ValueError("El vocabulario no puede estar vacío.")
+    if not (0 <= q <= 1):
+        raise ValueError("q debe estar entre 0 y 1.")
+    if l < 1:
+        raise ValueError("l debe ser >= 1.")
+    
+    # Inicialización: primer símbolo completamente aleatorio
+    serie = [rng.choice(vocabulario)]
+    
+    while len(serie) < N:
+        u = rng.random()
+        
+        if u < q:
+            # Repetir el último valor l veces (truncando si se excede N)
+            ultimo = serie[-1]
+            repeticiones = min(l, N - len(serie))
+            serie.extend([ultimo] * repeticiones)
+        else:
+            # Elegir un valor distinto al último
+            ultimo = serie[-1]
+            candidatos = vocabulario[vocabulario != ultimo]
+            
+            # Si el vocabulario tiene un solo elemento, necesariamente se repite
+            if len(candidatos) == 0:
+                serie.append(ultimo)
+            else:
+                nuevo = rng.choice(candidatos)
+                serie.append(nuevo)
+    
+    return np.array(serie)
+
+def vocabulario_midi_centrado(k, seed=None, aleatorio=False):
+    """
+    Genera un array de longitud k con valores MIDI únicos, centrados en Do central (60).
+    
+    Reglas:
+    - k = 1 → empieza en Do central (60)
+    - k <= 75 → solo teclas blancas (notas naturales), cercanas a 60
+    - 75 < k <= 128 → añade progresivamente teclas negras (cromáticas)
+      también por cercanía a 60 hasta cubrir todo el rango MIDI
+    
+    Parámetros
+    ----------
+    k : int
+        Tamaño del vocabulario (1 <= k <= 128)
+    seed : int o None
+        Semilla para reproducibilidad (si aleatorio=True)
+    aleatorio : bool
+        Si True, mezcla las notas añadidas (manteniendo 60 como primer elemento)
+    
+    Retorna
+    -------
+    np.ndarray
+        Array de longitud k con valores MIDI únicos
+    """
+    if not (1 <= k <= 128):
+        raise ValueError("k debe estar en el rango [1, 128].")
+    
+    do_central = 60
+    naturales_mod12 = {0, 2, 4, 5, 7, 9, 11}  # teclas blancas
+    
+    # Todas las notas MIDI
+    midi_total = np.arange(128)
+    
+    # Separar naturales (blancas) y cromáticas (negras)
+    midi_naturales = np.array(
+        [m for m in midi_total if (m % 12) in naturales_mod12]
+    )
+    midi_cromaticas = np.array(
+        [m for m in midi_total if (m % 12) not in naturales_mod12]
+    )
+    
+    # Ordenar ambas por cercanía al Do central
+    orden_nat = np.argsort(np.abs(midi_naturales - do_central))
+    orden_crom = np.argsort(np.abs(midi_cromaticas - do_central))
+    
+    naturales_ordenadas = midi_naturales[orden_nat]
+    cromaticas_ordenadas = midi_cromaticas[orden_crom]
+    
+    # Construcción progresiva del vocabulario
+    if k <= len(naturales_ordenadas):  # k <= 75
+        seleccion = naturales_ordenadas[:k]
+    else:
+        # Tomar todas las naturales primero (75)
+        seleccion = list(naturales_ordenadas)
+        restantes = k - len(naturales_ordenadas)
+        
+        # Añadir cromáticas por cercanía al Do central
+        seleccion.extend(cromaticas_ordenadas[:restantes])
+        seleccion = np.array(seleccion)
+    
+    # Asegurar que el primer elemento sea exactamente 60 (si está en el conjunto)
+    if do_central in seleccion:
+        idx = np.where(seleccion == do_central)[0][0]
+        seleccion[0], seleccion[idx] = seleccion[idx], seleccion[0]
+    
+    # Mezcla opcional (manteniendo C4 al inicio)
+    if aleatorio and k > 1:
+        rng = np.random.default_rng(seed)
+        resto = seleccion[1:].copy()
+        rng.shuffle(resto)
+        seleccion = np.concatenate(([do_central], resto))
+    
+    return seleccion

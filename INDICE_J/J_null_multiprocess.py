@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import multiprocessing as mp
-from funciones import mejor_vector, calcular_angulos, permutation_entropy, entropia_shannon, interpolador, interpolador_constante, indice_J
+from funciones import mejor_vector, calcular_angulos, permutation_entropy, entropia_shannon, interpolador, interpolador_constante, indice_J, random_array, angulos_alpha, vocabulario_midi_centrado
 from gamma_4 import correlation_integrals, gamma_index_jacobs, gamma
 
 def caminata_aleatoria(N):
@@ -19,16 +19,15 @@ def caminata_aleatoria(N):
 def main(X):
     # vectores = caminata_aleatoria(X)
     # angulos = calcular_angulos(vectores)
-    # e = np.exp(angulos * 1j)
-    # e1 = np.sum(e) / len(angulos)
-    # J = 1.0 - np.abs(e1.real)
     # C, g = gamma_index_jacobs(angulos,3)
-    # H = entropia_shannon(angulos,False)
-    serie = np.random.uniform(0,1,X)
-    serie = interpolador(serie,'lineal',5)
-    J = indice_J(serie,False)
-    # PE = permutation_entropy(serie,m=8,tau=1)
-    return J
+    # serie = np.random.uniform(0,1,X)
+    A = vocabulario_midi_centrado(k=10)
+    serie = random_array(A,X,0.4,3)
+    # angulos = angulos_alpha(serie,False)
+    # J = indice_J(serie,False)
+    PE = permutation_entropy(serie,m=8,tau=1)
+    # H = entropia_shannon(serie,False)
+    return PE
 
 def calcular_J_N(N):
     J_N_min = np.ones(20)
@@ -98,4 +97,4 @@ if __name__ == '__main__':
 
     J_null_continuo = np.vstack((interpolador_constante(Ns), Js_min_interp,Js_mean_interp,Js_std_interp))
 
-    np.save('new_data/J_interp_null.npy' ,J_null_continuo)
+    np.save('new_data/H_null.npy' ,J_null_continuo)
