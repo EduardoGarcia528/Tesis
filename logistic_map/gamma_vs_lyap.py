@@ -1,0 +1,145 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from funciones import indice_J, permutation_entropy, angulos_alpha, entropia_shannon, interpolador
+from gamma_4 import gamma_index_jacobs
+
+def logistic_map(r, x):
+    return r * x * (1 - x)
+
+
+def ruido_uniforme(size, var):
+    # Ruido blanco uniforme centrado con varianza ~ var
+    a = np.sqrt(3 * var)
+    return np.random.uniform(-a, a, size)
+
+
+def bifurcacion_con_J(
+    r_min=3.0,
+    r_max=4.0,
+    max_gamma=4,
+    mu=20,
+    resolucion_r=300,
+    longitud_serie=2000,
+    iter_descartar=4000,
+    var_ruido=1e-7,
+    tipo_ruido="iterativo",  # "iterativo" o "aditivo"
+    graficar=True
+):
+    r_vals_plot = []
+    x_vals_plot = []
+
+    r_vals_J = []
+    J_vals = []
+    g_vals = []
+    gammas = np.zeros((max_gamma ,resolucion_r))
+
+    for r in np.linspace(r_min, r_max, resolucion_r):
+        if r == 3.0:
+            continue
+        x = 0.6
+
+        # --- Transitorio ---
+        for _ in range(iter_descartar):
+            x = np.clip(x, 0, 1)
+            x = logistic_map(r, x)
+            if tipo_ruido == "iterativo":
+                x += ruido_uniforme(1, var_ruido)[0]
+
+        # --- Serie ---
+        serie = np.empty(longitud_serie)
+        for i in range(longitud_serie):
+            x = np.clip(x, 0, 1)
+            x = logistic_map(r, x)
+            if tipo_ruido == "iterativo":
+                x += ruido_uniforme(1, var_ruido)[0]
+            serie[i] = x
+
+        if tipo_ruido == "aditivo":
+            serie += ruido_uniforme(longitud_serie, var_ruido)
+
+        # Guardar para bifurcación
+        r_vals_plot.extend([r] * longitud_serie)
+        x_vals_plot.extend(serie)
+
+        # # Índice J
+        # J = indice_J(serie,False)
+        # J = permutation_entropy(serie, m=5)
+        angulos = angulos_alpha(serie,False)
+        # J = entropia_shannon(angulos,discreto= False,bins=30)
+        C, g = gamma_index_jacobs(angulos,max_gamma,mu)
+        J = indice_J(serie,False)
+        r_vals_J.append(r)  
+        g_vals.append(g[-1])
+        J_vals.append(J)
+        # J_vals.append(np.sum(J))
+    # J_vals = np.mean(np.load(f'data/ruidos_promedios/J_por_ruido_{str(var_ruido)}.npy'),axis = 0
+
+    if graficar:
+        fig, ax1 = plt.subplots(figsize=(10, 6))
+
+
+        # Índice J
+        # ax1.invert_yaxis()
+        ax1.axvline(x=3.5699456718471634, color='gray', linestyle='--', label=r'$r_\infty = 3.56994...$')
+        y_min,y_max = np.round(np.min(g_vals),3), np.round(np.max(g_vals),3)
+        ax1.plot(r_vals_J[1:], np.abs(np.diff(g_vals)), color='red',marker='.', lw=0.5,ms=0.5, label=r'$\gamma^\alpha$')
+        ax1.set_ylabel(r'$S^\alpha$', rotation= 360)
+        # ax1.set_yscale('log')
+        # ax1.set_xscale('log')
+        ax1.tick_params(axis='y') 
+        ax1.set_xlabel('r')
+        ax1.legend(loc='upper left')
+        
+        fig.tight_layout()  
+        # major_ticks_x = np.linspace(r_min, r_max, 6)  # 0.0, 0.2, ..., 1.0
+        # minor_ticks_x = np.linspace(r_min, r_max, 21)  # Ticks secundarios
+
+        # major_ticks_y = np.linspace(y_min, y_max, 6)  # -1, -0.5, 0, 0.5, 1.0
+        # minor_ticks_y = np.linspace(y_min, y_max, 21)  # Ticks secundarios
+
+        # # Configurar los ticks del eje X
+        # plt.xticks(major_ticks_x)  # Solo etiquetar los ticks principales
+        # plt.gca().set_xticks(minor_ticks_x, minor=True)  # Agregar ticks menores sin etiquetas
+
+        # # Configurar los ticks del eje Y
+        # plt.yticks(major_ticks_y)  # Solo etiquetar los ticks principales
+        # plt.gca().set_yticks(minor_ticks_y, minor=True)  # Agregar ticks menores sin etiquetas
+
+        # # Activar la cuadrícula
+        # plt.grid(which='major', linestyle='-', linewidth=0.5, alpha=0.5)  # Para ticks principales
+        # plt.grid(which='minor', linestyle='-', linewidth=0.5, alpha=0.5)  # Para ticks secundarios
+
+
+
+        # Bifurcación
+        ax2 = ax1.twinx()
+        # ax2.plot(r_vals_plot, x_vals_plot, '.', ms=0.1, alpha=0.2)
+        ax2.plot(r_vals_J, J_vals, color='blue',marker='.', lw=0.5, ms = 0.5,label=r'$J$ index')
+        ax2.set_xlabel('r')
+        ax2.set_ylabel('x')
+        ax2.legend(loc='upper right')
+        ax2.set_xlim(r_min, r_max)
+        ax2.set_ylim(0, 1)
+
+        plt.title(
+            f"Mapeo logístico +"+ r"$\gamma^\alpha$"
+            # f"Ruido {tipo_ruido}, varianza = {var_ruido}"
+        )
+
+        plt.tight_layout()
+        plt.show()
+
+    return np.array(r_vals_J), np.array(J_vals), np.array(r_vals_plot), np.array(x_vals_plot)
+
+
+r_J, J, r_bif, x_bif = bifurcacion_con_J(
+    r_min=3.569,
+    r_max=3.571,
+    max_gamma=3,
+    mu=3, 
+    resolucion_r=1000,
+    longitud_serie=2000,
+    iter_descartar=1000,
+    var_ruido=1e-04,
+    tipo_ruido="no",  # o "aditivo"
+    graficar=True)
