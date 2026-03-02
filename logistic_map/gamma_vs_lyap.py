@@ -1,8 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from numba import njit
 from funciones import indice_J, permutation_entropy, angulos_alpha, entropia_shannon, interpolador
 from gamma_4 import gamma_index_jacobs
 
+@njit
 def logistic_map(r, x):
     return r * x * (1 - x)
 
@@ -33,10 +35,10 @@ def bifurcacion_con_J(
     g_vals = []
     gammas = np.zeros((max_gamma ,resolucion_r))
 
-    for r in np.linspace(r_min, r_max, resolucion_r):
+    for r in np.sort(np.concatenate((np.linspace(r_min, r_max, resolucion_r), np.array([3.569945671, 3.569945672, 3.569945673])))):
         if r == 3.0:
             continue
-        x = 0.6
+        x = 0.5
 
         # --- Transitorio ---
         for _ in range(iter_descartar):
@@ -65,12 +67,13 @@ def bifurcacion_con_J(
         # J = indice_J(serie,False)
         # J = permutation_entropy(serie, m=5)
         angulos = angulos_alpha(serie,False)
-        # J = entropia_shannon(angulos,discreto= False,bins=30)
-        C, g = gamma_index_jacobs(angulos,max_gamma,mu)
-        J = indice_J(serie,False)
+        J = entropia_shannon(angulos,discreto= False,bins=None)
+        # C, g = gamma_index_jacobs(angulos,max_gamma,mu)
+        # J = indice_J(serie,False)
         r_vals_J.append(r)  
-        g_vals.append(g[-1])
+        # g_vals.append(g[-1])
         J_vals.append(J)
+        # print(r) 
         # J_vals.append(np.sum(J))
     # J_vals = np.mean(np.load(f'data/ruidos_promedios/J_por_ruido_{str(var_ruido)}.npy'),axis = 0
 
@@ -80,9 +83,10 @@ def bifurcacion_con_J(
 
         # Índice J
         # ax1.invert_yaxis()
-        ax1.axvline(x=3.5699456718471634, color='gray', linestyle='--', label=r'$r_\infty = 3.56994...$')
-        y_min,y_max = np.round(np.min(g_vals),3), np.round(np.max(g_vals),3)
-        ax1.plot(r_vals_J[1:], np.abs(np.diff(g_vals)), color='red',marker='.', lw=0.5,ms=0.5, label=r'$\gamma^\alpha$')
+        ax1.axvline(x=3.569945672, color='gray', linestyle='--', label=r'$r_\infty = 3.56994...$')
+        # y_min,y_max = np.round(np.min(g_vals),3), np.round(np.max(g_vals),3)
+        # np.save('data/gamma2v2_r_infty.npy', np.array(g_vals))
+        # ax1.plot(r_vals_J[1:], np.abs(np.diff(g_vals)), color='red',marker='.', lw=0.5,ms=2.0, label=r'$\gamma^\alpha$')
         ax1.set_ylabel(r'$S^\alpha$', rotation= 360)
         # ax1.set_yscale('log')
         # ax1.set_xscale('log')
@@ -113,8 +117,8 @@ def bifurcacion_con_J(
 
         # Bifurcación
         ax2 = ax1.twinx()
-        # ax2.plot(r_vals_plot, x_vals_plot, '.', ms=0.1, alpha=0.2)
-        ax2.plot(r_vals_J, J_vals, color='blue',marker='.', lw=0.5, ms = 0.5,label=r'$J$ index')
+        ax2.plot(r_vals_plot, x_vals_plot, '.', ms=0.1, alpha=0.2)
+        ax1.plot(r_vals_J, J_vals, color='blue',marker='.', lw=0.5, ms = 2.0,label=r'$J$ index')
         ax2.set_xlabel('r')
         ax2.set_ylabel('x')
         ax2.legend(loc='upper right')
@@ -133,12 +137,12 @@ def bifurcacion_con_J(
 
 
 r_J, J, r_bif, x_bif = bifurcacion_con_J(
-    r_min=3.569,
-    r_max=3.571,
-    max_gamma=3,
-    mu=3, 
+    r_min=3.4, 
+    r_max=4.0,
+    max_gamma=2,
+    mu=5,  
     resolucion_r=1000,
-    longitud_serie=2000,
+    longitud_serie=3500,
     iter_descartar=1000,
     var_ruido=1e-04,
     tipo_ruido="no",  # o "aditivo"

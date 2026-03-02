@@ -1,6 +1,6 @@
 import numpy as np
 
-def lyapunov_logistic(r, x0=0.5, n_trans=5000, n_iter=100000):
+def lyapunov_logistic(r, x0=0.5, n_trans=1000, n_iter=3500):
     """
     Calcula el exponente de Lyapunov del mapa logístico para un r dado.
     """
@@ -19,7 +19,7 @@ def lyapunov_logistic(r, x0=0.5, n_trans=5000, n_iter=100000):
     return lyap / n_iter
 
 
-def find_r_infty(r_min=3.568, r_max=3.572, tol=1e-10, max_iter=1000):
+def find_r_infty(r_min=3.569, r_max=3.571, tol=1e-10, max_iter=10000):
     """
     Encuentra r_infty (transición al caos) resolviendo λ(r)=0
     mediante bisección.

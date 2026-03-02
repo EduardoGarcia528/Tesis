@@ -169,7 +169,7 @@ def mejor_vector(p1, p2):
 @njit
 def calcular_angulos(vectores):
     n = len(vectores) - 1
-    angulos = np.empty(n)
+    angulos = np.empty(n, dtype=np.float64)
     for i in range(n):
         v1 = vectores[i]
         v2 = vectores[i + 1]
@@ -207,7 +207,7 @@ def caminata_univariante(X, tau, bivariante):
     ff2 = np.angle(np.fft.rfft(y1))
 
     n = len(ff1) - 1
-    vectores = np.empty((n,2)) #(n,2)
+    vectores = np.empty((n,2),dtype=np.float64) #(n,2)
     for i in range(n):
         p1 = (ff1[i], ff2[i])
         p2 = (ff1[i+1], ff2[i+1])
