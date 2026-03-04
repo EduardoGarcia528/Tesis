@@ -20,31 +20,25 @@ def main(X):
     # vectores = caminata_aleatoria(X)
     # angulos = calcular_angulos(vectores)
     # C, g = gamma_index_jacobs(angulos,3)
-    # serie = np.random.uniform(0,1,X)
-    A = vocabulario_midi_centrado(k=10)
-    serie = random_array(A,X,0.4,3)
+    serie = np.random.uniform(0,1,X)
+    # A = vocabulario_midi_centrado(k=10)
+    # serie = random_array(A,X,0.4,3)
     # angulos = angulos_alpha(serie,False)
     # J = indice_J(serie,False)
-    PE = permutation_entropy(serie,m=8,tau=1)
+    PE = permutation_entropy(serie,m=5,tau=1)
     # H = entropia_shannon(serie,False)
     return PE
 
 def calcular_J_N(N):
-    J_N_min = np.ones(20)
-    J_N_mean = np.ones(20)
-    J_N_std = np.ones(20)
-    for i in range(20):
-        subjects = np.zeros(100)
-        for j in range(100):
+    for i in range(1):
+        subjects = np.zeros(2000)
+        for j in range(2000):
             subjects[j] = main(X=N)
             # entropia_shannon(np.diff(angulos))
 
-        J_N_min[i] = np.min(subjects)
-        J_N_mean[i] = np.mean(subjects)
-        J_N_std[i] = np.std(subjects)
-    J_N_min = np.mean(J_N_min)
-    J_N_mean = np.mean(J_N_mean)
-    J_N_std = np.mean(J_N_std)
+        J_N_min = np.min(subjects)
+        J_N_mean = np.mean(subjects)
+        J_N_std = np.std(subjects)
     print(N)
     return J_N_min, J_N_std, J_N_mean
 
@@ -59,14 +53,9 @@ if __name__ == '__main__':
     N0 = np.arange(10, 20, 1)
     N1 = np.arange(20, 100, 5)
     N2 = np.arange(100, 2000, 100)
-    N3 = np.arange(2000, 10000, 1000)
-    N4 = np.arange(10000, 100000, 10000)
-    N5 = np.arange(100000, 200000, 20000)
-    N6 = np.array([500_000, 1000000])
-    N7 = np.array([100_000])
-    # Ns = np.concatenate((N0, N1, N2, N3, N4, N5))
-    Ns = np.concatenate((N0, N1,N2)) 
- 
+    N3 = np.arange(2000, 20000, 1000)
+    Ns = np.concatenate((N0, N1,N2,N3)) 
+  
     # Usa multiprocessing para calcular J_min en paralelo
     with mp.Pool(processes=mp.cpu_count()) as pool:
         resultados = pool.map(calcular_J_N, Ns)

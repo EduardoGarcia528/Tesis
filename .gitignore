@@ -11,3 +11,5 @@ Comparar_dist/new_data
 Grupo_Normalizacion/kuramoto_Rc.npy
 Audios/wavs
 musica-tesis/PDMX
+*.pyc
+*.json
