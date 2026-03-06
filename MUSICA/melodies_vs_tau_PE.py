@@ -5,6 +5,7 @@ from pathlib import Path
 
 from funciones import angulos_alpha, permutation_entropy
 from gamma_4 import gamma_index_jacobs
+from modified_PE import modified_permutation_entropy
 
 plt.rcParams.update({
     "font.size": 10,
@@ -26,7 +27,7 @@ def segunda_diferencia(C, tol=1e-5):
 # =========================
 melodies_folder = Path("melodies")
 max_files = 23
-max_tau = 15
+max_tau = 7
 m = 5
 
 # Buscar archivos .npy
@@ -58,15 +59,15 @@ for i, file_path in enumerate(files):
 
     # Calcular C(d) con entropía permutacional variando tau
     C = []
-    for tau in range(1, max_tau + 1):
-        pe = permutation_entropy(serie, m=m, tau=tau)
+    for tau in range(3, max_tau + 1):
+        pe = modified_permutation_entropy(serie, m=tau, tau=1)
         C.append(pe)
 
     # Si quieres usar gamma en vez de PE, descomenta esto:
     # angulos = angulos_alpha(serie, False)
     # C, g = gamma_index_jacobs(angulos, max_gamma, mu)
 
-    d = np.arange(1, len(C) + 1)
+    d = np.arange(3, len(C) + 3)
     ax = axes[i]
 
     ax.plot(d, C, marker='o', linestyle='-', linewidth=1.0, markersize=2.5)

@@ -1,0 +1,563 @@
+# -*- coding: utf-8 -*-
+import os
+import re
+import hashlib
+import numpy as np
+import pandas as pd
+import copy 
+import matplotlib.pyplot as plt
+from modified_PE import modified_permutation_entropy
+
+# =========================================================
+# PARÁMETROS GENERALES
+# =========================================================
+DOT_SIZE = 22
+EDGE_ALPHA = 0.55
+JITTER_STD = 0.06
+LINE_WIDTH = 0.9
+
+FONT_GENERAL = 12
+FONT_TICKS = 11
+LEGEND_FONTSIZE = 11
+TITLE_SIZE = 14
+PERCENT_FONTSIZE = 11
+
+BOTTOM_MARGIN = 0.28
+LEFT_MARGIN = 0.08
+RIGHT_MARGIN = 0.98
+TOP_MARGIN = 0.90
+
+# =========================================================
+# PARÁMETROS DEL TEST NULO
+# =========================================================
+N_SURROGATES = 1000
+RANDOM_STATE = 12345
+ALTERNATIVE = "less"   # 'two-sided', 'greater', 'less'
+NORMALIZE = True
+
+# rojo si ningún surrogate fue tan extremo como el dato
+USE_P_RAW_ZERO_FOR_RED = True
+ALPHA = 0.05   # sólo se usa si USE_P_RAW_ZERO_FOR_RED = False
+
+# =========================================================
+# CONFIGURACIÓN DE LOS 4 PANELES
+# =========================================================
+PANEL_CONFIGS = [
+    {"D": 3, "tau": 1, "title": r"mPE: $m=3,\ \tau=1$"},
+    {"D": 3, "tau": 2, "title": r"mPE: $m=3,\ \tau=2$"},
+    {"D": 3, "tau": 3, "title": r"mPE: $m=3,\ \tau=3$"},
+    {"D": 3, "tau": 4, "title": r"mPE: $m=3,\ \tau=4$"},
+]
+
+# =========================================================
+# CACHÉ
+# =========================================================
+CACHE_DIR = "cache_pe_zscore"
+FORCE_RECOMPUTE = False   # True si quieres forzar recálculo
+
+# =========================================================
+# AUXILIARES
+# =========================================================
+#dataframe datos de compositores 
+def extraer_dataset_musica():
+
+    datos_composers = {}
+    carpeta = r'data\Sequences\labels'
+    archivos_en_carpeta = os.listdir(carpeta)
+    index0 = 0
+    indice = 0
+
+    for archivo in archivos_en_carpeta:
+        ruta_completa = os.path.join(carpeta, archivo)
+        serie = pd.read_csv(ruta_completa, header = None)
+        composer = archivo.split('-')[1].capitalize() # nombre compositor
+        datos_composers[composer] = {} #genero bibio para composer
+        datos_composers[composer]['Birth_year'] = archivo.split('-')[0] #año de nacimiento
+        index1 = serie.iloc[0, 0].split('\t')[0] #el # del primer serie del composer
+        index2 = int(serie.iloc[len(serie)-3, 0].split('\t')[0]) - index0 # # Piezas
+        index0 = index2 + index0 # numero total de piezas anteriores
+        datos_composers[composer]['# Piezas'] = index2 # Piezas
+        datos_composers[composer]['Indice'] = indice
+        indice += 1
+
+    composers = {}
+    M = 0
+    carpeta = r'data\Sequences\Series'
+    archivos_en_carpeta = os.listdir(carpeta)
+
+    for archivo in archivos_en_carpeta:
+        ruta_completa = os.path.join(carpeta, archivo)
+        serie = pd.read_csv(ruta_completa)
+        # escoge una serie
+        composer = archivo.split('-')[1].capitalize() # nombre compositor
+        composers[composer] = {}
+
+        for pieza in range( datos_composers[composer]['# Piezas'] ):
+            N = serie.iloc[0, 0].split('\t')[1] # # de elementos por pieza
+            M = int(N) + M
+            index_n1 = 0 
+            index_n2 = int(N)+2 
+            serie_n = serie[index_n1 + 2:index_n2].reset_index(drop=True) # resetear index
+            serie = serie[index_n2 +1:] # recortar serie Original
+            serie_n.index += 1 # que index empiece desde 1
+            num_serie_T = serie.columns[0]  # numero de serie de todo el dataset
+            num_serie = pieza + 1
+            composers[composer]['Serie_'+str(num_serie)] = serie_n.squeeze().to_numpy().astype(float) # agregamos pieza al dicc composer con key como # serie
+
+    ###
+    ###
+
+    composers_depurado = copy.deepcopy(composers)
+    datos_composers_depurado = copy.deepcopy(datos_composers)
+
+    for i,composer in enumerate(composers.keys()):
+        d = 0
+        for pieza in composers[composer].keys():
+            if len(composers[composer][pieza])//2 < 400:
+                del composers_depurado[composer][pieza]
+                d = d + 1
+        datos_composers_depurado[composer]['# Piezas'] = datos_composers[composer]['# Piezas'] - d
+
+
+    # 40 promedio de numero de piezas por compositor
+    composers_depurado_v2 = copy.deepcopy(composers_depurado)
+    composers_depurado_v2_keychange = copy.deepcopy(composers_depurado_v2)
+    datos_composers_depurado_v2 = copy.deepcopy(datos_composers_depurado)
+
+    for composer in composers.keys():
+        if datos_composers_depurado[composer]['# Piezas'] < 30:
+            del composers_depurado_v2[composer]
+            del datos_composers_depurado_v2[composer]
+        
+    for i,composer in enumerate(composers_depurado_v2.keys()):
+        datos_composers_depurado_v2[composer]['Indice'] = i 
+
+    for composer in composers_depurado_v2.keys():
+        for i,serie in enumerate(composers_depurado_v2[composer].keys()):
+            composers_depurado_v2_keychange[composer]['Serie_' + str(i+1)] = composers_depurado_v2_keychange[composer].pop(serie)
+
+    print(" # de compositores restantes: ", len(composers_depurado_v2))
+
+    return composers_depurado_v2, datos_composers_depurado_v2
+
+def natural_key(text):
+    return [int(tok) if tok.isdigit() else tok.lower()
+            for tok in re.split(r'(\d+)', str(text))]
+
+def composer_sort_key(item):
+    composer, meta = item
+    idx = meta.get("Indice", np.inf)
+    byear = meta.get("Birth_year", "999999")
+    try:
+        byear_num = int(byear)
+    except Exception:
+        byear_num = 999999
+    return (idx, byear_num, composer)
+
+def composer_labels(datos_composers):
+    ordered = sorted(datos_composers.items(), key=composer_sort_key)
+    names = []
+    labels = []
+    for composer, meta in ordered:
+        byear = meta.get("Birth_year", "")
+        names.append(composer)
+        labels.append(f"{composer} {byear}".strip())
+    return names, labels
+
+def empirical_p_raw(pe_surrogates, pe_obs, mu_null, alternative="two-sided"):
+    pe_surrogates = np.asarray(pe_surrogates, dtype=float)
+
+    if alternative == "greater":
+        return np.mean(pe_surrogates >= pe_obs)
+    elif alternative == "less":
+        return np.mean(pe_surrogates <= pe_obs)
+    elif alternative == "two-sided":
+        return np.mean(np.abs(pe_surrogates - mu_null) >= np.abs(pe_obs - mu_null))
+    else:
+        raise ValueError("alternative debe ser 'two-sided', 'greater' o 'less'.")
+
+def pe_stats_for_series(
+    x,
+    D,
+    tau,
+    n_surrogates,
+    normalize,
+    alternative,
+    random_state=None
+):
+    """
+    Requiere permutation_entropy(...) ya definida en tu entorno.
+    """
+    rng = np.random.default_rng(random_state)
+    x = np.asarray(x, dtype=float)
+
+    pe_obs = modified_permutation_entropy(x, m=D, tau=tau)
+
+    pe_surrogates = np.empty(n_surrogates, dtype=float)
+    for k in range(n_surrogates):
+        x_surr = rng.permutation(x)
+        pe_surr = modified_permutation_entropy(x_surr, m=D, tau=tau)
+        pe_surrogates[k] = pe_surr
+
+    mu_null = np.mean(pe_surrogates)
+    sigma_null = np.std(pe_surrogates, ddof=1)
+
+    if sigma_null == 0:
+        z = np.nan
+    else:
+        z = (pe_obs - mu_null) / sigma_null
+
+    # p-value corregido (+1)
+    if alternative == "greater":
+        p_value = (np.sum(pe_surrogates >= pe_obs) + 1) / (n_surrogates + 1)
+    elif alternative == "less":
+        p_value = (np.sum(pe_surrogates <= pe_obs) + 1) / (n_surrogates + 1)
+    elif alternative == "two-sided":
+        p_value = (np.sum(np.abs(pe_surrogates - mu_null) >= np.abs(pe_obs - mu_null)) + 1) / (n_surrogates + 1)
+    else:
+        raise ValueError("alternative debe ser 'two-sided', 'greater' o 'less'.")
+
+    p_raw = empirical_p_raw(pe_surrogates, pe_obs, mu_null, alternative=alternative)
+
+    return {
+        "pe_obs": pe_obs,
+        "mu_null": mu_null,
+        "sigma_null": sigma_null,
+        "z": z,
+        "p_value": p_value,
+        "p_raw": p_raw
+    }
+
+def build_cache_key(D, tau, n_surrogates, normalize, alternative, random_state):
+    """
+    Genera una clave única y estable para el archivo de caché.
+    """
+    txt = (
+        f"D={D}|tau={tau}|n_surrogates={n_surrogates}|"
+        f"normalize={normalize}|alternative={alternative}|random_state={random_state}"
+    )
+    short_hash = hashlib.md5(txt.encode("utf-8")).hexdigest()[:12]
+    return f"PEcache_D{D}_tau{tau}_ns{n_surrogates}_{alternative}_norm{int(normalize)}_seed{random_state}_{short_hash}"
+
+def get_cache_path(cache_dir, D, tau, n_surrogates, normalize, alternative, random_state):
+    os.makedirs(cache_dir, exist_ok=True)
+    fname = build_cache_key(D, tau, n_surrogates, normalize, alternative, random_state) + ".pkl"
+    return os.path.join(cache_dir, fname)
+
+def compute_panel_dataframe(
+    composers,
+    datos_composers,
+    D,
+    tau,
+    n_surrogates,
+    normalize,
+    alternative,
+    random_state
+):
+    """
+    Calcula un DataFrame con una fila por serie.
+    """
+    composer_names, _ = composer_labels(datos_composers)
+
+    rows = []
+    global_counter = 0
+    seed_base = int(random_state) if random_state is not None else None
+
+    for composer in composer_names:
+        if composer not in composers:
+            continue
+
+        meta = datos_composers.get(composer, {})
+        birth_year = meta.get("Birth_year", np.nan)
+        composer_index = meta.get("Indice", np.nan)
+
+        series_names = sorted(composers[composer].keys(), key=natural_key)
+
+        for sname in series_names:
+            x = np.asarray(composers[composer][sname], dtype=float)
+
+            if seed_base is None:
+                seed_here = None
+            else:
+                seed_here = seed_base + 100000 * D + 1000 * tau + global_counter
+
+            global_counter += 1
+
+            stats = pe_stats_for_series(
+                x=x,
+                D=D,
+                tau=tau,
+                n_surrogates=n_surrogates,
+                normalize=normalize,
+                alternative=alternative,
+                random_state=seed_here
+            )
+
+            rows.append({
+                "composer": composer,
+                "birth_year": birth_year,
+                "composer_index": composer_index,
+                "serie": sname,
+                "length": len(x),
+                "D": D,
+                "tau": tau,
+                "n_surrogates": n_surrogates,
+                "normalize": normalize,
+                "alternative": alternative,
+                "random_state": seed_here,
+                "pe_obs": stats["pe_obs"],
+                "mu_null": stats["mu_null"],
+                "sigma_null": stats["sigma_null"],
+                "z": stats["z"],
+                "p_value": stats["p_value"],
+                "p_raw": stats["p_raw"]
+            })
+
+    df = pd.DataFrame(rows)
+    return df
+
+def get_or_compute_panel_dataframe(
+    composers,
+    datos_composers,
+    D,
+    tau,
+    n_surrogates,
+    normalize,
+    alternative,
+    random_state,
+    cache_dir=CACHE_DIR,
+    force_recompute=FORCE_RECOMPUTE
+):
+    """
+    Si ya existe el caché para esos parámetros, lo carga.
+    Si no existe, calcula, guarda y devuelve.
+    """
+    cache_path = get_cache_path(
+        cache_dir=cache_dir,
+        D=D,
+        tau=tau,
+        n_surrogates=n_surrogates,
+        normalize=normalize,
+        alternative=alternative,
+        random_state=random_state
+    )
+
+    if (not force_recompute) and os.path.exists(cache_path):
+        df = pd.read_pickle(cache_path)
+        print(f"[CACHE] Cargado: {cache_path}")
+        return df
+
+    print(f"[CACHE] Calculando panel D={D}, tau={tau} ...")
+    df = compute_panel_dataframe(
+        composers=composers,
+        datos_composers=datos_composers,
+        D=D,
+        tau=tau,
+        n_surrogates=n_surrogates,
+        normalize=normalize,
+        alternative=alternative,
+        random_state=random_state
+    )
+    df.to_pickle(cache_path)
+    print(f"[CACHE] Guardado: {cache_path}")
+    return df
+
+def point_is_red(p_raw, p_value, use_p_raw_zero=True, alpha=0.05):
+    if use_p_raw_zero:
+        return (p_raw == 0.0)
+    return (p_value <= alpha)
+
+def plot_panel(ax, df_panel, composer_names, title,
+               use_p_raw_zero=True, alpha=0.05):
+    """
+    df_panel: DataFrame con una fila por serie para un panel fijo (D, tau).
+    """
+    medianas = []
+    all_z = []
+
+    total_red_points = 0
+    total_points = 0
+
+    for i, composer in enumerate(composer_names, start=1):
+        sub = df_panel[df_panel["composer"] == composer].copy()
+
+        if sub.empty:
+            medianas.append(np.nan)
+            continue
+
+        zvals = sub["z"].to_numpy(dtype=float)
+        pvals = sub["p_value"].to_numpy(dtype=float)
+        praws = sub["p_raw"].to_numpy(dtype=float)
+
+        finite_mask = np.isfinite(zvals)
+        zvals = zvals[finite_mask]
+        pvals = pvals[finite_mask]
+        praws = praws[finite_mask]
+
+        if zvals.size == 0:
+            medianas.append(np.nan)
+            continue
+
+        red_mask = np.array([
+            point_is_red(pr, pv, use_p_raw_zero=use_p_raw_zero, alpha=alpha)
+            for pr, pv in zip(praws, pvals)
+        ], dtype=bool)
+
+        colors = np.where(red_mask, "red", "blue")
+        x = np.random.normal(i, JITTER_STD, size=zvals.size)
+
+        ax.scatter(
+            x, zvals,
+            s=DOT_SIZE,
+            alpha=EDGE_ALPHA,
+            facecolors="none",
+            edgecolors=colors,
+            linewidths=0.8
+        )
+
+        med = np.median(zvals)
+        medianas.append(med)
+        all_z.extend(zvals.tolist())
+
+        num_red = np.sum(red_mask)
+        total_red_points += num_red
+        total_points += zvals.size
+
+        percentage_red = 100.0 * num_red / zvals.size
+        if i % 2 != 0:
+            y_offset = 0.02
+        else:
+            y_offset = 0.07
+        ax.text(
+            i, y_offset, f"{percentage_red:.1f}%",
+            ha="center", va="bottom",
+            fontsize=PERCENT_FONTSIZE,
+            color="black",
+            transform=ax.get_xaxis_transform()
+        )
+
+    idxs = np.arange(1, len(composer_names) + 1)
+    medianas = np.array(medianas, dtype=float)
+
+    ax.axhline(0, color="gray", linestyle="--", linewidth=LINE_WIDTH, alpha=0.9)
+
+    if np.isfinite(medianas).any():
+        ax.scatter(
+            idxs, medianas,
+            color="black",
+            s=DOT_SIZE,
+            zorder=3,
+            marker="o",
+            label="Mediana"
+        )
+
+    if use_p_raw_zero:
+        red_label = r"Significativa ($p_{\mathrm{raw}}=0$)"
+    else:
+        red_label = fr"Significativa ($p \leq {alpha}$)"
+
+    ax.plot([], [], marker='o', color='none', markeredgecolor='red', label=red_label)
+    ax.plot([], [], marker='o', color='none', markeredgecolor='blue', label='No significativa')
+    ax.plot([], [], marker='none', color='none', label='%: series rojas')
+
+    if total_points > 0:
+        total_percentage_red = 100.0 * total_red_points / total_points
+        ax.text(
+            0.01, 0.98,
+            f"Total: {total_percentage_red:.1f}%",
+            ha="left", va="top",
+            fontsize=FONT_GENERAL,
+            color="black",
+            transform=ax.transAxes
+        )
+
+    ax.set_title(title, fontsize=TITLE_SIZE)
+    ax.grid(axis='y', alpha=0.4)
+    ax.set_xticks(np.arange(1, len(composer_names) + 1))
+    ax.tick_params(axis='both', labelsize=FONT_TICKS)
+
+    return np.array(all_z, dtype=float)
+
+# =========================================================
+# OBTENER DATOS DESDE CACHÉ O CÁLCULO
+# =========================================================
+# Se asume que YA existen:
+#   composers
+#   datos_composers
+#   permutation_entropy(...)
+
+composers, datos_composers = extraer_dataset_musica()
+composer_names, labels = composer_labels(datos_composers)
+
+panel_dfs = []
+all_z_global = []
+
+for cfg in PANEL_CONFIGS:
+    df_panel = get_or_compute_panel_dataframe(
+        composers=composers,
+        datos_composers=datos_composers,
+        D=cfg["D"],
+        tau=cfg["tau"],
+        n_surrogates=N_SURROGATES,
+        normalize=NORMALIZE,
+        alternative=ALTERNATIVE,
+        random_state=RANDOM_STATE,
+        cache_dir=CACHE_DIR,
+        force_recompute=FORCE_RECOMPUTE
+    )
+    panel_dfs.append(df_panel)
+
+# =========================================================
+# PLOTEO 2x2
+# =========================================================
+fig, axs = plt.subplots(2, 2, figsize=(18, 10), sharex=True, sharey=True)
+
+for ax, cfg, df_panel in zip(axs.ravel(), PANEL_CONFIGS, panel_dfs):
+    zvals_panel = plot_panel(
+        ax=ax,
+        df_panel=df_panel,
+        composer_names=composer_names,
+        title=cfg["title"],
+        use_p_raw_zero=USE_P_RAW_ZERO_FOR_RED,
+        alpha=ALPHA
+    )
+    if zvals_panel.size > 0:
+        all_z_global.extend(zvals_panel[np.isfinite(zvals_panel)].tolist())
+
+all_z_global = np.array(all_z_global, dtype=float)
+if all_z_global.size > 0:
+    zmax = np.nanmax(np.abs(all_z_global))
+    if np.isfinite(zmax) and zmax > 0:
+        pad = 0.08 * zmax
+        ylim = (-zmax - pad, zmax + pad)
+        for ax in axs.ravel():
+            ax.set_ylim(*ylim)
+
+for ax in axs.ravel():
+    ax.set_ylabel("Z-score of mPE", fontsize=FONT_GENERAL)
+
+xticks = np.arange(1, len(labels) + 1)
+for ax in axs[1, :]:
+    ax.set_xticks(xticks)
+    ax.set_xticklabels(labels, rotation=90, fontsize=FONT_TICKS)
+
+handles, lab = axs[0, 0].get_legend_handles_labels()
+fig.legend(
+    handles, lab,
+    loc='upper center',
+    ncol=3,
+    fontsize=LEGEND_FONTSIZE,
+    frameon=False
+)
+
+plt.subplots_adjust(
+    left=LEFT_MARGIN,
+    right=RIGHT_MARGIN,
+    bottom=BOTTOM_MARGIN,
+    top=TOP_MARGIN,
+    wspace=0.08,
+    hspace=0.18
+)
+
+plt.margins(x=0.02)
+plt.show()
