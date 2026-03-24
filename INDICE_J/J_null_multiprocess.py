@@ -3,6 +3,7 @@ import numpy as np
 import multiprocessing as mp
 from funciones import mejor_vector, calcular_angulos, permutation_entropy, entropia_shannon, interpolador, interpolador_constante, indice_J, random_array, angulos_alpha, vocabulario_midi_centrado
 from gamma_4 import correlation_integrals, gamma_index_jacobs, gamma
+from circular_gamma import gamma_index_jacobs_circular
 
 def caminata_aleatoria(N):
     ff1 = np.random.uniform(-np.pi, np.pi, N)
@@ -17,17 +18,11 @@ def caminata_aleatoria(N):
     return vectores
 
 def main(X):
-    # vectores = caminata_aleatoria(X)
-    # angulos = calcular_angulos(vectores)
-    # C, g = gamma_index_jacobs(angulos,3)
-    serie = np.random.uniform(0,1,X)
-    # A = vocabulario_midi_centrado(k=10)
-    # serie = random_array(A,X,0.4,3)
-    # angulos = angulos_alpha(serie,False)
-    # J = indice_J(serie,False)
-    PE = permutation_entropy(serie,m=5,tau=1)
-    # H = entropia_shannon(serie,False)
-    return PE
+    x1 = np.random.uniform(0, 1, X)
+    y1 = np.random.uniform(0, 1, X)
+    angulos = angulos_alpha(x1,y1)
+    J, _ = gamma_index_jacobs_circular(angulos,5,3)
+    return J[-1]     
 
 def calcular_J_N(N):
     for i in range(1):
@@ -53,8 +48,8 @@ if __name__ == '__main__':
     N0 = np.arange(10, 20, 1)
     N1 = np.arange(20, 100, 5)
     N2 = np.arange(100, 2000, 100)
-    N3 = np.arange(2000, 20000, 1000)
-    Ns = np.concatenate((N0, N1,N2,N3)) 
+    # N3 = np.arange(2000, 20000, 1000)
+    Ns = np.concatenate((N0, N1,N2)) 
   
     # Usa multiprocessing para calcular J_min en paralelo
     with mp.Pool(processes=mp.cpu_count()) as pool:
@@ -86,4 +81,4 @@ if __name__ == '__main__':
 
     J_null_continuo = np.vstack((interpolador_constante(Ns), Js_min_interp,Js_mean_interp,Js_std_interp))
 
-    np.save('new_data/H_null.npy' ,J_null_continuo)
+    np.save('new_data/J_null.npy' ,J_null_continuo)

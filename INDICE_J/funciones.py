@@ -220,7 +220,7 @@ def indice_J(seriex, seriey, tau = 1):
     angulos = calcular_angulos(vectores)
     e = np.exp(angulos * 1j)
     e1 = np.sum(e) / len(angulos)
-    J = 1.0 - np.abs(e1.real)
+    J = 1.0 - np.abs(e1)
     return J
 
 def angulos_alpha(seriex, seriey, tau = 1):

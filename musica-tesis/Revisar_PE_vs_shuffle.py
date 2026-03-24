@@ -4,6 +4,7 @@ from modified_PE import modified_permutation_entropy
 import pandas as pd
 import copy
 import os
+from iaaft import iaaft
 
 def extraer_dataset_musica():
 
@@ -128,9 +129,10 @@ def plot_pe_vs_shuffle(array, m, tau, n_shuffles=1000, random_state=None, bins=3
 
     # PE de los shuffles
     pe_shuffles = np.empty(n_shuffles)
+    shuffled = iaaft(array,n_shuffles)
     for i in range(n_shuffles):
-        shuffled = rng.permutation(array)
-        pe_shuffles[i] = modified_permutation_entropy(shuffled, m, tau)
+        # shuffled = rng.permutation(array)
+        pe_shuffles[i] = modified_permutation_entropy(shuffled[i,:], m, tau)
 
     # Estadísticos
     mu_shuffle = np.mean(pe_shuffles)

@@ -6,6 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from funciones import indice_J, permutation_entropy, angulos_alpha, entropia_shannon
 from gamma_4 import gamma_index_jacobs
+from circular_gamma import gamma_index_jacobs_circular
 
 def logistic_map(r, x):
     return r * x * (1 - x)
@@ -31,7 +32,7 @@ def bifurcacion_con_J(
     medida_por_ruido = []
     ruidos = [1e-10,1e-8,1e-7,1e-6,1e-5,1e-4]
     colores = ['gray','#2ECC71','purple', '#FFD700','#1ABC9C','#E91E63']
-    for var_ruido in ruidos:
+    for var_ruido in [0.0]:
         medida_por_iteracion = []
         for _ in range(1):
             r_vals_plot = []
@@ -69,13 +70,12 @@ def bifurcacion_con_J(
                 x_vals_plot.extend(serie)
 
                 # # MEDIDA
-                angulos = angulos_alpha(serie,False)
-                C, J = gamma_index_jacobs(angulos,max_gamma,mu)
+                J  = indice_J(serie,False)
                 r_vals_J.append(r)
-                J_vals.append(C[-1])
-            medida_por_iteracion.append(J_vals)
-        medida_por_ruido.append(np.mean(medida_por_iteracion, axis=0))
-        # np.save(f'data/RUIDOS/aditivo_C6_alpha/C6_por_ruido_{str(var_ruido)}.npy', np.mean(medida_por_iteracion, axis=0))
+                J_vals.append(J)
+            # medida_por_iteracion.append(J_vals)
+        # medida_por_ruido.append(np.mean(medida_por_iteracion, axis=0))
+        # np.save(f'data/RUIDOS/iterativo_C6_alpha/C6_por_ruido_{str(var_ruido)}.npy', np.mean(medida_por_iteracion, axis=0))
         # print(var_ruido)
     # J_vals = np.mean(np.load(f'data/ruidos_promedios/J_por_ruido_{str(var_ruido)}.npy'),axis = 0)
 
@@ -111,23 +111,23 @@ def bifurcacion_con_J(
 
         # Índice J
         ax2 = ax1.twinx()
-        ax2.invert_yaxis()
-        ax2.plot(r_vals_J, J_vals, color='black', alpha = 1, label = r'$C^\alpha_6$ sin ruido')
+        # ax2.invert_yaxis()
+        ax2.plot(r_vals_J, J_vals, color='black', alpha = 1, label = r'$J$ sin ruido')
         for i,var_ruido in enumerate(ruidos):
-            medida_por_ruido.append(np.load(f'data/RUIDOS/aditivo_C6_alpha/C6_por_ruido_{str(var_ruido)}.npy'))
+            medida_por_ruido.append(np.mean(np.load(f'data/RUIDOS/aditivo_J/J_por_ruido_{str(var_ruido)}.npy'), axis=0))
             ax2.plot(r_vals_J, medida_por_ruido[i], color=colores[i] , alpha = 1, label= f'varianza = {var_ruido}')
             # ax1.annotate(f'Varianza = {ruido}', xy=(r_vals_J[len(r_vals_J)//4], medida_por_ruido[i][len(r_vals_J)//4]), xytext=(10, medida_por_ruido[i][-1]),
                         #  textcoords='offset points', ha='left', va='center')
 
         ax1.set_ylabel('x', rotation = 360)
-        ax2.set_ylabel(r'$C^\alpha_6$', rotation= 360)
+        ax2.set_ylabel(r'$J$', rotation= 360)
         # ax2.set_yscale('log')
         # ax2.set_xscale('log')
         ax1.tick_params(axis='y')
 
         ax2.legend(loc='lower left')
         plt.title(
-            f"Mapa logístico +" + r"$C^\alpha_6$" + " \n"
+            f"Mapeo logístico +" + r"$J$" + " \n"
             f"Ruido {tipo_ruido}, varianza variable"
         )
         plt.show()
@@ -138,10 +138,10 @@ def bifurcacion_con_J(
 r_J, J, r_bif, x_bif = bifurcacion_con_J(
     r_min=3.0,
     r_max=4.0,
-    max_gamma=4,
-    mu=3,
+    max_gamma=5,
+    mu=5,
     resolucion_r=300,
-    longitud_serie=5000,
+    longitud_serie=4000,
     iter_descartar=1000,
     tipo_ruido="aditivo",  # o "aditivo"
     graficar=True)

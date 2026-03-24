@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # array  = np.load('new_data/J_null_continuo.npy')
-array  = np.load('new_data/H_null.npy')
+array  = np.load('new_data/J_null.npy')
 # Suponiendo que array tiene forma (4, N)
 x = array[0]
 # x = (x + 5*(x-1))//2

@@ -169,7 +169,7 @@ def mejor_vector(p1, p2):
 @njit
 def calcular_angulos(vectores):
     n = len(vectores) - 1
-    angulos = np.empty(n)
+    angulos = np.empty(n, dtype=np.float64)
     for i in range(n):
         v1 = vectores[i]
         v2 = vectores[i + 1]
@@ -207,7 +207,7 @@ def caminata_univariante(X, tau, bivariante):
     ff2 = np.angle(np.fft.rfft(y1))
 
     n = len(ff1) - 1
-    vectores = np.empty((n,2)) #(n,2)
+    vectores = np.empty((n,2),dtype=np.float64) #(n,2)
     for i in range(n):
         p1 = (ff1[i], ff2[i])
         p2 = (ff1[i+1], ff2[i+1])
@@ -220,7 +220,7 @@ def indice_J(seriex, seriey, tau = 1):
     angulos = calcular_angulos(vectores)
     e = np.exp(angulos * 1j)
     e1 = np.sum(e) / len(angulos)
-    J = 1.0 - np.abs(e1.real)
+    J = 1.0 - np.abs(e1)
     return J
 
 def angulos_alpha(seriex, seriey, tau = 1):
@@ -230,7 +230,7 @@ def angulos_alpha(seriex, seriey, tau = 1):
 
 # Entropia de Shannon
 
-def entropia_shannon(x, discreto, bins=100):
+def entropia_shannon(x, discreto, bins=None):
     x = np.asarray(x)
     x = x[np.isfinite(x)]
     if x.size == 0:
@@ -247,8 +247,11 @@ def entropia_shannon(x, discreto, bins=100):
     else:
         # Caso continuo: estimar densidad mediante histograma
         try:
+            if bins is None:
+                bins = 1 + int(np.log2(len(x)))  # Sturges
             hist, _ = np.histogram(x, bins=bins, density=True)
         except Exception:
+            print("error: retorna nan")
             return np.nan
         hist = hist[hist > 0]
         if hist.size == 0:
@@ -258,3 +261,104 @@ def entropia_shannon(x, discreto, bins=100):
         H_norm = H / np.log2(bins)
     
     return H_norm
+
+#Ruido de Colores 
+
+def colored_noise(N, color="white", fs=1.0, seed=None, normalize=True):
+    if seed is not None:
+        np.random.seed(seed)
+
+    # Mapeo color → beta
+    beta_map = {
+        "violet": -2, "violeta": -2,
+        "blue": -1, "azul": -1,
+        "white": 0, "blanco": 0,
+        "pink": 1, "rosa": 1,
+        "brown": 2, "cafe": 2, "café": 2
+    }
+
+    if color not in beta_map:
+        raise ValueError("Color no reconocido")
+
+    beta = beta_map[color]
+
+    # Frecuencias positivas
+    freqs = np.fft.rfftfreq(N, d=1/fs)
+    freqs[0] = freqs[1]  # evitar división por cero
+
+    # Ruido blanco en frecuencia (fase aleatoria)
+    phases = np.exp(2j * np.pi * np.random.rand(len(freqs)))
+
+    # Amplitud espectral ∝ 1/f^{beta/2}
+    amplitude = 1.0 / (freqs ** (beta / 2.0))
+
+    spectrum = amplitude * phases
+
+    # Transformada inversa
+    x = np.fft.irfft(spectrum, n=N)
+
+    if normalize:
+        x = (x - np.mean(x)) / np.std(x)
+
+    return x
+
+def random_array(vocabulario, N, q, m, seed=None):
+    """
+    Genera una serie de tiempo discreta de longitud N a partir de un vocabulario finito.
+    
+    Dinámica:
+    - Con probabilidad q: repite m veces el último valor agregado (persistencia).
+    - Con probabilidad (1-q): elige un valor distinto al último del vocabulario.
+    
+    Parámetros
+    ----------
+    vocabulario : array-like
+        Conjunto finito de valores posibles (por ejemplo notas MIDI, enteros, etc.)
+    N : int
+        Longitud deseada de la serie
+    q : float
+        Probabilidad de repetir el último valor m veces (0 <= q <= 1)
+    m : int
+        Número de repeticiones cuando ocurre persistencia (m >= 1)
+    seed : int o None
+        Semilla para reproducibilidad
+    
+    Retorna
+    -------
+    np.ndarray
+        Serie de tiempo discreta de longitud N
+    """
+    rng = np.random.default_rng(seed)
+    vocabulario = np.array(vocabulario)
+    
+    if len(vocabulario) == 0:
+        raise ValueError("El vocabulario no puede estar vacío.")
+    if not (0 <= q <= 1):
+        raise ValueError("q debe estar entre 0 y 1.")
+    if m < 1:
+        raise ValueError("m debe ser >= 1.")
+    
+    # Inicialización: primer símbolo completamente aleatorio
+    serie = [rng.choice(vocabulario)]
+    
+    while len(serie) < N:
+        u = rng.random()
+        
+        if u < q:
+            # Repetir el último valor m veces (truncando si se excede N)
+            ultimo = serie[-1]
+            repeticiones = min(m, N - len(serie))
+            serie.extend([ultimo] * repeticiones)
+        else:
+            # Elegir un valor distinto al último
+            ultimo = serie[-1]
+            candidatos = vocabulario[vocabulario != ultimo]
+            
+            # Si el vocabulario tiene un solo elemento, necesariamente se repite
+            if len(candidatos) == 0:
+                serie.append(ultimo)
+            else:
+                nuevo = rng.choice(candidatos)
+                serie.append(nuevo)
+    
+    return np.array(serie)

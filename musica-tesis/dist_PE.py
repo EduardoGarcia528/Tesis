@@ -7,6 +7,8 @@ import pandas as pd
 import copy 
 import matplotlib.pyplot as plt
 from modified_PE import modified_permutation_entropy
+from funciones import angulos_alpha, permutation_entropy
+from iaaft import iaaft
 
 # =========================================================
 # PARÁMETROS GENERALES
@@ -30,6 +32,8 @@ TOP_MARGIN = 0.90
 # =========================================================
 # PARÁMETROS DEL TEST NULO
 # =========================================================
+MEASURE = "mPE"
+TYPE_NULL = "shuffle"
 N_SURROGATES = 1000
 RANDOM_STATE = 12345
 ALTERNATIVE = "less"   # 'two-sided', 'greater', 'less'
@@ -43,16 +47,16 @@ ALPHA = 0.05   # sólo se usa si USE_P_RAW_ZERO_FOR_RED = False
 # CONFIGURACIÓN DE LOS 4 PANELES
 # =========================================================
 PANEL_CONFIGS = [
-    {"D": 3, "tau": 1, "title": r"mPE: $m=3,\ \tau=1$"},
-    {"D": 3, "tau": 2, "title": r"mPE: $m=3,\ \tau=2$"},
-    {"D": 3, "tau": 3, "title": r"mPE: $m=3,\ \tau=3$"},
-    {"D": 3, "tau": 4, "title": r"mPE: $m=3,\ \tau=4$"},
+    {"measure":"mPE_interval","D": 3, "tau": 1,"type_null":"shuffle", "title": fr"mPE (interval,shuffle): $m=3,\ \tau=1$"},
+    {"measure":"mPE_interval","D": 4, "tau": 1,"type_null":"shuffle", "title": fr"mPE (interval,shuffle): $m=4,\ \tau=1$"},
+    {"measure":"mPE_interval","D": 4, "tau": 2,"type_null":"shuffle", "title": fr"mPE (interval,shuffle): $m=4,\ \tau=2$"},
+    {"measure":"mPE_interval","D": 5, "tau": 1,"type_null":"shuffle", "title": fr"mPE (interval,shuffle): $m=5,\ \tau=1$"},
 ]
 
 # =========================================================
 # CACHÉ
 # =========================================================
-CACHE_DIR = "cache_pe_zscore"
+CACHE_DIR = f"cache_zscore"
 FORCE_RECOMPUTE = False   # True si quieres forzar recálculo
 
 # =========================================================
@@ -178,10 +182,11 @@ def empirical_p_raw(pe_surrogates, pe_obs, mu_null, alternative="two-sided"):
 
 def pe_stats_for_series(
     x,
+    measure,
     D,
     tau,
     n_surrogates,
-    normalize,
+    type_null,
     alternative,
     random_state=None
 ):
@@ -190,14 +195,29 @@ def pe_stats_for_series(
     """
     rng = np.random.default_rng(random_state)
     x = np.asarray(x, dtype=float)
-
-    pe_obs = modified_permutation_entropy(x, m=D, tau=tau)
-
+    if "interval" in measure:
+        pe_obs = modified_permutation_entropy(np.diff(x), m=D, tau=tau)
+    else:
+        pe_obs = modified_permutation_entropy(x, m=D, tau=tau)
     pe_surrogates = np.empty(n_surrogates, dtype=float)
-    for k in range(n_surrogates):
-        x_surr = rng.permutation(x)
-        pe_surr = modified_permutation_entropy(x_surr, m=D, tau=tau)
-        pe_surrogates[k] = pe_surr
+    if type_null == "shuffle":
+        for k in range(n_surrogates):
+            if "interval" in measure:
+                x_surr = rng.permutation(np.diff(x))
+            else:
+                x_surr = rng.permutation(x)
+            pe_surr = modified_permutation_entropy(x_surr, m=D, tau=tau)
+            pe_surrogates[k] = pe_surr
+    if type_null == "iaaft":
+        if "interval" in measure:    
+            x_surr = iaaft(np.diff(x),n_surrogates)
+        else:
+            x_surr = iaaft(x,n_surrogates)
+        for k in range(n_surrogates):
+            pe_surr = modified_permutation_entropy(x_surr[k,:], m=D, tau=tau)
+            pe_surrogates[k] = pe_surr
+
+
 
     mu_null = np.mean(pe_surrogates)
     sigma_null = np.std(pe_surrogates, ddof=1)
@@ -228,28 +248,25 @@ def pe_stats_for_series(
         "p_raw": p_raw
     }
 
-def build_cache_key(D, tau, n_surrogates, normalize, alternative, random_state):
-    """
-    Genera una clave única y estable para el archivo de caché.
-    """
-    txt = (
-        f"D={D}|tau={tau}|n_surrogates={n_surrogates}|"
-        f"normalize={normalize}|alternative={alternative}|random_state={random_state}"
-    )
-    short_hash = hashlib.md5(txt.encode("utf-8")).hexdigest()[:12]
-    return f"PEcache_D{D}_tau{tau}_ns{n_surrogates}_{alternative}_norm{int(normalize)}_seed{random_state}_{short_hash}"
+def build_cache_key(measure,D, tau, type_null, normalize, alternative):
+    if "PE" in measure:
+        return f"{measure}_D{D}_tau{tau}_{type_null}_{alternative}_norm{int(normalize)}"
+    else:
+        return f"{measure}_{type_null}_{alternative}_norm{int(normalize)}"
 
-def get_cache_path(cache_dir, D, tau, n_surrogates, normalize, alternative, random_state):
+def get_cache_path(measure,cache_dir, D, tau, type_null, normalize, alternative):
     os.makedirs(cache_dir, exist_ok=True)
-    fname = build_cache_key(D, tau, n_surrogates, normalize, alternative, random_state) + ".pkl"
+    fname = build_cache_key(measure,D, tau, type_null, normalize, alternative) + ".pkl"
     return os.path.join(cache_dir, fname)
 
 def compute_panel_dataframe(
     composers,
     datos_composers,
+    measure,
     D,
     tau,
     n_surrogates,
+    type_null,
     normalize,
     alternative,
     random_state
@@ -285,10 +302,11 @@ def compute_panel_dataframe(
 
             stats = pe_stats_for_series(
                 x=x,
+                measure=measure,
                 D=D,
                 tau=tau,
                 n_surrogates=n_surrogates,
-                normalize=normalize,
+                type_null = type_null,
                 alternative=alternative,
                 random_state=seed_here
             )
@@ -319,9 +337,11 @@ def compute_panel_dataframe(
 def get_or_compute_panel_dataframe(
     composers,
     datos_composers,
+    measure,
     D,
     tau,
     n_surrogates,
+    type_null,
     normalize,
     alternative,
     random_state,
@@ -333,13 +353,13 @@ def get_or_compute_panel_dataframe(
     Si no existe, calcula, guarda y devuelve.
     """
     cache_path = get_cache_path(
+        measure=measure,
         cache_dir=cache_dir,
         D=D,
         tau=tau,
-        n_surrogates=n_surrogates,
+        type_null=type_null,
         normalize=normalize,
         alternative=alternative,
-        random_state=random_state
     )
 
     if (not force_recompute) and os.path.exists(cache_path):
@@ -347,13 +367,15 @@ def get_or_compute_panel_dataframe(
         print(f"[CACHE] Cargado: {cache_path}")
         return df
 
-    print(f"[CACHE] Calculando panel D={D}, tau={tau} ...")
+    print(f"[CACHE] Calculando panel {measure} D={D}, tau={tau} {type_null}...")
     df = compute_panel_dataframe(
         composers=composers,
         datos_composers=datos_composers,
+        measure=measure,
         D=D,
         tau=tau,
         n_surrogates=n_surrogates,
+        type_null = type_null,
         normalize=normalize,
         alternative=alternative,
         random_state=random_state
@@ -407,7 +429,7 @@ def plot_panel(ax, df_panel, composer_names, title,
         x = np.random.normal(i, JITTER_STD, size=zvals.size)
 
         ax.scatter(
-            x, zvals,
+            x, -zvals,
             s=DOT_SIZE,
             alpha=EDGE_ALPHA,
             facecolors="none",
@@ -415,7 +437,7 @@ def plot_panel(ax, df_panel, composer_names, title,
             linewidths=0.8
         )
 
-        med = np.median(zvals)
+        med = np.median(-zvals)
         medianas.append(med)
         all_z.extend(zvals.tolist())
 
@@ -496,9 +518,11 @@ for cfg in PANEL_CONFIGS:
     df_panel = get_or_compute_panel_dataframe(
         composers=composers,
         datos_composers=datos_composers,
+        measure=cfg["measure"],
         D=cfg["D"],
         tau=cfg["tau"],
         n_surrogates=N_SURROGATES,
+        type_null = cfg["type_null"],
         normalize=NORMALIZE,
         alternative=ALTERNATIVE,
         random_state=RANDOM_STATE,

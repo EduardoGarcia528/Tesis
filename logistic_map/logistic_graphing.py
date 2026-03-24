@@ -5,6 +5,7 @@ from numba import njit
 from PEvsN import N_required_eq25_from_series
 from funciones import indice_J, permutation_entropy, angulos_alpha, entropia_shannon, interpolador
 from gamma_4 import gamma_index_jacobs
+from circular_gamma import gamma_index_jacobs_circular
 
 @njit
 def logistic_map(r, x):
@@ -13,15 +14,15 @@ def logistic_map(r, x):
 
 def ruido_uniforme(size, var):
     # Ruido blanco uniforme centrado con varianza ~ var
-    a = np.sqrt(3 * var)
+    a = np.sqrt(var)
     return np.random.uniform(-a, a, size)
 
 
 def bifurcacion_con_J(
     r_min=3.0,
     r_max=4.0,
-    max_gamma=4,
-    mu=20,
+    max_gamma=5,
+    mu=3,
     resolucion_r=300,
     longitud_serie=2000,
     iter_descartar=4000,
@@ -66,9 +67,13 @@ def bifurcacion_con_J(
         x_vals_plot.extend(serie)
 
         # # Índice J
-        J = permutation_entropy(serie,m=mu,tau=max_gamma)
+        # J = permutation_entropy(serie,m=mu,tau=max_gamma)
+        angulos = angulos_alpha(serie,False)
+        J, _ = gamma_index_jacobs_circular(angulos,max_gamma,mu)
+        # J, _ = gamma_index_jacobs(angulos,max_gamma,mu)
+
         r_vals_J.append(r)  
-        J_vals.append(J)
+        J_vals.append(J[-1])
 
     if graficar:
         fig, ax1 = plt.subplots(figsize=(10, 6))
@@ -107,8 +112,8 @@ def bifurcacion_con_J(
         ax2 = ax1.twinx()
         ax2.plot(r_vals_J, J_vals, color='red',marker='.', lw=0.5, ms = 2.0,label=r'$J$ index')
         # ax2.invert_yaxis()
-        U = np.log(longitud_serie-(mu-1)*max_gamma)/np.log(math.factorial(mu))
-        ax2.axhline(y=U, color='red', linestyle='--', label=r'$U(N,m)$') 
+        # U = np.log(longitud_serie-(mu-1)*max_gamma)/np.log(math.factorial(mu))
+        # ax2.axhline(y=U, color='red', linestyle='--', label=r'$U(N,m)$') 
         ax2.set_xlabel('r')
         ax2.set_ylabel('PE',rotation=360)
         ax2.legend(loc='lower left')
@@ -129,10 +134,10 @@ def bifurcacion_con_J(
 r_J, J, r_bif, x_bif = bifurcacion_con_J(
     r_min=3.4, 
     r_max=4.0,
-    max_gamma=2,
-    mu=3,  
-    resolucion_r=1000,
-    longitud_serie=12500, 
+    max_gamma=5,
+    mu=5,  
+    resolucion_r=300,
+    longitud_serie=3500, 
     iter_descartar=1000,
     var_ruido=1e-04,
     tipo_ruido="no",  # o "aditivo"
