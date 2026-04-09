@@ -5,7 +5,7 @@ import re
 import importlib
 import funciones
 importlib.reload(funciones)
-from funciones import entropia_shannon, extract_melody_grow, juntar_y_ordenar, extract_melody_simple
+from funciones import entropia_shannon, extract_melody_grow, juntar_y_ordenar, extract_melody_simple, indice_J
 import funciones2
 importlib.reload(funciones2)
 from funciones2 import randomize_rhythm_per_bar_with_rests
@@ -231,29 +231,30 @@ def process_wav(archivo_wav, segundo2, minuto2 = 0.0):
     duracion = len(señal) / fs
     t_start= 0.0
     # minuto2, segundo2 = 0, duracion-3.0
-    t_end = minuto2*60 + segundo2
+    t_end = minuto2*60 + segundo2 + 1.0
     print('t_end',divmod(t_end, 60))
     ventana = (t >= t_start) & (t <= t_end) 
     N = int(fs*(t_end - t_start))
     muestra, t_muestra = sg.resample(señal[ventana], N, t[ventana]) 
-    muestra = señal[:len(muestra)]
+    # muestra = señal[:len(muestra)]
     print(len(muestra))
-    plt.figure(figsize=(12, 6))
-    plt.subplot(2, 1, 1)
-    plt.plot(t, señal)
-    plt.xlabel('Tiempo')
-    plt.ylabel('Amplitud')
-    plt.title('Señal original')
-    plt.axvspan(t_start, t_end, alpha=0.5, color='red') 
+    # plt.figure(figsize=(12, 6))
+    # plt.subplot(2, 1, 1)
+    # plt.plot(t, señal)
+    # plt.xlabel('Tiempo')
+    # plt.ylabel('Amplitud')
+    # plt.title('Señal original')
+    # plt.axvspan(t_start, t_end, alpha=0.5, color='red') 
 
-    plt.subplot(2, 1, 2)
-    plt.plot(t_muestra, muestra)
-    plt.xlabel('Tiempo')
-    plt.ylabel('Amplitud')
-    # plt.title(f'Muestra de la señal S = {main(muestra,d=1,bivariante=False)}')
+    # plt.subplot(2, 1, 2)
+    # plt.plot(t_muestra, muestra)
+    # plt.xlabel('Tiempo')
+    # plt.ylabel('Amplitud')
+    # # plt.title(f'Muestra de la señal S = {main(muestra,d=1,bivariante=False)}')
 
-    plt.tight_layout()
-    plt.show() 
+    # plt.tight_layout()
+    # plt.show() 
+    return muestra
 
 
 def permutar_penultima_columna(arr):
@@ -262,6 +263,9 @@ def permutar_penultima_columna(arr):
     np.random.shuffle(penultima)  # permuta en su lugar
     arr[:, -2] = penultima  # asigna de nuevo
     return arr
+
+
+from regla_simple_multivoz import extract_melody_multi_voices
 
 """""""""
 
@@ -282,7 +286,32 @@ ostinato = np.array([
         [0.0, 1.0, 1.0, 60.0, 4.0],
         [1.0, 2.0, 1.0, 64.0, 4.0],
         [2.0, 3.0, 1.0, 67.0, 4.0],
-        [3.0, 4.0, 1.0, 64.0, 4.0]])
+        [3.0, 4.0, 1.0, 64.0, 4.0],
+        [0.0, 1.0, 1.0, 60.0, 5.0],
+        [1.0, 2.0, 1.0, 64.0, 5.0],
+        [2.0, 3.0, 1.0, 67.0, 5.0],
+        [3.0, 4.0, 1.0, 64.0, 5.0],
+        [0.0, 1.0, 1.0, 60.0, 6.0],
+        [1.0, 2.0, 1.0, 64.0, 6.0],
+        [2.0, 3.0, 1.0, 67.0, 6.0],
+        [3.0, 4.0, 1.0, 64.0, 6.0],
+        [0.0, 1.0, 1.0, 60.0, 7.0],
+        [1.0, 2.0, 1.0, 64.0, 7.0],
+        [2.0, 3.0, 1.0, 67.0, 7.0],
+        [3.0, 4.0, 1.0, 64.0, 7.0],
+        [0.0, 1.0, 1.0, 60.0, 8.0],
+        [1.0, 2.0, 1.0, 64.0, 8.0],
+        [2.0, 3.0, 1.0, 67.0, 8.0],
+        [3.0, 4.0, 1.0, 64.0, 8.0],
+        [0.0, 1.0, 1.0, 60.0, 9.0],
+        [1.0, 2.0, 1.0, 64.0, 9.0],
+        [2.0, 3.0, 1.0, 67.0, 9.0],
+        [3.0, 4.0, 1.0, 64.0, 9.0],
+        [0.0, 1.0, 1.0, 60.0, 10.0],
+        [1.0, 2.0, 1.0, 64.0, 10.0],
+        [2.0, 3.0, 1.0, 67.0, 10.0],
+        [3.0, 4.0, 1.0, 64.0, 10.0] 
+        ])
 
 random_C_scale = np.array([
         [0.0, 1.0, 1.0, np.random.choice([60.0,62.,64.,65.,67.,69.,71.]), 1.0],
@@ -339,36 +368,29 @@ scale_C_ascend = np.array([
         [3.0, 4.0, 1.0, 86.0, 4.0]])
 
 repetir = np.array([
-        [0.0, 1.0, 1.0, 72.0, 1.0],
+        [0.0, 1.0, 1.0, 60.0, 1.0],
         [1.0, 2.0, 1.0, 60.0, 1.0],
-        [2.0, 3.0, 1.0, 48.0, 1.0],
-        [3.0, 4.0, 1.0, 84.0, 1.0],
+        [2.0, 3.0, 1.0, 60.0, 1.0],
+        [3.0, 4.0, 1.0, 60.0, 1.0],
         [0.0, 1.0, 1.0, 60.0, 2.0],
         [1.0, 2.0, 1.0, 60.0, 2.0],
-        [2.0, 3.0, 1.0, 48.0, 2.0],
+        [2.0, 3.0, 1.0, 60.0, 2.0],
         [3.0, 4.0, 1.0, 60.0, 2.0],
-        [0.0, 1.0, 1.0, 72.0, 3.0],
-        [1.0, 2.0, 1.0, 72.0, 3.0],
+        [0.0, 1.0, 1.0, 60.0, 3.0],
+        [1.0, 2.0, 1.0, 60.0, 3.0],
         [2.0, 3.0, 1.0, 60.0, 3.0],
-        [3.0, 4.0, 1.0, 48.0, 3.0],
-        [0.0, 1.0, 1.0, 84.0, 4.0],
-        [1.0, 2.0, 1.0, 72.0, 4.0],
-        [2.0, 3.0, 1.0, 84.0, 4.0],
+        [3.0, 4.0, 1.0, 60.0, 3.0],
+        [0.0, 1.0, 1.0, 60.0, 4.0],
+        [1.0, 2.0, 1.0, 60.0, 4.0],
+        [2.0, 3.0, 1.0, 60.0, 4.0],
         [3.0, 4.0, 1.0, 60.0, 4.0],
 ])
 
-acorde = np.array([
-    [0.0,1.0,1.0,61.,1.0],
-    [0.0,1.0,1.0,65.,1.0],
-    [0.0,1.0,1.0,67.,1.0]])
 
-    # [0.0,1.0,1.0,70.,1.0]])
-from regla_simple_multivoz import extract_melody_multi_voices
-array_complete = np.array((ostinato,))
 
-partitura = r'data\humdrum-data-numpy\beethoven\piano\sonata\sonata14-1'
-partitura = r'data\humdrum-data-numpy\polyrhythm\rds\R222_Sch-w35p20m73-75'
-array_complete = extraer_partitura_npy(partitura) 
+# partitura = r'data\humdrum-data-numpy\beethoven\piano\sonata\sonata14-1'
+# partitura = r'data\humdrum-data-numpy\polyrhythm\rds\R222_Sch-w35p20m73-75'
+# array_complete = extraer_partitura_npy(partitura) 
 
 # array_complete[0] = randomize_rhythm_per_bar_with_rests(array_complete[0])
 # array_complete[1] = randomize_rhythm_per_bar_with_rests(array_complete[1])
@@ -382,23 +404,31 @@ array_complete = extraer_partitura_npy(partitura)
 # print(serie1d)
 # np.save('chopin1d.npy', np.array(serie1d))
 
+acorde = np.array([
+    [0.0, 1.0, 1.0, 60.0, 1.0]
+    ])
 
-mxl_file ='partitura.xml'
-tempo = 120
+Js = []
+for i in range(np.shape(repetir)[0]):
+    array_complete = np.array((repetir[0:i+1],))
+    mxl_file ='partitura.xml'
+    tempo = 120
 
-generador_partitura(array_complete,output_name=mxl_file,tempo=tempo,path=False)
+    generador_partitura(array_complete,output_name=mxl_file,tempo=tempo,path=False)
 
-archivo_wav = mxl_to_wav(mxl_file)
-# archivo_wav = generador_ruido_wav(duration=12,amplitude=0.3)
-# process_wav(archivo_wav, segundo2=5.0) #15.5
-process_wav(archivo_wav, segundo2=(60/tempo)*4*4) #15.5
+    archivo_wav = mxl_to_wav(mxl_file)
+    # archivo_wav = generador_ruido_wav(duration=12,amplitude=0.3)
+    # process_wav(archivo_wav, segundo2=5.0) #15.5
+    muestra = process_wav(archivo_wav, segundo2=(60/tempo)*np.shape(repetir[0:i+1])[0]) #15.5
 
-for arch in [mxl_file,archivo_wav,'first_step.xml']:
-    if os.path.exists(arch):
-        os.remove(arch)
-        print("Archivo eliminado.")
-    else:
-        print("El archivo no existe.")
+    for arch in [mxl_file,archivo_wav,'first_step.xml']:
+        if os.path.exists(arch):
+            os.remove(arch)
+            print("Archivo eliminado.")
+        else:
+            print("El archivo no existe.")
 
-
-
+    J = indice_J(muestra, False)
+    print("Índice J:", J)
+    Js.append(J)
+np.save('J_audio/Js_melody_repeat_C.npy', np.array(Js))

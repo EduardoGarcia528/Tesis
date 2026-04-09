@@ -58,7 +58,6 @@ def remove_consecutive_duplicates(data, tolerance=1e-1):
 
     return np.array(result)
 
-
 # PE
 
 @njit
@@ -156,7 +155,7 @@ def mejor_vector(p1, p2):
 @njit
 def calcular_angulos(vectores):
     n = len(vectores) - 1
-    angulos = np.empty(n)
+    angulos = np.empty(n, dtype=np.float64)
     for i in range(n):
         v1 = vectores[i]
         v2 = vectores[i + 1]
@@ -194,7 +193,7 @@ def caminata_univariante(X, tau, bivariante):
     ff2 = np.angle(np.fft.rfft(y1))
 
     n = len(ff1) - 1
-    vectores = np.empty((n,2)) #(n,2)
+    vectores = np.empty((n,2),dtype=np.float64) #(n,2)
     for i in range(n):
         p1 = (ff1[i], ff2[i])
         p2 = (ff1[i+1], ff2[i+1])
@@ -207,12 +206,17 @@ def indice_J(seriex, seriey, tau = 1):
     angulos = calcular_angulos(vectores)
     e = np.exp(angulos * 1j)
     e1 = np.sum(e) / len(angulos)
-    J = 1.0 - np.abs(e1.real)
+    J = 1.0 - np.abs(e1)
     return J
+
+def angulos_alpha(seriex, seriey, tau = 1):
+    vectores = caminata_univariante(seriex,tau,bivariante=seriey)
+    angulos = calcular_angulos(vectores)
+    return angulos
 
 # Entropia de Shannon
 
-def entropia_shannon(x, discreto, bins=100):
+def entropia_shannon(x, discreto, bins=None):
     x = np.asarray(x)
     x = x[np.isfinite(x)]
     if x.size == 0:
@@ -229,8 +233,11 @@ def entropia_shannon(x, discreto, bins=100):
     else:
         # Caso continuo: estimar densidad mediante histograma
         try:
+            if bins is None:
+                bins = 1 + int(np.log2(len(x)))  # Sturges
             hist, _ = np.histogram(x, bins=bins, density=True)
         except Exception:
+            print("error: retorna nan")
             return np.nan
         hist = hist[hist > 0]
         if hist.size == 0:

@@ -5,6 +5,9 @@ import pandas as pd
 import copy
 import os
 from iaaft import iaaft
+from funciones import angulos_alpha
+from gamma_4 import gamma_index_jacobs
+from circular_gamma import gamma_index_jacobs_circular
 
 def extraer_dataset_musica():
 
@@ -126,13 +129,13 @@ def plot_pe_vs_shuffle(array, m, tau, n_shuffles=1000, random_state=None, bins=3
 
     # PE observado
     pe_obs = modified_permutation_entropy(array, m, tau)
-
     # PE de los shuffles
     pe_shuffles = np.empty(n_shuffles)
     shuffled = iaaft(array,n_shuffles)
     for i in range(n_shuffles):
         # shuffled = rng.permutation(array)
         pe_shuffles[i] = modified_permutation_entropy(shuffled[i,:], m, tau)
+
 
     # Estadísticos
     mu_shuffle = np.mean(pe_shuffles)
@@ -197,7 +200,7 @@ labels = list(composers[composer].keys())
 for i, label in enumerate(labels):
     serie = composers[composer][label]
 
-    resultados = plot_pe_vs_shuffle(serie, m=5, tau=1, n_shuffles=1000, random_state=123)
+    resultados = plot_pe_vs_shuffle(serie, m=5, tau=1, n_shuffles=500, random_state=123)
         
     print("PE observado:", resultados['pe_obs'])
     print("Media shuffle:", resultados['mu_shuffle'])

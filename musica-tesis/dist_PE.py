@@ -5,10 +5,13 @@ import hashlib
 import numpy as np
 import pandas as pd
 import copy 
+from scipy.stats import spearmanr, pearsonr
 import matplotlib.pyplot as plt
 from modified_PE import modified_permutation_entropy
 from funciones import angulos_alpha, permutation_entropy
 from iaaft import iaaft
+from gamma_4 import gamma_index_jacobs
+from circular_gamma import gamma_index_jacobs_circular
 
 # =========================================================
 # PARÁMETROS GENERALES
@@ -34,7 +37,7 @@ TOP_MARGIN = 0.90
 # =========================================================
 MEASURE = "mPE"
 TYPE_NULL = "shuffle"
-N_SURROGATES = 1000
+N_SURROGATES = 800
 RANDOM_STATE = 12345
 ALTERNATIVE = "less"   # 'two-sided', 'greater', 'less'
 NORMALIZE = True
@@ -46,11 +49,12 @@ ALPHA = 0.05   # sólo se usa si USE_P_RAW_ZERO_FOR_RED = False
 # =========================================================
 # CONFIGURACIÓN DE LOS 4 PANELES
 # =========================================================
+
 PANEL_CONFIGS = [
-    {"measure":"mPE_interval","D": 3, "tau": 1,"type_null":"shuffle", "title": fr"mPE (interval,shuffle): $m=3,\ \tau=1$"},
-    {"measure":"mPE_interval","D": 4, "tau": 1,"type_null":"shuffle", "title": fr"mPE (interval,shuffle): $m=4,\ \tau=1$"},
-    {"measure":"mPE_interval","D": 4, "tau": 2,"type_null":"shuffle", "title": fr"mPE (interval,shuffle): $m=4,\ \tau=2$"},
+    {"measure":"mPE","D": 5, "tau": 1,"type_null":"shuffle", "title": fr"mPE (notes,shuffle): $m=5,\ \tau=1$"},
     {"measure":"mPE_interval","D": 5, "tau": 1,"type_null":"shuffle", "title": fr"mPE (interval,shuffle): $m=5,\ \tau=1$"},
+    {"measure":"mPE","D": 5, "tau": 1,"type_null":"iaaft", "title": fr"mPE (notes,iaaft): $m=5,\ \tau=1$"},
+    {"measure":"mPE_interval","D": 5, "tau": 1,"type_null":"iaaft", "title": fr"mPE (interval,IAAFT): $m=5,\ \tau=1$"},
 ]
 
 # =========================================================
@@ -62,6 +66,26 @@ FORCE_RECOMPUTE = False   # True si quieres forzar recálculo
 # =========================================================
 # AUXILIARES
 # =========================================================
+
+def medianas_por_compositor(df_panel, composer_names):
+    medianas = []
+    for composer in composer_names:
+        sub = df_panel[df_panel["composer"] == composer].copy()
+        if sub.empty:
+            medianas.append(np.nan)
+            continue
+
+        zvals = sub["z"].to_numpy(dtype=float)
+        zvals = zvals[np.isfinite(zvals)]
+
+        if zvals.size == 0:
+            medianas.append(np.nan)
+        else:
+            medianas.append(np.median(zvals))
+
+    return np.array(medianas, dtype=float)
+
+
 #dataframe datos de compositores 
 def extraer_dataset_musica():
 
@@ -195,10 +219,20 @@ def pe_stats_for_series(
     """
     rng = np.random.default_rng(random_state)
     x = np.asarray(x, dtype=float)
-    if "interval" in measure:
-        pe_obs = modified_permutation_entropy(np.diff(x), m=D, tau=tau)
-    else:
-        pe_obs = modified_permutation_entropy(x, m=D, tau=tau)
+    if "PE" in measure:
+        if "interval" in measure:
+            pe_obs = modified_permutation_entropy(np.diff(x), m=D, tau=tau)
+        else:
+            pe_obs = modified_permutation_entropy(x, m=D, tau=tau)
+    elif "Cd" in measure:
+        if "interval" in measure:
+            # angulos = angulos_alpha(np.diff(x),False)
+            C,_ = gamma_index_jacobs(np.diff(x),max_gamma=D,mu=tau)
+            pe_obs = 1-C[-1]
+        else:
+            # angulos = angulos_alpha(x,False)
+            C,_ = gamma_index_jacobs(x,max_gamma=D,mu=tau)
+            pe_obs = 1-C[-1]
     pe_surrogates = np.empty(n_surrogates, dtype=float)
     if type_null == "shuffle":
         for k in range(n_surrogates):
@@ -206,7 +240,12 @@ def pe_stats_for_series(
                 x_surr = rng.permutation(np.diff(x))
             else:
                 x_surr = rng.permutation(x)
-            pe_surr = modified_permutation_entropy(x_surr, m=D, tau=tau)
+            if "PE" in measure:
+                pe_surr = modified_permutation_entropy(x_surr, m=D, tau=tau)
+            elif "Cd" in measure:
+                # angulos_surr = angulos_alpha(x_surr,False)
+                C,_ = gamma_index_jacobs(x_surr,max_gamma=D,mu=tau)
+                pe_surr = 1-C[-1]
             pe_surrogates[k] = pe_surr
     if type_null == "iaaft":
         if "interval" in measure:    
@@ -251,6 +290,8 @@ def pe_stats_for_series(
 def build_cache_key(measure,D, tau, type_null, normalize, alternative):
     if "PE" in measure:
         return f"{measure}_D{D}_tau{tau}_{type_null}_{alternative}_norm{int(normalize)}"
+    elif "Cd" in measure:
+        return f"{measure}_d{D}_mu{tau}_{type_null}_{alternative}_norm{int(normalize)}"
     else:
         return f"{measure}_{type_null}_{alternative}_norm{int(normalize)}"
 
@@ -429,7 +470,7 @@ def plot_panel(ax, df_panel, composer_names, title,
         x = np.random.normal(i, JITTER_STD, size=zvals.size)
 
         ax.scatter(
-            x, -zvals,
+            x, zvals,
             s=DOT_SIZE,
             alpha=EDGE_ALPHA,
             facecolors="none",
@@ -437,7 +478,7 @@ def plot_panel(ax, df_panel, composer_names, title,
             linewidths=0.8
         )
 
-        med = np.median(-zvals)
+        med = np.median(zvals)
         medianas.append(med)
         all_z.extend(zvals.tolist())
 
@@ -585,3 +626,42 @@ plt.subplots_adjust(
 
 plt.margins(x=0.02)
 plt.show()
+
+medianas_dict = {}
+
+for cfg, df_panel in zip(PANEL_CONFIGS, panel_dfs):
+    nombre_panel = cfg["title"]
+    medianas_dict[nombre_panel] = medianas_por_compositor(df_panel, composer_names)
+
+df_medianas = pd.DataFrame(medianas_dict, index=composer_names)
+
+print("\nMedianas por compositor:")
+print(df_medianas)
+
+print("\nCorrelaciones de Pearson entre series de medianas:")
+for i in range(len(df_medianas.columns)):
+    for j in range(i + 1, len(df_medianas.columns)):
+        c1 = df_medianas.columns[i]
+        c2 = df_medianas.columns[j]
+
+        pares = df_medianas[[c1, c2]].dropna()
+        if len(pares) < 2:
+            print(f"{c1} vs {c2}: insuficientes datos")
+            continue
+
+        r, p = pearsonr(pares[c1], pares[c2])
+        print(f"{c1} vs {c2}: r = {r:.6f}, p = {p:.6g}")
+
+print("\nCorrelaciones de Spearman entre series de medianas:")
+for i in range(len(df_medianas.columns)):
+    for j in range(i + 1, len(df_medianas.columns)):
+        c1 = df_medianas.columns[i]
+        c2 = df_medianas.columns[j]
+
+        pares = df_medianas[[c1, c2]].dropna()
+        if len(pares) < 2:
+            print(f"{c1} vs {c2}: insuficientes datos")
+            continue
+
+        rho, p = spearmanr(pares[c1], pares[c2])
+        print(f"{c1} vs {c2}: rho = {rho:.6f}, p = {p:.6g}")
