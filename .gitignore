@@ -10,6 +10,6 @@ DFA/new_data
 Comparar_dist/new_data
 Grupo_Normalizacion/kuramoto_Rc.npy
 Audios/wavs
-musica-tesis/PDMX
+pdmx_musica/PDMX
 *.pyc
 *.json

@@ -1,28 +1,25 @@
 REGLA GENERAL PARA OBTENER MELODÍA SIN ARBITRARIEDAD
-1. Elegir voz principal solista.
-2. Si la voz del instrumento es polifónico, elegir siempre la nota más aguda.
-3. Cuando la voz principal está en silencio en todo un compás, la segunda voz será la principal en ese compás específico.
+I. Elegir voz principal solista.
+II. Si la voz del instrumento es polifónico, elegir siempre la nota más aguda.
+III. Cuando la voz principal está en silencio en todo un compás, la segunda voz será la principal en ese compás específico.
+
+
+1. Vivaldi, Concerto in a minor vivaldi first movement  RV 356
+https://musescore.com/user/87031/scores/4199371
 
 Barroco — Johann Sebastian Bach
 
-1. Violin Concerto in A minor, BWV 1041 — (concerto para violín solista). 
+2. Violin Concerto in A minor, BWV 1041 — (concerto para violín solista). 
 https://musescore.com/user/4235291/scores/1284501
-
-2. Violin Concerto in E major, BWV 1042 — (otro concierto con línea solista de violín clara).
-https://musescore.com/user/2451366/scores/10357609
 
 3. Cello Suite No. 1 in G major, BWV 1007 (suite para violonchelo solo — la línea de cello es monofónica y muy definida, p. ej. el Prélude). https://www.youtube.com/watch?v=cGnZHIY_hoQ
 https://musescore.com/user/32980011/scores/10287298
 Este tiene todo el Suite (prelude, Allemande, courante, Sarabande, Menuet I y II, gigue), solamente transpuesta del Cello al violin
 
-
+4. Violin Concerto in E major, BWV 1042 — (otro concierto con línea solista de violín clara).
+https://musescore.com/user/2451366/scores/10357609
 
 Barroco — Antonio Vivaldi (4 estaciones https://www.youtube.com/watch?v=4rgSzQwe5DQ )
-
-4. "El otoño“ (Autumn, RV 293) — idem. (Error en obtener melodía audio)
-https://musescore.com/user/38606/scores/5515019
-Es un arreglo de solo piano pero la melodía SIEMPRE lo lleva la nota más alta (el violin). De hecho este arreglo está muy bien porque la dinámica de la nota más aguda comprime la melodía llevada por todo el ensamble de cuerdas.
-
 
 5. "La primavera“ (The Four Seasons — Violin Concerto in E major, RV 269) — movimiento con melodía principal de violín.
 https://musescore.com/user/32841239/scores/6502764
@@ -32,9 +29,9 @@ También en solo piano. Solo la sección Allegro (la sección lenta de la pieza 
 https://musescore.com/user/22928/scores/45159
 También Solo Piano (2 minutos de la obra completa)
 
-7. Concerto in a minor vivaldi first movement
-https://musescore.com/user/87031/scores/4199371
-
+7. "El otoño“ (Autumn, RV 293) — idem. (Error en obtener melodía audio)
+https://musescore.com/user/38606/scores/5515019
+Es un arreglo de solo piano pero la melodía SIEMPRE lo lleva la nota más alta (el violin). De hecho este arreglo está muy bien porque la dinámica de la nota más aguda comprime la melodía llevada por todo el ensamble de cuerdas.
 
 Clasicismo — Wolfgang Amadeus Mozart
 
@@ -48,76 +45,66 @@ Tomar Violin 1 como voz
 10. Mozart's Clarinet Concerto in A major for Bb clarinet - https://www.youtube.com/watch?v=YT_63UntRJE
 https://musescore.com/user/5195646/scores/1802971
 
+Romanticismo - Paganini
+
+11. Solo Violin Caprice No. 24 in A Minor - N. Paganini, Op. 1, No. 24 (Sin audio)
+https://musescore.com/user/13502736/scores/5582243
 
 Clasicismo → puente al Romanticismo — Ludwig van Beethoven (periodo temprano / medio)
 
-11. String Quartet No. 7 in F major, Op. 59 No. 1 (Razumovsky). https://www.youtube.com/watch?v=aG89Fdc1jk0
+12. String Quartet No. 7 in F major, Op. 59 No. 1 (Razumovsky). https://www.youtube.com/watch?v=aG89Fdc1jk0
 https://musescore.com/user/1021946/scores/5129045 (No se puede extraer audio, notas muy cortas)
 Aquí la voz viaja entre el primer violín, segundo violín y el violonchelo. Pero extraer la melodía es muy fácil porque cuando el segundo violín o el violonchelo son voz, las voces de mayor "preferencia" están silenciadas o sus notas se repiten de manera monótona por varios compases.
 
-12. Piano Concerto No.5, Op.73 E-flat major
+13. Piano Concerto No.5, Op.73 E-flat major
 Fue su último piano concierto, no estoy muy seguro si el clasicismo. Melodía claramente la nota más aguda de la mano derecha.
 https://musescore.com/user/1021946/scores/1041006 (Sin audio)
 
-Romanticismo — Frédéric Chopin
-
-Nota: Chopin escribió casi exclusivamente para piano; su repertorio no-piano es reducido. Aun así hay obras donde la voz principal monofónica está clara (violonchelo o voz). 
-
-13. Cello Sonata in G minor, Op. 65 — sonata para violonchelo y piano; el violonchelo suele llevar la línea melódica principal https://www.youtube.com/watch?v=P3thZnim4jY
-https://musescore.com/user/13734346/scores/7798859
+Paganini
+14. Paganini, Concierto para violín No. 2 en Si menor, “La campanella” 
+https://musescore.com/user/27439014/scores/5316979
 
 Romanticismo - Mendelssohn 
 
-14. Violin Concerto In E Minor Op. 64 
-Corrompido
+15. Violin Concerto In E Minor Op. 64 
+https://musescore.com/user/26932368/scores/5173331
 
-15. Mendelssohn Piano Concerto No. 1 in G minor Op. 25
-Corrompido
+Romanticismo — Frédéric Chopin, Nota: Chopin escribió casi exclusivamente para piano; su repertorio no-piano es reducido. Aun así hay obras donde la voz principal monofónica está clara (violonchelo o voz). 
 
-16. Violin Concerto In D Minor, MWV O 3 https://www.youtube.com/watch?v=zOf2ne_4Ors
-Corrompido
+16. Cello Sonata in G minor, Op. 65 — sonata para violonchelo y piano; el violonchelo suele llevar la línea melódica principal https://www.youtube.com/watch?v=P3thZnim4jY
+https://musescore.com/user/13734346/scores/7798859
 
 Romanticismo — Johannes Brahms
 
-17. Violin Concerto in D major, Op. 77 — concierto con melodía solista bien definida para violín. 
+17. Cello Sonata No. 1 in E minor, Op. 38 — el cello lleva líneas melódicas definidas. 
+https://www.youtube.com/watch?v=J7ecdXzSADE
+https://musescore.com/user/81587/scores/99220
+
+18. Violin Concerto in D major, Op. 77 — concierto con melodía solista bien definida para violín. 
 https://musescore.com/user/82861258/scores/27001963
 
-18. Double Concerto for Violin and Cello in A minor, Op. 102 — voz(s) solistas claramente monofónicas (dos solistas).
+19. Double Concerto for Violin and Cello in A minor, Op. 102 — voz(s) solistas claramente monofónicas (dos solistas).
 https://www.youtube.com/watch?v=Hj4qCTETAlg - 
 https://musescore.com/user/49345559/scores/8248676 
 Esta la voz del violin, sin el otro solista
 
-19. Cello Sonata No. 1 in E minor, Op. 38 — el cello lleva líneas melódicas definidas. 
-https://www.youtube.com/watch?v=J7ecdXzSADE
-https://musescore.com/user/81587/scores/99220
-
-Romanticismo tardío - Jean Sibelius
-
-20. Violin Concerto in D Minor, op. 47 (Sin audio)
-https://musescore.com/user/44012303/scores/7805798
-
 Impresionismo — Claude Debussy
 
-21. Violin Sonata https://www.youtube.com/watch?v=J7ecdXzSADE  - B♭ mayor, G menor
-https://musescore.com/user/31445995/scores/11531119
-
-22. The Suite bergamasque https://www.youtube.com/watch?v=2O6aBBFJ9xY  - F mayor, D menor
-https://musescore.com/user/2585196/scores/890041
-
-23. Debussy - Deux arabesques - E mayor, C♯ menor
+20. Debussy - Deux arabesques - E mayor, C♯ menor
 Incluye clair de lune
 La melodía está determinada en un video anexo en el musescore, y las claves no la separan correctamente del acompañamiento, aunque la incluyo de todos modos, parece que el acompañamiento se filtra un poco solamente.
 https://musescore.com/openscore/scores/4788704 
 
-Romanticismo - Paganini
+21. The Suite bergamasque https://www.youtube.com/watch?v=2O6aBBFJ9xY  - F mayor, D menor
+https://musescore.com/user/2585196/scores/890041
 
-24. Solo Violin Caprice No. 24 in A Minor - N. Paganini, Op. 1, No. 24 (Sin audio)
-https://musescore.com/user/13502736/scores/5582243
+Romanticismo tardío - Jean Sibelius
 
-25. Concierto para violín No. 2 en Si menor, “La campanella” 
-https://musescore.com/user/27439014/scores/5316979
+22. Violin Concerto in D Minor, op. 47 (Sin audio)
+https://musescore.com/user/44012303/scores/7805798
 
-26. Solo Violin Caprice No. 5 in A Minor - N. Paganini, Op. 1, No. 5
-https://musescore.com/user/13502736/scores/5370204
 
+Debussy
+23. Debusy, Violin Sonata https://www.youtube.com/watch?v=J7ecdXzSADE  - B♭ mayor, G menor
+https://musescore.com/user/31445995/scores/11531119
 

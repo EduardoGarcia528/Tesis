@@ -1,0 +1,413 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
+
+from funciones import angulos_alpha
+from gamma_4 import gamma_index_jacobs
+from circular_gamma import gamma_index_jacobs_circular
+
+
+# =========================
+# MAPA LOGÍSTICO
+# =========================
+def logistic_map(r, x):
+    return r * x * (1.0 - x)
+
+
+# =========================
+# GENERAR BIFURCACIÓN
+# =========================
+def generar_bifurcacion(
+    r_min=3.0,
+    r_max=4.0,
+    resolucion_r=300,
+    longitud_serie=1200,
+    iter_descartar=2000,
+    x0=0.6
+):
+    r_grid = np.linspace(r_min, r_max, resolucion_r)[1:]
+
+    r_vals_plot = []
+    x_vals_plot = []
+
+    for r in r_grid:
+        x = x0
+
+        for _ in range(iter_descartar):
+            x = np.clip(x, 0.0, 1.0)
+            x = logistic_map(r, x)
+
+        serie = np.empty(longitud_serie)
+        for i in range(longitud_serie):
+            x = np.clip(x, 0.0, 1.0)
+            x = logistic_map(r, x)
+            serie[i] = x
+
+        r_vals_plot.extend([r] * longitud_serie)
+        x_vals_plot.extend(serie)
+
+    return r_grid, np.array(r_vals_plot), np.array(x_vals_plot)
+
+
+# =========================
+# GENERAR SERIE PARA UN r 
+# =========================
+def generar_serie_logistica(r, longitud_serie=1200, iter_descartar=2000, x0=0.6):
+    x = x0
+
+    for _ in range(iter_descartar):
+        x = np.clip(x, 0.0, 1.0)
+        x = logistic_map(r, x)
+
+    serie = np.empty(longitud_serie)
+    for i in range(longitud_serie):
+        x = np.clip(x, 0.0, 1.0)
+        x = logistic_map(r, x)
+        serie[i] = x
+
+    return serie
+
+
+# =========================
+# FORMATO PAPER
+# =========================
+def aplicar_formato_panel(ax, ylabel=None, show_bottom_ticks=False, xlabel=None):
+    ax.set_xlim(3.0, 4.0)
+
+    if ylabel is not None:
+        ax.set_ylabel(ylabel, rotation=360, labelpad=14, fontsize=13)
+    if xlabel is not None:
+        ax.set_xlabel(xlabel, fontsize=12)
+
+    ax.minorticks_on()
+    ax.tick_params(axis='both', which='major', direction='out', length=4, width=0.8)
+    ax.tick_params(axis='both', which='minor', direction='out', length=2.5, width=0.6)
+
+    if not show_bottom_ticks:
+        ax.tick_params(labelbottom=False)
+
+    for spine in ax.spines.values():
+        spine.set_linewidth(0.8)
+
+
+def poner_letra_panel(ax, letra):
+    ax.text(
+        0.985, 0.50, f"{letra})",
+        transform=ax.transAxes,
+        ha="right", va="center",
+        fontsize=14
+    )
+
+
+# =========================
+# CÁLCULO DE CURVAS SIN RUIDO
+# =========================
+def calcular_curvas_gamma1(
+    r_grid,
+    longitud_serie=1200,
+    iter_descartar=2000,
+    x0=0.6,
+    max_gamma=6
+):
+    mus = [2, 3, 4, 5, 6]
+    nus = [2, 3, 4, 5, 6]
+
+    gamma1_mu = {mu: np.empty(len(r_grid)) for mu in mus}
+    gamma1_alpha_nu = {nu: np.empty(len(r_grid)) for nu in nus}
+
+    for i, r in enumerate(r_grid):
+        serie = generar_serie_logistica(
+            r,
+            longitud_serie=longitud_serie,
+            iter_descartar=iter_descartar,
+            x0=x0
+        )
+
+        angulo = angulos_alpha(serie, False, tau=1)
+
+        for mu in mus:
+            _, g = gamma_index_jacobs(serie, max_gamma=max_gamma, mu=float(mu))
+            gamma1_mu[mu][i] = g[0]
+
+        for nu in nus:
+            _, g_alpha = gamma_index_jacobs_circular(angulo, max_gamma=max_gamma, nu=float(nu))
+            gamma1_alpha_nu[nu][i] = g_alpha[0]
+
+        print(f"{i + 1}/{len(r_grid)}   r = {r:.6f}")
+
+    return gamma1_mu, gamma1_alpha_nu
+
+
+# =========================
+# CARGAR CURVAS CON RUIDO
+# =========================
+def cargar_curvas_ruido_gamma1():
+    ruidos = [1e-10, 1e-8, 1e-7, 1e-6, 1e-5, 1e-4]
+
+    gamma1_aditivo = {}
+    gamma1_iterativo = {}
+    gamma1_alpha_aditivo = {}
+    gamma1_alpha_iterativo = {}
+
+    for vr in ruidos:
+        gamma1_aditivo[vr] = np.load(
+            f"data/RUIDOS/aditivo_gamma/g_por_ruido_{str(vr)}.npy"
+        )
+        gamma1_iterativo[vr] = np.load(
+            f"data/RUIDOS/iterativo_gamma/g_por_ruido_{str(vr)}.npy"
+        )
+        gamma1_alpha_aditivo[vr] = np.load(
+            f"data/RUIDOS/aditivo_gamma_alpha/g_por_ruido_{str(vr)}.npy"
+        )
+        gamma1_alpha_iterativo[vr] = np.load(
+            f"data/RUIDOS/iterativo_gamma_alpha/g_por_ruido_{str(vr)}.npy"
+        )
+
+    return ruidos, gamma1_aditivo, gamma1_iterativo, gamma1_alpha_aditivo, gamma1_alpha_iterativo
+
+
+# =========================
+# FIGURA 1: SIN RUIDO
+# =========================
+def figura_gamma1_sin_ruido(
+    r_min=3.0,
+    r_max=4.0,
+    resolucion_r=300,
+    longitud_bif=4000,
+    iter_descartar_bif=1000,
+    longitud_indices=20000,
+    iter_descartar_indices=1000,
+    x0=0.6,
+    max_gamma=6,
+    guardar_como="gamma1_sin_ruido.png"
+):
+    r_grid, r_bif, x_bif = generar_bifurcacion(
+        r_min=r_min,
+        r_max=r_max,
+        resolucion_r=resolucion_r,
+        longitud_serie=longitud_bif,
+        iter_descartar=iter_descartar_bif,
+        x0=x0
+    )
+
+    gamma1_mu, gamma1_alpha_nu = calcular_curvas_gamma1(
+        r_grid=r_grid,
+        longitud_serie=longitud_indices,
+        iter_descartar=iter_descartar_indices,
+        x0=x0,
+        max_gamma=max_gamma
+    )
+
+    colores_param = {
+        2: "gray",
+        3: "#2ECC71",
+        4: "purple",
+        5: "#CBAC00B8",
+        6: "#E91E63",
+    }
+
+    estilos_param = {
+        2: "-",
+        3: "--",
+        4: "-.",
+        5: ":",
+        6: (0, (3, 1, 1, 1)),
+    }
+
+    fig, axes = plt.subplots(
+        3, 1,
+        figsize=(7.4, 8.8),
+        sharex=True,
+        gridspec_kw={"hspace": 0.05}
+    )
+
+    # a) bifurcación
+    ax = axes[0]
+    ax.plot(r_bif, x_bif, ",", color="black", alpha=0.55)
+    aplicar_formato_panel(ax, ylabel=r"$x$", show_bottom_ticks=False)
+    poner_letra_panel(ax, "a")
+
+    # b) gamma1 variando mu
+    ax = axes[1]
+    for mu in [2, 3, 4, 5, 6]:
+        ax.plot(r_grid, 1-gamma1_mu[mu], color=colores_param[mu], ls=estilos_param[mu], lw=1.1)
+    aplicar_formato_panel(ax, ylabel=r"$\gamma_1$", show_bottom_ticks=False)
+    poner_letra_panel(ax, "b")
+    
+    # c) gamma1_alpha variando nu
+    ax = axes[2]
+    for nu in [2, 3, 4, 5, 6]:
+        ax.plot(r_grid, 1-gamma1_alpha_nu[nu], color=colores_param[nu], ls=estilos_param[nu], lw=1.1)
+    aplicar_formato_panel(ax, ylabel=r"$\gamma_1^\alpha$", show_bottom_ticks=True, xlabel=r"$r$")
+    poner_letra_panel(ax, "c")
+
+    handles_param = [
+        Line2D([0], [0], color=colores_param[v], lw=1.2, ls=estilos_param[v], label=fr"${v}$")
+        for v in [2, 3, 4, 5, 6]
+    ]
+
+    axes[1].legend(
+        handles=handles_param,
+        title=r"$\mu$",
+        loc="lower left",
+        frameon=False,
+        fontsize=9,
+        title_fontsize=10,
+        ncol=2
+    )
+
+    axes[2].legend(
+        handles=handles_param,
+        title=r"$\nu$",
+        loc="lower left",
+        frameon=False,
+        fontsize=9,
+        title_fontsize=10,
+        ncol=2
+    )
+
+    fig.subplots_adjust(
+        top=0.98,
+        left=0.12,
+        right=0.98,
+        bottom=0.08,
+        hspace=0.04
+    )
+
+    plt.savefig(guardar_como, dpi=300, bbox_inches="tight")
+    plt.show()
+
+
+# =========================
+# FIGURA 2: CON RUIDO
+# =========================
+def figura_gamma1_con_ruido(
+    r_min=3.0,
+    r_max=4.0,
+    resolucion_r=300,
+    longitud_bif=4000,
+    iter_descartar_bif=1000,
+    x0=0.6,
+    guardar_como="gamma1_con_ruido.png"
+):
+    r_grid, r_bif, x_bif = generar_bifurcacion(
+        r_min=r_min,
+        r_max=r_max,
+        resolucion_r=resolucion_r,
+        longitud_serie=longitud_bif,
+        iter_descartar=iter_descartar_bif,
+        x0=x0
+    )
+
+    ruidos, gamma1_aditivo, gamma1_iterativo, gamma1_alpha_aditivo, gamma1_alpha_iterativo = cargar_curvas_ruido_gamma1()
+
+    colores_ruido = {
+        1e-10: "gray",
+        1e-8: "#2ECC71",
+        1e-7: "purple",
+        1e-6: "#CBAC00B8",
+        1e-5: "#1ABC9C",
+        1e-4: "#E91E63",
+    }
+
+    estilos_ruido = {
+        1e-10: "-",
+        1e-8: "--",
+        1e-7: "-.",
+        1e-6: ":",
+        1e-5: (0, (5, 1)),
+        1e-4: (0, (3, 1, 1, 1)),
+    }
+
+    fig, axes = plt.subplots(
+        5, 1,
+        figsize=(7.4, 11.6),
+        sharex=True,
+        gridspec_kw={"hspace": 0.05}
+    )
+
+    # a) bifurcación
+    ax = axes[0]
+    ax.plot(r_bif, x_bif, ",", color="black", alpha=0.55)
+    aplicar_formato_panel(ax, ylabel=r"$x$", show_bottom_ticks=False)
+    poner_letra_panel(ax, "a")
+
+    # b) gamma1 con ruido aditivo
+    ax = axes[1]
+    for vr in ruidos:
+        ax.plot(r_grid, 1-gamma1_aditivo[vr], color=colores_ruido[vr], ls=estilos_ruido[vr], lw=1.1)
+    aplicar_formato_panel(ax, ylabel=r"$\gamma_1$", show_bottom_ticks=False)
+    poner_letra_panel(ax, "b")
+
+    # c) gamma1 con ruido iterativo
+    ax = axes[2]
+    for vr in ruidos:
+        ax.plot(r_grid, 1-gamma1_iterativo[vr], color=colores_ruido[vr], ls=estilos_ruido[vr], lw=1.1)
+    aplicar_formato_panel(ax, ylabel=r"$\gamma_1$", show_bottom_ticks=False)
+    poner_letra_panel(ax, "c")
+
+    # d) gamma1_alpha con ruido aditivo
+    ax = axes[3]
+    for vr in ruidos:
+        ax.plot(r_grid, 1-gamma1_alpha_aditivo[vr], color=colores_ruido[vr], ls=estilos_ruido[vr], lw=1.1)
+    aplicar_formato_panel(ax, ylabel=r"$\gamma_1^\alpha$", show_bottom_ticks=False)
+    poner_letra_panel(ax, "d")
+
+    # e) gamma1_alpha con ruido iterativo
+    ax = axes[4]
+    for vr in ruidos:
+        ax.plot(r_grid, 1-gamma1_alpha_iterativo[vr], color=colores_ruido[vr], ls=estilos_ruido[vr], lw=1.1)
+    aplicar_formato_panel(ax, ylabel=r"$\gamma_1^\alpha$", show_bottom_ticks=True, xlabel=r"$r$")
+    poner_letra_panel(ax, "e")
+
+    handles_ruido = [
+        Line2D([0], [0], color=colores_ruido[vr], lw=1.2, ls=estilos_ruido[vr], label=fr"$\sigma^2={vr}$")
+        for vr in ruidos
+    ]
+
+    fig.legend(
+        handles=handles_ruido,
+        loc="upper center",
+        bbox_to_anchor=(0.5, 0.992),
+        ncol=3,
+        frameon=False,
+        fontsize=9
+    )
+
+    fig.subplots_adjust(
+        top=0.94,
+        left=0.12,
+        right=0.98,
+        bottom=0.06,
+        hspace=0.04
+    )
+
+    plt.savefig(guardar_como, dpi=300, bbox_inches="tight")
+    plt.show()
+
+
+# =========================
+# EJECUCIÓN
+# =========================
+figura_gamma1_sin_ruido(
+    r_min=3.0,
+    r_max=4.0,
+    resolucion_r=300,
+    longitud_bif=300,
+    iter_descartar_bif=1000,
+    longitud_indices=300,
+    iter_descartar_indices=1000,
+    x0=0.6,
+    max_gamma=6,
+    guardar_como="gamma1_sin_ruido.png"
+)
+
+figura_gamma1_con_ruido(
+    r_min=3.0,
+    r_max=4.0,
+    resolucion_r=300,
+    longitud_bif=300,
+    iter_descartar_bif=1000,
+    x0=0.6,
+    guardar_como="gamma1_con_ruido.png"
+)

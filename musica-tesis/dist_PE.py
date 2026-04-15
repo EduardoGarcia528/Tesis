@@ -64,6 +64,75 @@ CACHE_DIR = f"cache_zscore"
 FORCE_RECOMPUTE = False   # True si quieres forzar recálculo
 
 # =========================================================
+# EXPORTAR MEDIDAS POR PANEL A CSV
+# =========================================================
+EXPORT_DIR = "csv_medidas_paneles"
+
+def sanitize_filename(text):
+    text = str(text)
+    text = re.sub(r"[^\w\s-]", "", text)
+    text = re.sub(r"\s+", "_", text.strip())
+    return text
+
+def build_measure_dict_from_panel(df_panel, composer_names):
+    """
+    Reconstruye una estructura tipo:
+    measure_dict[composer][serie] = pe_obs
+    respetando el orden natural de las series.
+    """
+    measure_dict = {}
+
+    for composer in composer_names:
+        sub = df_panel[df_panel["composer"] == composer].copy()
+        if sub.empty:
+            continue
+
+        sub = sub.sort_values("serie", key=lambda s: s.map(natural_key))
+
+        measure_dict[composer] = {}
+        for _, row in sub.iterrows():
+            measure_dict[composer][row["serie"]] = row["pe_obs"]
+
+    return measure_dict
+
+def build_measure_dataframe_from_panel(df_panel, composer_names):
+    """
+    Convierte el panel a un DataFrame:
+      columnas = compositores
+      índice   = Serie_1, Serie_2, ...
+      valores  = pe_obs
+    """
+    measure_dict = build_measure_dict_from_panel(df_panel, composer_names)
+    df_measure = pd.DataFrame(measure_dict)
+
+    # ordenar índice tipo Serie_1, Serie_2, ...
+    df_measure = df_measure.sort_index(key=lambda idx: [natural_key(x) for x in idx])
+
+    # ordenar columnas según composer_names
+    valid_cols = [c for c in composer_names if c in df_measure.columns]
+    df_measure = df_measure.reindex(columns=valid_cols)
+
+    return df_measure
+
+def save_panel_measure_csv(df_panel, composer_names, cfg, export_dir=EXPORT_DIR):
+    os.makedirs(export_dir, exist_ok=True)
+
+    df_measure = build_measure_dataframe_from_panel(df_panel, composer_names)
+
+    fname = (
+        f"{cfg['measure']}_"
+        f"D{cfg['D']}_"
+        f"tau{cfg['tau']}_"
+        f"{cfg['type_null']}.csv"
+    )
+    fname = sanitize_filename(fname)
+    path = os.path.join(export_dir, fname)
+
+    df_measure.to_csv(path, encoding="utf-8")
+    print(f"[CSV] Guardado: {path}")
+
+    return df_measure, path
+# =========================================================
 # AUXILIARES
 # =========================================================
 
@@ -553,6 +622,7 @@ composers, datos_composers = extraer_dataset_musica()
 composer_names, labels = composer_labels(datos_composers)
 
 panel_dfs = []
+panel_measure_dfs = []
 all_z_global = []
 
 for cfg in PANEL_CONFIGS:
@@ -563,7 +633,7 @@ for cfg in PANEL_CONFIGS:
         D=cfg["D"],
         tau=cfg["tau"],
         n_surrogates=N_SURROGATES,
-        type_null = cfg["type_null"],
+        type_null=cfg["type_null"],
         normalize=NORMALIZE,
         alternative=ALTERNATIVE,
         random_state=RANDOM_STATE,
@@ -571,6 +641,15 @@ for cfg in PANEL_CONFIGS:
         force_recompute=FORCE_RECOMPUTE
     )
     panel_dfs.append(df_panel)
+
+    # construir DataFrame de medidas y guardarlo en CSV
+    df_measure, csv_path = save_panel_measure_csv(
+        df_panel=df_panel,
+        composer_names=composer_names,
+        cfg=cfg,
+        export_dir=EXPORT_DIR
+    )
+    panel_measure_dfs.append(df_measure)
 
 # =========================================================
 # PLOTEO 2x2

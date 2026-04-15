@@ -2,16 +2,20 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 
+from funciones import permutation_entropy, angulos_alpha
+from gamma_4 import gamma_index_jacobs
+from circular_gamma import gamma_index_jacobs_circular
+from gamma_5 import gamma_index_jacobs_rank
 
 # =========================
-# MAPA
+# MAPA LOGÍSTICO
 # =========================
 def logistic_map(r, x):
-    return r * x * (1 - x)
+    return r * x * (1.0 - x)
 
 
 # =========================
-# GENERAR BIFURCACIÓN SIN RUIDO
+# GENERAR BIFURCACIÓN
 # =========================
 def generar_bifurcacion(
     r_min=3.0,
@@ -27,16 +31,15 @@ def generar_bifurcacion(
     x_vals_plot = []
 
     for r in r_grid:
-
         x = x0
 
         for _ in range(iter_descartar):
-            x = np.clip(x, 0, 1)
+            x = np.clip(x, 0.0, 1.0)
             x = logistic_map(r, x)
 
         serie = np.empty(longitud_serie)
         for i in range(longitud_serie):
-            x = np.clip(x, 0, 1)
+            x = np.clip(x, 0.0, 1.0)
             x = logistic_map(r, x)
             serie[i] = x
 
@@ -47,35 +50,34 @@ def generar_bifurcacion(
 
 
 # =========================
-# CARGA DE MEDIDAS CON RUIDO
+# GENERAR SERIE PARA UN r
 # =========================
-def cargar_medidas_ruido(ruidos):
-    data = {
-        "J": {},
-        "C6a": {},
-        "SE": {},
-        "PE": {},
-        "C6": {},
-    }
+def generar_serie_logistica(r, longitud_serie=1200, iter_descartar=2000, x0=0.6):
+    x = x0
 
-    for var_ruido in ruidos:
-        data["J"][var_ruido] = np.load(f"data/RUIDOS/aditivo_J/J_por_ruido_{str(var_ruido)}.npy")    
-        data["C6"][var_ruido] = 1-np.load(f"data/RUIDOS/aditivo_C6/C_por_ruido_{str(var_ruido)}.npy")
-        data["C6a"][var_ruido] = 1-np.load(f"data/RUIDOS/aditivo_C6_alpha/C6_por_ruido_{str(var_ruido)}.npy")
-        data["SE"][var_ruido] = np.load(f"data/RUIDOS/aditivo_shannon/S_por_ruido_{str(var_ruido)}.npy")
-        data["PE"][var_ruido] = np.load(f"data/RUIDOS/aditivo_PE/PE_por_ruido_{str(var_ruido)}.npy")
+    for _ in range(iter_descartar):
+        x = np.clip(x, 0.0, 1.0)
+        x = logistic_map(r, x)
 
-    return data
+    serie = np.empty(longitud_serie)
+    for i in range(longitud_serie):
+        x = np.clip(x, 0.0, 1.0)
+        x = logistic_map(r, x)
+        serie[i] = x
+
+    return serie
 
 
 # =========================
 # FORMATO PAPER
 # =========================
-def aplicar_formato_panel(ax, ylabel=None, show_bottom_ticks=False):
+def aplicar_formato_panel(ax, ylabel=None, show_bottom_ticks=False, xlabel=None):
     ax.set_xlim(3.0, 4.0)
 
     if ylabel is not None:
-        ax.set_ylabel(ylabel, rotation=360)
+        ax.set_ylabel(ylabel, rotation=360, labelpad=14, fontsize=13)
+    if xlabel is not None:
+        ax.set_xlabel(xlabel, fontsize=12)
 
     ax.minorticks_on()
     ax.tick_params(axis='both', which='major', direction='out', length=4, width=0.8)
@@ -90,41 +92,121 @@ def aplicar_formato_panel(ax, ylabel=None, show_bottom_ticks=False):
 
 def poner_letra_panel(ax, letra):
     ax.text(
-        0.985, 0.90, f"{letra})",
+        0.985, 0.50, f"{letra})",
         transform=ax.transAxes,
         ha="right", va="center",
-        fontsize=11
+        fontsize=14
     )
+
+
+# =========================
+# CÁLCULO DE CURVAS
+# =========================
+def calcular_curvas_indices(
+    r_grid,
+    longitud_serie=1200,
+    iter_descartar=2000,
+    x0=0.6
+):
+    ms = [3, 4, 5, 6]
+    ds = [2, 3, 4, 5, 6]
+    mus = [2, 3, 4, 5, 6]
+
+    # Diccionarios para guardar curvas
+    pe_m = {m: np.empty(len(r_grid)) for m in ms}
+    pe_alpha_m = {m: np.empty(len(r_grid)) for m in ms}
+
+    cd = {d: np.empty(len(r_grid)) for d in ds}
+    cd_alpha = {d: np.empty(len(r_grid)) for d in ds}
+    c6_mu = {mu: np.empty(len(r_grid)) for mu in mus}
+
+    for i, r in enumerate(r_grid):
+        serie = generar_serie_logistica(
+            r,
+            longitud_serie=longitud_serie,
+            iter_descartar=iter_descartar,
+            x0=x0
+        )
+
+        alpha = angulos_alpha(serie, False, tau=1)
+
+        # -------- PE variando m --------
+        for m in ms:
+            pe_m[m][i] = permutation_entropy(serie, m=m, tau=1)
+            pe_alpha_m[m][i] = permutation_entropy(alpha, m=m, tau=1)
+
+        # -------- C_d variando d --------
+        # max_gamma = 6 para asegurar tener C_2,...,C_6
+        C, _ = gamma_index_jacobs(serie, max_gamma=6, mu=5.0)
+
+        # Para alpha: versión circular
+        C_alpha, _ = gamma_index_jacobs_circular(alpha, max_gamma=6, nu=5.0)
+
+        for d in ds:
+            cd[d][i] = C[d]
+            cd_alpha[d][i] = C_alpha[d]
+
+        # -------- C_6 variando mu --------
+        for mu in mus:
+            C_mu, _ = gamma_index_jacobs(serie, max_gamma=6, mu=float(mu))
+            c6_mu[mu][i] = C_mu[6]
+
+        print(f"{i + 1}/{len(r_grid)}  r = {r:.6f}")
+
+    return pe_m, pe_alpha_m, cd, cd_alpha, c6_mu
 
 
 # =========================
 # FIGURA PRINCIPAL
 # =========================
-def figura_multipanel_ruido_aditivo(
+def figura_multipanel_indices(
     r_min=3.0,
     r_max=4.0,
     resolucion_r=300,
-    longitud_bif=1200,
-    iter_descartar_bif=2000
+    longitud_bif=4000,
+    iter_descartar_bif=1000,
+    longitud_indices=1200,
+    iter_descartar_indices=2000,
+    x0=0.6,
+    guardar_como="indices_logistico.png"
 ):
-    ruidos = [1e-10, 1e-8, 1e-7, 1e-6, 1e-5, 1e-4]
+    # ---------- estilos ----------
+    colores_m = {
+        3: "gray",
+        4: "#2ECC71",
+        5: "purple",
+        6: "#E91E63",
+    }
 
-    colores = {
-        1e-10: "gray",
-        1e-8: "#2ECC71",
-        1e-7: "purple",
-        1e-6: "#CBAC00B8",
-        1e-5: "#1ABC9C",
-        1e-4: "#E91E63",
+    colores_d = {
+        2: "gray",
+        3: "#2ECC71",
+        4: "purple",
+        5: "#CBAC00B8",
+        6: "#E91E63",
+    }
+
+    colores_mu = {
+        2: "gray",
+        3: "#2ECC71",
+        4: "purple",
+        5: "#CBAC00B8",
+        6: "#E91E63",
     }
 
     estilos = {
-        1e-10: "-",
-        1e-8: "--",
-        1e-7: "-.",
-        1e-6: ":",
-        1e-5: (0, (5, 1)),
-        1e-4: (0, (3, 1, 1, 1)),
+        2: "-",
+        3: "--",
+        4: "-.",
+        5: ":",
+        6: (0, (3, 1, 1, 1)),
+    }
+
+    estilos_4 = {
+        1: "-",
+        2: "--",
+        3: "-.",
+        4: ":",
     }
 
     # ---------- Bifurcación ----------
@@ -133,97 +215,103 @@ def figura_multipanel_ruido_aditivo(
         r_max=r_max,
         resolucion_r=resolucion_r,
         longitud_serie=longitud_bif,
-        iter_descartar=iter_descartar_bif
+        iter_descartar=iter_descartar_bif,
+        x0=x0
     )
 
-    # ---------- Medidas con ruido ----------
-    data_ruido = cargar_medidas_ruido(ruidos)
+    # ---------- Índices ----------
+    pe_m, pe_alpha_m, cd, cd_alpha, c6_mu = calcular_curvas_indices(
+        r_grid=r_grid,
+        longitud_serie=longitud_indices,
+        iter_descartar=iter_descartar_indices,
+        x0=x0
+    )
 
     # ---------- Figura ----------
     fig, axes = plt.subplots(
         6, 1,
-        figsize=(7.2, 13.2),
+        figsize=(7.6, 13.8),
         sharex=True,
         gridspec_kw={"hspace": 0.05}
     )
 
-    # Panel a) bifurcación
+    # a) bifurcación
     ax = axes[0]
     ax.plot(r_bif, x_bif, ",", color="black", alpha=0.55)
-    ax.set_ylim(0, 1)
-    aplicar_formato_panel(ax, ylabel=r"$x_t$", show_bottom_ticks=False)
+    aplicar_formato_panel(ax, ylabel=r"$x$", show_bottom_ticks=False)
     poner_letra_panel(ax, "a")
 
-    # Panel b) J
+    # b) PE variando m
     ax = axes[1]
-    for vr in ruidos:
-        ax.plot(r_grid, data_ruido["J"][vr], color=colores[vr], ls=estilos[vr], lw=1.1)
-    aplicar_formato_panel(ax, ylabel=r"$J$", show_bottom_ticks=False)
+    for m in [3, 4, 5, 6]:
+        ax.plot(r_grid, pe_m[m], color=colores_m[m], ls=estilos[m], lw=1.1)
+    aplicar_formato_panel(ax, ylabel=r"$PE$", show_bottom_ticks=False)
     poner_letra_panel(ax, "b")
 
-    # Panel c) C6^alpha
+    # c) PE^alpha variando m
     ax = axes[2]
-    for vr in ruidos:
-        ax.plot(r_grid, data_ruido["C6a"][vr], color=colores[vr], ls=estilos[vr], lw=1.1)
-    aplicar_formato_panel(ax, ylabel=r"$C_6^\alpha$", show_bottom_ticks=False)
+    for m in [3, 4, 5, 6]:
+        ax.plot(r_grid, pe_alpha_m[m], color=colores_m[m], ls=estilos[m], lw=1.1)
+    aplicar_formato_panel(ax, ylabel=r"$PE^\alpha$", show_bottom_ticks=False)
     poner_letra_panel(ax, "c")
 
-    # Panel d) Shannon
+    # e) C_d variando d
     ax = axes[3]
-    for vr in ruidos:
-        ax.plot(r_grid, data_ruido["SE"][vr], color=colores[vr], ls=estilos[vr], lw=1.1)
-    aplicar_formato_panel(ax, ylabel=r"$SE^\alpha$", show_bottom_ticks=False)
+    for d in [2, 3, 4, 5, 6]:
+        ax.plot(r_grid, 1- cd[d], color=colores_d[d], ls=estilos[d], lw=1.1)
+    aplicar_formato_panel(ax, ylabel=r"$C_d$", show_bottom_ticks=False)
     poner_letra_panel(ax, "d")
 
-    # Panel e) PE
+    # f) C_d^alpha variando d
     ax = axes[4]
-    for vr in ruidos:
-        ax.plot(r_grid, data_ruido["PE"][vr], color=colores[vr], ls=estilos[vr], lw=1.1)
-    aplicar_formato_panel(ax, ylabel=r"$PE$", show_bottom_ticks=False)
+    for d in [2, 3, 4, 5, 6]:
+        ax.plot(r_grid, 1-cd_alpha[d], color=colores_d[d], ls=estilos[d], lw=1.1)
+    aplicar_formato_panel(ax, ylabel=r"$C_d^\alpha$", show_bottom_ticks=False)
     poner_letra_panel(ax, "e")
 
-    # Panel f) C6
+    # g) C6 variando mu
     ax = axes[5]
-    for vr in ruidos:
-        ax.plot(r_grid, data_ruido["C6"][vr], color=colores[vr], ls=estilos[vr], lw=1.1)
-    aplicar_formato_panel(ax, ylabel=r"$C_6$", show_bottom_ticks=True)
+    for mu in [2, 3, 4, 5, 6]:
+        ax.plot(r_grid, 1-c6_mu[mu], color=colores_mu[mu], ls=estilos[mu], lw=1.1)
+    aplicar_formato_panel(ax, ylabel=r"$C_6$", show_bottom_ticks=True, xlabel=r"$r$")
     poner_letra_panel(ax, "f")
-    ax.set_xlabel(r"$r$")
 
-    # ---------- Leyenda global ----------
-    handles = []
-    for vr in ruidos:
-        handles.append(
-            Line2D(
-                [0], [0],
-                color=colores[vr],
-                lw=1.2,
-                ls=estilos[vr],
-                label=fr"$\sigma^2 = {vr}$"
-            )
-        )
+    # ---------- leyendas por panel ----------
+    handles_m = [
+        Line2D([0], [0], color=colores_m[m], lw=1.2, ls=estilos[m], label=fr"$m={m}$")
+        for m in [3, 4, 5, 6]
+    ]
+    handles_d = [
+        Line2D([0], [0], color=colores_d[d], lw=1.2, ls=estilos[d], label=fr"$d={d}$")
+        for d in [2, 3, 4, 5, 6]
+    ]
+    handles_mu = [
+        Line2D([0], [0], color=colores_mu[mu], lw=1.2, ls=estilos[mu], label=fr"$\mu={mu}$")
+        for mu in [2, 3, 4, 5, 6]
+    ]
 
-    fig.legend(
-        handles=handles,
-        loc="upper center",
-        ncol=3,
-        frameon=False,
-        bbox_to_anchor=(0.5, 0.995),
-        fontsize=10
-    )
+    axes[1].legend(handles=handles_m, loc="upper left", frameon=False, fontsize=9, ncol=1)
+    axes[2].legend(handles=handles_m, loc="upper left", frameon=False, fontsize=9, ncol=2)
+    axes[3].legend(handles=handles_d, loc="upper left", frameon=False, fontsize=9, ncol=2)
+    axes[4].legend(handles=handles_d, loc="upper left", frameon=False, fontsize=9, ncol=2)
+    axes[5].legend(handles=handles_mu, loc="upper left", frameon=False, fontsize=9, ncol=2)
 
-    fig.subplots_adjust(top=0.94, left=0.12, right=0.98, bottom=0.07, hspace=0.04)
-    plt.savefig('ruido_aditivo.png')
+    fig.subplots_adjust(top=0.98, left=0.12, right=0.98, bottom=0.06, hspace=0.04)
+    plt.savefig(guardar_como, dpi=300, bbox_inches="tight")
     plt.show()
 
 
 # =========================
 # EJECUCIÓN
 # =========================
-figura_multipanel_ruido_aditivo(
+figura_multipanel_indices(
     r_min=3.0,
     r_max=4.0,
     resolucion_r=300,
-    longitud_bif=4000,
-    iter_descartar_bif=1000
+    longitud_bif=1000,
+    iter_descartar_bif=1000,
+    longitud_indices=20_000,
+    iter_descartar_indices=1000,
+    x0=0.6,
+    guardar_como="indices_logistico.png"
 )
