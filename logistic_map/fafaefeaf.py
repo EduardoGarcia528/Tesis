@@ -77,7 +77,7 @@ def bifurcacion_con_J(
                 J_vals.append(J[0])
             medida_por_iteracion.append(J_vals)
         medida_por_ruido.append(np.mean(medida_por_iteracion, axis=0))
-        np.save(f'data/RUIDOS/aditivo_rank_gamma_alpha/g_por_ruido_{str(var_ruido)}.npy', np.mean(medida_por_iteracion, axis=0))
+        np.save(f'data/RUIDOS/iterativo_rank_gamma_alpha/g_por_ruido_{str(var_ruido)}.npy', np.mean(medida_por_iteracion, axis=0))
         print(var_ruido)
     # J_vals = np.mean(np.load(f'data/ruidos_promedios/J_por_ruido_{str(var_ruido)}.npy'),axis = 0)
 
@@ -143,5 +143,5 @@ r_J, J, r_bif, x_bif = bifurcacion_con_J(
     resolucion_r=300,
     longitud_serie=20000,
     iter_descartar=1000,
-    tipo_ruido="aditivo",  # o "aditivo"
+    tipo_ruido="iterativo",  # o "aditivo"
     graficar=True)

@@ -12,6 +12,7 @@ from modified_PE import modified_permutation_entropy
 from funciones import angulos_alpha, permutation_entropy
 from iaaft import iaaft
 from gamma_4 import gamma_index_jacobs
+from gamma_5 import gamma_index_jacobs_rank_ties
 # from circular_gamma import gamma_index_jacobs_circular
 
 # =========================================================
@@ -56,7 +57,7 @@ ALPHA = 0.05   # solo se usa si USE_P_RAW_ZERO_FOR_RED = False
 # CONFIGURACIÓN DE LOS PANELES
 # =========================================================
 PANEL_CONFIGS = [
-    {"measure": "mPE",          "D": 5, "tau": 1, "type_null": "shuffle", "title": r"mPE (notes, shuffle): $m=5,\ \tau=1$"},
+    {"measure": "gamma_rank", "D": 1, "tau": 2, "type_null": "shuffle", "title": fr"$\gamma_1$ (notes, shuffle): $\mu=2$"},
     {"measure": "mPE_interval", "D": 5, "tau": 1, "type_null": "shuffle", "title": r"mPE (interval, shuffle): $m=5,\ \tau=1$"},
     {"measure": "mPE",          "D": 5, "tau": 1, "type_null": "iaaft",   "title": r"mPE (notes, IAAFT): $m=5,\ \tau=1$"},
     {"measure": "mPE_interval", "D": 5, "tau": 1, "type_null": "iaaft",   "title": r"mPE (interval, IAAFT): $m=5,\ \tau=1$"},
@@ -136,6 +137,13 @@ def compute_measure(x, measure, D, tau):
         else:
             C, _ = gamma_index_jacobs(x, max_gamma=D, mu=tau)
             return 1 - C[-1]
+    elif "gamma_rank" in measure:
+        if "interval" in measure:
+            _, C = gamma_index_jacobs_rank_ties(np.diff(x), max_gamma=D, mu=tau)
+            return 1 - C[0]
+        else:
+            _, C = gamma_index_jacobs_rank_ties(x, max_gamma=D, mu=tau)
+            return 1 - C[0]
 
     else:
         raise ValueError(f"Medida no reconocida: {measure}")
@@ -169,6 +177,9 @@ def pe_stats_for_series(
             elif "Cd" in measure:
                 C, _ = gamma_index_jacobs(x_surr, max_gamma=D, mu=tau)
                 surrogates_values[k] = 1 - C[-1]
+            elif "gamma_rank" in measure:
+                _, C = gamma_index_jacobs_rank_ties(x_surr, max_gamma=D, mu=tau)
+                surrogates_values[k] = 1 - C[0]
 
     elif type_null == "iaaft":
         if "interval" in measure:

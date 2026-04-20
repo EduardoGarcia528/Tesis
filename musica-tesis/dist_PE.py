@@ -11,6 +11,7 @@ from modified_PE import modified_permutation_entropy
 from funciones import angulos_alpha, permutation_entropy
 from iaaft import iaaft
 from gamma_4 import gamma_index_jacobs
+from gamma_5 import gamma_index_jacobs_rank
 from circular_gamma import gamma_index_jacobs_circular
 
 # =========================================================
@@ -51,7 +52,8 @@ ALPHA = 0.05   # sólo se usa si USE_P_RAW_ZERO_FOR_RED = False
 # =========================================================
 
 PANEL_CONFIGS = [
-    {"measure":"mPE","D": 5, "tau": 1,"type_null":"shuffle", "title": fr"mPE (notes,shuffle): $m=5,\ \tau=1$"},
+    {"measure":"gamma_rank","D": 1, "tau": 2,"type_null":"shuffle", "title": r"$\gamma_1^{(R)}(\mu=2)$ (notes,shuffle)"},
+    # {"measure":"mPE","D": 5, "tau": 1,"type_null":"shuffle", "title": fr"mPE (notes,shuffle): $m=5,\ \tau=1$"},
     {"measure":"mPE_interval","D": 5, "tau": 1,"type_null":"shuffle", "title": fr"mPE (interval,shuffle): $m=5,\ \tau=1$"},
     {"measure":"mPE","D": 5, "tau": 1,"type_null":"iaaft", "title": fr"mPE (notes,iaaft): $m=5,\ \tau=1$"},
     {"measure":"mPE_interval","D": 5, "tau": 1,"type_null":"iaaft", "title": fr"mPE (interval,IAAFT): $m=5,\ \tau=1$"},
@@ -91,7 +93,7 @@ def build_measure_dict_from_panel(df_panel, composer_names):
 
         measure_dict[composer] = {}
         for _, row in sub.iterrows():
-            measure_dict[composer][row["serie"]] = row["pe_obs"]
+            measure_dict[composer][row["serie"]] = row["z"]
 
     return measure_dict
 
@@ -302,6 +304,15 @@ def pe_stats_for_series(
             # angulos = angulos_alpha(x,False)
             C,_ = gamma_index_jacobs(x,max_gamma=D,mu=tau)
             pe_obs = 1-C[-1]
+    elif "gamma" in measure:
+        if "interval" in measure:
+            # angulos = angulos_alpha(np.diff(x),False)
+            _,C = gamma_index_jacobs_rank(np.diff(x),max_gamma=D,mu=tau)
+            pe_obs = 1-C[0]
+        else:
+            # angulos = angulos_alpha(x,False)
+            _,C = gamma_index_jacobs_rank(x,max_gamma=D,mu=tau)
+            pe_obs = 1-C[0]
     pe_surrogates = np.empty(n_surrogates, dtype=float)
     if type_null == "shuffle":
         for k in range(n_surrogates):
@@ -315,6 +326,9 @@ def pe_stats_for_series(
                 # angulos_surr = angulos_alpha(x_surr,False)
                 C,_ = gamma_index_jacobs(x_surr,max_gamma=D,mu=tau)
                 pe_surr = 1-C[-1]
+            elif "gamma" in measure:
+                _,C = gamma_index_jacobs_rank(x_surr,max_gamma=D,mu=tau)
+                pe_surr = 1-C[0]
             pe_surrogates[k] = pe_surr
     if type_null == "iaaft":
         if "interval" in measure:    
@@ -393,6 +407,7 @@ def compute_panel_dataframe(
     for composer in composer_names:
         if composer not in composers:
             continue
+        print(composer)
 
         meta = datos_composers.get(composer, {})
         birth_year = meta.get("Birth_year", np.nan)
@@ -539,7 +554,7 @@ def plot_panel(ax, df_panel, composer_names, title,
         x = np.random.normal(i, JITTER_STD, size=zvals.size)
 
         ax.scatter(
-            x, zvals,
+            x, 1 - zvals,
             s=DOT_SIZE,
             alpha=EDGE_ALPHA,
             facecolors="none",
@@ -575,7 +590,7 @@ def plot_panel(ax, df_panel, composer_names, title,
 
     if np.isfinite(medianas).any():
         ax.scatter(
-            idxs, medianas,
+            idxs, 1- medianas,
             color="black",
             s=DOT_SIZE,
             zorder=3,
