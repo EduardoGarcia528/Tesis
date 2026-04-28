@@ -5,11 +5,11 @@ import numpy as np
 
 def logistic_map(
     r,
-    x0=0.5,
     n_iter=1000,
     n_transient=0,
     ruido=None,
     sigma=0.0,
+    x0=0.6,
     random_state=None,
     clip=True
 ):
