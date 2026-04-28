@@ -1,10 +1,52 @@
 import numpy as np
 from numba import njit
 
-# C[d] devuelve la integral de correlación rank-based en dimensión d
-# C[0] = 1.0 por convención
-# Si quieres gamma_1, ..., gamma_max_gamma, necesitas C[0] hasta C[max_gamma+1]
-# Por eso max_d = max_gamma + 1
+# maxd te da maxd+2 valores de C, el primero es C[0](d=0) = 1.0, el ultimo es C[maxd+1]
+# max_gamma te da max_gamma valores de g, el primero es g[0] = gamma(C,1), el ultimo es g[max_gamma-1] = gamma(C,max_gamma)
+# maxd = max_gamma + 1
+
+# max_gamma te da desde gamma_1 hasta gamma_{max_gamma}, lo que significa que 
+# te da desde C(d=0) hasta C(d=max_gamma+1) (max_gamma+1 integrales de correlacion en total)
+
+@njit
+def correlation_integrals(x, max_d, eps):
+    N = len(x)
+    idx = np.argsort(x)
+
+    Ci = np.zeros(max_d + 1, dtype=np.int64)
+
+    for a in range(N):
+        ia = idx[a]
+        for b in range(a + 1, N):
+            ib = idx[b]
+
+            if abs(x[ib] - x[ia]) > eps:
+                break
+
+            k = 0
+            while k < max_d and abs(x[ia + k] - x[ib + k]) <= eps:
+                k += 1
+                Ci[k] += 1
+
+    C = np.zeros(max_d + 1)
+    norm = 2.0 / (N * (N - 1))
+    C[0] = 1.0
+    for d in range(1, max_d + 1):
+        C[d] = Ci[d] * norm
+
+    return C
+
+
+def gamma_index(data, max_gamma, mu = 5.0):
+    max_d = max_gamma + 1
+    C = correlation_integrals(data, max_d, np.std(data) / mu)
+    g = np.zeros(max_gamma)
+    for j in range(1, max_gamma + 1):
+        if C[j - 1] * C[j + 1] == 0.0:
+            g[j - 1] = np.nan
+        else:
+            g[j - 1] = gamma(C, j)
+    return C, g
 
 @njit
 def correlation_integrals_rank(x, max_d, K):
@@ -56,7 +98,7 @@ def gamma(C, j):
     return 1.0 - (C[j] ** 2) / denom
 
 
-def gamma_index_jacobs_rank(data, max_gamma, mu=5.0):
+def gamma_index_rank(data, max_gamma, mu=5.0):
     """
     Calcula la versión rank-based de las integrales de correlación y del índice gamma.
 
@@ -96,7 +138,75 @@ def gamma_index_jacobs_rank(data, max_gamma, mu=5.0):
 
     return C, g
 
-###################
+@njit
+def circ_dist(a, b):
+    """
+    Distancia angular mínima entre dos ángulos en [0, 2*pi).
+    Regresa un valor en [0, pi].
+    """
+    d = abs(a - b)
+    if d > np.pi:
+        d = 2.0 * np.pi - d
+    return d
+
+
+@njit
+def correlation_integrals_circular(x, max_d, eps):
+    """
+    Calcula C[d] para una serie angular x usando distancia circular.
+    
+    x debe estar en [0, 2*pi).
+    """
+    N = len(x)
+
+    # Índices iniciales válidos para comparar bloques de longitud max_d
+    M = N - max_d + 1
+    C = np.zeros(max_d + 1, dtype=np.float64)
+
+    if M < 2:
+        C[:] = np.nan
+        return C
+
+    Ci = np.zeros(max_d + 1, dtype=np.int64)
+
+    # Comparación directa entre todos los pares válidos
+    for ia in range(M):
+        for ib in range(ia + 1, M):
+
+            k = 0
+            while k < max_d and circ_dist(x[ia + k], x[ib + k]) <= eps:
+                k += 1
+                Ci[k] += 1
+
+    norm = 2.0 / (M * (M - 1))
+    C[0] = 1.0
+    for d in range(1, max_d + 1):
+        C[d] = Ci[d] * norm
+
+    return C
+
+def gamma_index_circular(data, max_gamma, nu=5.0):
+    """
+    Índice gamma para series angulares.
+    
+    Usa:
+        eps = pi / nu
+    y distancia circular mínima.
+    """
+    max_d = max_gamma + 1
+    eps = np.pi / nu
+
+    data = np.asarray(data, dtype=np.float64)
+    C = correlation_integrals_circular(data, max_d, eps)
+
+    g = np.zeros(max_gamma, dtype=np.float64)
+    for j in range(1, max_gamma + 1):
+        if np.isnan(C[j - 1]) or np.isnan(C[j + 1]) or C[j - 1] * C[j + 1] == 0.0:
+            g[j - 1] = np.nan
+        else:
+            g[j - 1] = gamma(C, j)
+
+    return C, g
 
 @njit
 def ranks_with_ties(x):
@@ -177,7 +287,7 @@ def correlation_integrals_rank_ties(x, max_d, K):
 
     return C
 
-def gamma_index_jacobs_rank_ties(data, max_gamma, mu=5.0):
+def gamma_index_rank_ties(data, max_gamma, mu=5.0):
     data = np.asarray(data, dtype=np.float64)
     ord_ = ranks_with_ties(data)
     n_unique = int(ord_.max()) + 1 if len(ord_) > 0 else 0

@@ -1,9 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import multiprocessing as mp
-from funciones import mejor_vector, calcular_angulos, permutation_entropy, entropia_shannon, interpolador, interpolador_constante, indice_J, random_array, angulos_alpha, vocabulario_midi_centrado
-from gamma_4 import correlation_integrals, gamma_index_jacobs, gamma
-from circular_gamma import gamma_index_jacobs_circular
+import mi_libreria as ml
 
 def caminata_aleatoria(N):
     ff1 = np.random.uniform(-np.pi, np.pi, N)
@@ -13,16 +11,17 @@ def caminata_aleatoria(N):
     for i in range(n):
         p1 = (ff1[i], ff2[i])
         p2 = (ff1[i+1], ff2[i+1])
-        vectores[i] = mejor_vector(p1, p2)
-
+        vectores[i] = ml.mejor_vector(p1, p2)
+    
     return vectores
 
 def main(X):
     x1 = np.random.uniform(0, 1, X)
     y1 = np.random.uniform(0, 1, X)
-    angulos = angulos_alpha(x1,y1)
-    J, _ = gamma_index_jacobs_circular(angulos,5,3)
-    return J[-1]     
+    # angulos = ml.angulos_alpha(x1,y1)
+    J = ml.indice_J(x1, y1)
+    # J, _ = ml.gamma_index_circular(angulos,5,3)
+    return J    
 
 def calcular_J_N(N):
     for i in range(1):
@@ -48,8 +47,9 @@ if __name__ == '__main__':
     N0 = np.arange(10, 20, 1)
     N1 = np.arange(20, 100, 5)
     N2 = np.arange(100, 2000, 100)
-    # N3 = np.arange(2000, 20000, 1000)
-    Ns = np.concatenate((N0, N1,N2)) 
+    N3 = np.arange(2000, 20000, 2000)
+    N4 = np.arange(20000, 100000, 10000)
+    Ns = np.concatenate((N0, N1,N2,N3,N4)) 
   
     # Usa multiprocessing para calcular J_min en paralelo
     with mp.Pool(processes=mp.cpu_count()) as pool:
@@ -66,19 +66,19 @@ if __name__ == '__main__':
     for i, der in enumerate(derivadas):
         Js_min_interp = np.concatenate((
             Js_min_interp,
-            interpolador(J_min[i:i+2], 'lineal', der - 1)[1:]
+            ml.interpolador(J_min[i:i+2], 'lineal', der - 1)[1:]
         ))
         Js_mean_interp = np.concatenate((
             Js_mean_interp,
-            interpolador(J_mean[i:i+2], 'lineal', der - 1)[1:]
+            ml.interpolador(J_mean[i:i+2], 'lineal', der - 1)[1:]
         ))
         Js_std_interp = np.concatenate((
             Js_std_interp,
-            interpolador(J_std[i:i+2], 'lineal', der - 1)[1:]
+            ml.interpolador(J_std[i:i+2], 'lineal', der - 1)[1:]
         ))
 
-    print(len(interpolador_constante(Ns)), len(Js_min_interp))
+    print(len(ml.interpolador_constante(Ns)), len(Js_min_interp))
 
-    J_null_continuo = np.vstack((interpolador_constante(Ns), Js_min_interp,Js_mean_interp,Js_std_interp))
+    J_null_continuo = np.vstack((ml.interpolador_constante(Ns), Js_min_interp,Js_mean_interp,Js_std_interp))
 
     np.save('new_data/J_null.npy' ,J_null_continuo)

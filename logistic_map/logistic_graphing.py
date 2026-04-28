@@ -2,11 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import math
 from numba import njit
-from PEvsN import N_required_eq25_from_series
-from funciones import indice_J, permutation_entropy, angulos_alpha, entropia_shannon, interpolador
-from gamma_4 import gamma_index_jacobs
-from circular_gamma import gamma_index_jacobs_circular
-from gamma_5 import gamma_index_jacobs_rank
+import mi_libreria as ml
 
 @njit
 def logistic_map(r, x):
@@ -25,10 +21,10 @@ def bifurcacion_con_J(
     max_gamma=5,
     mu=3,
     resolucion_r=300,
-    longitud_serie=2000,
-    iter_descartar=4000,
+    longitud_serie=20_000,
+    iter_descartar=1000,
     var_ruido=1e-7,
-    tipo_ruido="iterativo",  # "iterativo" o "aditivo"
+    tipo_ruido="no",  # "iterativo" o "aditivo"
     graficar=True
 ):
     r_vals_J = np.sort(np.concatenate((np.linspace(r_min, r_max, resolucion_r), np.array([3.569945672]))))
@@ -36,9 +32,9 @@ def bifurcacion_con_J(
         r_vals_J = r_vals_J[1:]
     r_vals_plot = []
     x_vals_plot = []
-
+    
     J_vals = np.zeros((len(r_vals_J)))
-    for V in range(1):
+    for V in range(500):
         print(V)
         for q,r in enumerate(r_vals_J):
             x = 0.6
@@ -68,13 +64,13 @@ def bifurcacion_con_J(
                 x_vals_plot.extend(serie)
 
             # # Índice J
-            # J = indice_J(serie, False)
+            J = ml.indice_J(serie, None)
             # _,J = gamma_index_jacobs(serie, max_gamma, mu=mu)
-            _, J = gamma_index_jacobs_rank(serie, max_gamma, mu=mu)
-            J_vals[q] = J_vals[q] + J[0]  
-    J_vals = J_vals / 1.0  
+            # _, J = gamma_index_rank(serie, max_gamma, mu=mu)
+            J_vals[q] = J_vals[q] + J  
+    J_vals = J_vals / 500.0  
         
-    # np.save("J_transicion2.npy", np.array([r_vals_J, J_vals]))
+    np.save("J_transicion5.npy", np.array([r_vals_J, J_vals]))
     if graficar:
         fig, ax1 = plt.subplots(figsize=(10, 6))
 
@@ -132,15 +128,15 @@ def bifurcacion_con_J(
 
 
 r_J, J, r_bif, x_bif = bifurcacion_con_J(
-    r_min=3.0, 
-    r_max=4.0,
-    # r_min=3.5695, 
-    # r_max=3.5702,
+    # r_min=3.0, 
+    # r_max=4.0,
+    r_min=3.5695, 
+    r_max=3.5702,
     max_gamma=1,
     mu=4.0,  
-    resolucion_r=300,
-    longitud_serie=10_000,  
+    resolucion_r=300, 
+    longitud_serie=5000,  
     iter_descartar=1000,
-    var_ruido=1e-08,
-    tipo_ruido="no",  # o "aditivo"
+    var_ruido=1e-05,
+    tipo_ruido="aditivo",  # o "aditivo"
     graficar=True)

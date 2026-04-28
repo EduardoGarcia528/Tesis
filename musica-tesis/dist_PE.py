@@ -7,12 +7,7 @@ import pandas as pd
 import copy 
 from scipy.stats import spearmanr, pearsonr
 import matplotlib.pyplot as plt
-from modified_PE import modified_permutation_entropy
-from funciones import angulos_alpha, permutation_entropy
-from iaaft import iaaft
-from gamma_4 import gamma_index_jacobs
-from gamma_5 import gamma_index_jacobs_rank
-from circular_gamma import gamma_index_jacobs_circular
+import mi_libreria as ml
 
 # =========================================================
 # PARÁMETROS GENERALES
@@ -52,11 +47,12 @@ ALPHA = 0.05   # sólo se usa si USE_P_RAW_ZERO_FOR_RED = False
 # =========================================================
 
 PANEL_CONFIGS = [
-    {"measure":"gamma_rank","D": 1, "tau": 2,"type_null":"shuffle", "title": r"$\gamma_1^{(R)}(\mu=2)$ (notes,shuffle)"},
+    {"measure":"J_tau1","D": 1, "tau": 2,"type_null":"shuffle", "title": r"$J_{\tau=1}$ (notes,shuffle)"},
+    {"measure":"gamma_rank_ties","D": 1, "tau": 2,"type_null":"iaaft", "title": r"$\gamma_1^{(R)}(\mu=2)$ (notes,iaaft)"},
     # {"measure":"mPE","D": 5, "tau": 1,"type_null":"shuffle", "title": fr"mPE (notes,shuffle): $m=5,\ \tau=1$"},
-    {"measure":"mPE_interval","D": 5, "tau": 1,"type_null":"shuffle", "title": fr"mPE (interval,shuffle): $m=5,\ \tau=1$"},
+    {"measure":"mPE","D": 5, "tau": 1,"type_null":"shuffle", "title": fr"mPE (notes,shuffle): $m=5,\ \tau=1$"},
     {"measure":"mPE","D": 5, "tau": 1,"type_null":"iaaft", "title": fr"mPE (notes,iaaft): $m=5,\ \tau=1$"},
-    {"measure":"mPE_interval","D": 5, "tau": 1,"type_null":"iaaft", "title": fr"mPE (interval,IAAFT): $m=5,\ \tau=1$"},
+    # {"measure":"mPE_interval","D": 5, "tau": 1,"type_null":"iaaft", "title": fr"mPE (interval,IAAFT): $m=5,\ \tau=1$"},
 ]
 
 # =========================================================
@@ -292,27 +288,33 @@ def pe_stats_for_series(
     x = np.asarray(x, dtype=float)
     if "PE" in measure:
         if "interval" in measure:
-            pe_obs = modified_permutation_entropy(np.diff(x), m=D, tau=tau)
+            pe_obs = ml.modified_permutation_entropy(np.diff(x), m=D, tau=tau)
         else:
-            pe_obs = modified_permutation_entropy(x, m=D, tau=tau)
+            pe_obs = ml.modified_permutation_entropy(x, m=D, tau=tau)
     elif "Cd" in measure:
         if "interval" in measure:
             # angulos = angulos_alpha(np.diff(x),False)
-            C,_ = gamma_index_jacobs(np.diff(x),max_gamma=D,mu=tau)
+            C,_ = ml.gamma_index(np.diff(x),max_gamma=D,mu=tau)
             pe_obs = 1-C[-1]
         else:
             # angulos = angulos_alpha(x,False)
-            C,_ = gamma_index_jacobs(x,max_gamma=D,mu=tau)
+            C,_ = ml.gamma_index(x,max_gamma=D,mu=tau)
             pe_obs = 1-C[-1]
     elif "gamma" in measure:
         if "interval" in measure:
             # angulos = angulos_alpha(np.diff(x),False)
-            _,C = gamma_index_jacobs_rank(np.diff(x),max_gamma=D,mu=tau)
+            _,C = ml.gamma_index_rank_ties(np.diff(x),max_gamma=D,mu=tau)
             pe_obs = 1-C[0]
         else:
             # angulos = angulos_alpha(x,False)
-            _,C = gamma_index_jacobs_rank(x,max_gamma=D,mu=tau)
+            _,C = ml.gamma_index_rank_ties(x,max_gamma=D,mu=tau)
             pe_obs = 1-C[0]
+    elif "J_tau" in measure:
+        if "interval" in measure:
+            x_input = np.diff(x)
+        else:
+            x_input = x
+        pe_obs = ml.indice_J(x_input, None, tau=tau)
     pe_surrogates = np.empty(n_surrogates, dtype=float)
     if type_null == "shuffle":
         for k in range(n_surrogates):
@@ -321,22 +323,30 @@ def pe_stats_for_series(
             else:
                 x_surr = rng.permutation(x)
             if "PE" in measure:
-                pe_surr = modified_permutation_entropy(x_surr, m=D, tau=tau)
+                pe_surr = ml.modified_permutation_entropy(x_surr, m=D, tau=tau)
             elif "Cd" in measure:
                 # angulos_surr = angulos_alpha(x_surr,False)
-                C,_ = gamma_index_jacobs(x_surr,max_gamma=D,mu=tau)
+                C,_ = ml.gamma_index(x_surr,max_gamma=D,mu=tau)
                 pe_surr = 1-C[-1]
             elif "gamma" in measure:
-                _,C = gamma_index_jacobs_rank(x_surr,max_gamma=D,mu=tau)
+                _,C = ml.gamma_index_rank_ties(x_surr,max_gamma=D,mu=tau)
                 pe_surr = 1-C[0]
+            elif "J_tau" in measure: 
+                pe_surr = ml.indice_J(x_surr, None, tau=tau)
             pe_surrogates[k] = pe_surr
     if type_null == "iaaft":
         if "interval" in measure:    
-            x_surr = iaaft(np.diff(x),n_surrogates)
+            x_surr = ml.iaaft(np.diff(x),n_surrogates)
         else:
-            x_surr = iaaft(x,n_surrogates)
+            x_surr = ml.iaaft(x,n_surrogates)
         for k in range(n_surrogates):
-            pe_surr = modified_permutation_entropy(x_surr[k,:], m=D, tau=tau)
+            if "PE" in measure: 
+                pe_surr = ml.modified_permutation_entropy(x_surr[k,:], m=D, tau=tau)
+            elif "gamma" in measure:
+                _,C = ml.gamma_index_rank_ties(x_surr[k,:],max_gamma=D,mu=tau)
+                pe_surr = 1-C[0]
+            elif "J_tau" in measure:
+                pe_surr = ml.indice_J(x_surr[k,:], None, tau=tau)
             pe_surrogates[k] = pe_surr
 
 
