@@ -39,7 +39,7 @@ def stable_argsort_by_value_then_index(x):
     return idx
 
 @njit
-def permutation_entropy(arr, m=3, tau=1):
+def permutation_entropy(arr, m=3, tau=1, norm=True):
     n = len(arr)
     if n < m:
         return np.nan
@@ -60,8 +60,11 @@ def permutation_entropy(arr, m=3, tau=1):
     probs = counts[counts > 0] / denom
     n_prohibidos = fact - len(probs)
     H = -np.sum(probs * np.log(probs))
-    Hnorm = H / np.log(fact)
-    return Hnorm
+    if norm:
+        Hnorm = H / np.log(fact)
+        return Hnorm
+    else:
+        return H
 
 @njit
 def stable_argsort_by_value_then_index(x):
@@ -144,7 +147,7 @@ def count_tie_patterns(m):
 
 
 @njit
-def modified_permutation_entropy(arr, m=3, tau=1):
+def modified_permutation_entropy(arr, m=3, tau=1,norm=True):
     """
     Entropía permutacional modificada para incluir empates.
     Normaliza por el número de patrones admisibles con empates.
@@ -177,6 +180,8 @@ def modified_permutation_entropy(arr, m=3, tau=1):
 
     # máximo teórico correcto para patrones con empates
     n_states = count_tie_patterns(m)
-    Hnorm = H / np.log(n_states)
-
-    return Hnorm
+    if norm:
+        Hnorm = H / np.log(n_states)
+        return Hnorm
+    else:
+        return H
