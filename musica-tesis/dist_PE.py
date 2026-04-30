@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
+import pickle
 import re
 import hashlib
 import numpy as np
@@ -643,7 +644,25 @@ def plot_panel(ax, df_panel, composer_names, title,
 #   datos_composers
 #   permutation_entropy(...)
 
-composers, datos_composers = extraer_dataset_musica()
+# composers, datos_composers = extraer_dataset_musica()
+# Carpeta de salida
+carpeta_salida = r"data/dataset_procesado"
+# os.makedirs(carpeta_salida, exist_ok=True)
+
+# # Guardar composers
+# with open(os.path.join(carpeta_salida, "composers.pkl"), "wb") as f:
+#     pickle.dump(composers, f, protocol=pickle.HIGHEST_PROTOCOL)
+
+# # Guardar datos_composers
+# with open(os.path.join(carpeta_salida, "datos_composers.pkl"), "wb") as f:
+#     pickle.dump(datos_composers, f, protocol=pickle.HIGHEST_PROTOCOL)
+# Cargar composers
+with open(os.path.join(carpeta_salida, "composers.pkl"), "rb") as f:
+    composers = pickle.load(f)
+
+# Cargar datos_composers
+with open(os.path.join(carpeta_salida, "datos_composers.pkl"), "rb") as f:
+    datos_composers = pickle.load(f)
 composer_names, labels = composer_labels(datos_composers)
 
 panel_dfs = []
