@@ -1,14 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from modified_PE import modified_permutation_entropy
+import mi_libreria as ml
 import pandas as pd
 import copy
 import os
-from iaaft import iaaft
-from funciones import angulos_alpha
-from gamma_4 import gamma_index_jacobs
-from gamma_5 import gamma_index_jacobs_rank
-from circular_gamma import gamma_index_jacobs_circular
+
 
 def extraer_dataset_musica():
 
@@ -130,15 +126,17 @@ def plot_pe_vs_shuffle(array, m, tau, n_shuffles=1000, random_state=None, bins=3
 
     # PE observado
     # pe_obs = modified_permutation_entropy(array, m, tau)
-    pe_obs= 1 - gamma_index_jacobs_rank(array,m,tau)[1][0]
+    # pe_obs= 1 - ml.gamma_index_rank_ties(array,m,tau)[1][-1]
+    pe_obs = ml.indice_H(array,seriey=None)
     # PE de los shuffles
     pe_shuffles = np.empty(n_shuffles)
-    shuffled = iaaft(array,n_shuffles)
+    shuffled = ml.iaaft(array,n_shuffles)
     for i in range(n_shuffles):
         # shuffled = rng.permutation(array)
         # pe_shuffles[i] = modified_permutation_entropy(shuffled[i,:], m, tau)
-        _, g = gamma_index_jacobs_rank(shuffled[i,:],m,tau)
-        pe_shuffles[i] = 1-g[0]
+        # _, g = ml.gamma_index_rank_ties(shuffled,m,tau)
+        # pe_shuffles[i] = 1-g[-1]
+        pe_shuffles[i] = ml.indice_H(shuffled[i,:],seriey=None)
 
 
     # Estadísticos
@@ -199,12 +197,12 @@ def plot_pe_vs_shuffle(array, m, tau, n_shuffles=1000, random_state=None, bins=3
 
 composers, datos_composers = extraer_dataset_musica()
 
-composer = 'Bach'
+composer = 'Beethoven'
 labels = list(composers[composer].keys())
 for i, label in enumerate(labels):
     serie = composers[composer][label]
 
-    resultados = plot_pe_vs_shuffle(serie, m=1, tau=2, n_shuffles=500, random_state=123)
+    resultados = plot_pe_vs_shuffle(serie, m=2, tau=2, n_shuffles=500, random_state=123)
         
     print("PE observado:", resultados['pe_obs'])
     print("Media shuffle:", resultados['mu_shuffle'])

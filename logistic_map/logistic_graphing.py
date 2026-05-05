@@ -34,7 +34,8 @@ def bifurcacion_con_J(
     x_vals_plot = []
     
     J_vals = np.zeros((len(r_vals_J)))
-    for V in range(500):
+    J_vals_null = np.zeros((len(r_vals_J)))
+    for V in range(1):
         print(V)
         for q,r in enumerate(r_vals_J):
             x = 0.6
@@ -64,13 +65,14 @@ def bifurcacion_con_J(
                 x_vals_plot.extend(serie)
 
             # # Índice J
-            J = ml.indice_J(serie, None)
+            J = ml.indice_H(serie,None)
             # _,J = gamma_index_jacobs(serie, max_gamma, mu=mu)
             # _, J = gamma_index_rank(serie, max_gamma, mu=mu)
             J_vals[q] = J_vals[q] + J  
-    J_vals = J_vals / 500.0  
+            J_vals_null[q] = J_vals_null[q] + ml.indice_H(np.random.permutation(serie),None)
+    # J_vals = J_vals / 500.0  
         
-    np.save("J_transicion5.npy", np.array([r_vals_J, J_vals]))
+    # np.save("J_transicion5.npy", np.array([r_vals_J, J_vals]))
     if graficar:
         fig, ax1 = plt.subplots(figsize=(10, 6))
 
@@ -106,7 +108,8 @@ def bifurcacion_con_J(
         # Bifurcación
         ax2 = ax1.twinx()
         ax2.axvline(x=3.569945672, color='gray', linestyle='--', label=r'$r_\infty = 3.56994...$')
-        ax2.plot(r_vals_J, J_vals, color='red',marker='.', lw=0.5, ms = 2.0,label=r'$J$')
+        ax2.plot(r_vals_J, J_vals, color='red',marker='.', lw=0.5, ms = 2.0,label=r'$J_{\theta}$')
+        ax2.plot(r_vals_J, J_vals_null, color='blue',marker='.', lw=0.5, ms = 2.0,label=r'$J_{\theta ,null}$')
         # ax2.invert_yaxis()
         # U = np.log(longitud_serie-(mu-1)*max_gamma)/np.log(math.factorial(mu))
         # ax2.axhline(y=U, color='red', linestyle='--', label=r'$U(N,m)$') 
@@ -128,15 +131,15 @@ def bifurcacion_con_J(
 
 
 r_J, J, r_bif, x_bif = bifurcacion_con_J(
-    # r_min=3.0, 
-    # r_max=4.0,
-    r_min=3.5695, 
-    r_max=3.5702,
+    r_min=3.45, 
+    r_max=4.0,
+    # r_min=3.5695, 
+    # r_max=3.5702,
     max_gamma=1,
     mu=4.0,  
     resolucion_r=300, 
-    longitud_serie=5000,  
+    longitud_serie=10000,  
     iter_descartar=1000,
     var_ruido=1e-05,
-    tipo_ruido="aditivo",  # o "aditivo"
+    tipo_ruido="no",  # o "aditivo"
     graficar=True)

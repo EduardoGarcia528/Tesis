@@ -10,6 +10,9 @@ from scipy.stats import pearsonr, spearmanr
 # =========================================================
 EXPORT_DIR = "csv_medidas_paneles"   # carpeta donde guardaste los CSV
 MIN_PAIRS = 3                        # mínimo de pares para calcular correlación
+MIN_BINS = 5                         # mínimo de bins para MI
+MAX_BINS = 40                        # máximo de bins para MI
+MI_BIN_RULE = "fd"                   # "fd" (Freedman-Diaconis) o "sqrt"
 
 # =========================================================
 # AUXILIARES
@@ -78,9 +81,135 @@ def panel_to_long(df, panel_name):
     long_df["panel"] = panel_name
     return long_df
 
-def correlation_summary(x, y, min_pairs=MIN_PAIRS):
+# =========================================================
+# INFORMACIÓN MUTUA
+# =========================================================
+def _safe_entropy(p):
     """
-    Calcula Pearson y Spearman con limpieza de NaN.
+    Entropía de Shannon en nats.
+    """
+    p = np.asarray(p, dtype=float)
+    p = p[p > 0]
+    if p.size == 0:
+        return np.nan
+    return -np.sum(p * np.log(p))
+
+def _choose_bins_1d(x, rule="fd", min_bins=MIN_BINS, max_bins=MAX_BINS):
+    """
+    Elige número de bins para una variable 1D.
+    """
+    x = np.asarray(x, dtype=float)
+    x = x[np.isfinite(x)]
+    n = x.size
+
+    if n < 2:
+        return min_bins
+
+    xmin = np.min(x)
+    xmax = np.max(x)
+    xrng = xmax - xmin
+
+    if xrng == 0:
+        return min_bins
+
+    if rule == "sqrt":
+        bins = int(np.ceil(np.sqrt(n)))
+    elif rule == "fd":
+        q75, q25 = np.percentile(x, [75, 25])
+        iqr = q75 - q25
+
+        if iqr == 0:
+            bins = int(np.ceil(np.sqrt(n)))
+        else:
+            h = 2.0 * iqr / np.cbrt(n)
+            if h <= 0:
+                bins = int(np.ceil(np.sqrt(n)))
+            else:
+                bins = int(np.ceil(xrng / h))
+    else:
+        raise ValueError("rule debe ser 'fd' o 'sqrt'.")
+
+    bins = max(min_bins, bins)
+    bins = min(max_bins, bins)
+    return bins
+
+def mutual_information_hist(x, y, rule=MI_BIN_RULE,
+                            min_bins=MIN_BINS, max_bins=MAX_BINS):
+    """
+    Estima la información mutua I(X;Y) por histograma 2D.
+
+    Retorna
+    -------
+    mi : float
+        Información mutua en nats.
+    nmi : float
+        Información mutua normalizada:
+            I(X;Y) / sqrt(H(X) H(Y))
+    hx : float
+        Entropía marginal de X.
+    hy : float
+        Entropía marginal de Y.
+    bx, by : int
+        Número de bins usados en X y Y.
+    """
+    x = np.asarray(x, dtype=float)
+    y = np.asarray(y, dtype=float)
+
+    mask = np.isfinite(x) & np.isfinite(y)
+    x = x[mask]
+    y = y[mask]
+
+    n = len(x)
+    if n < 2:
+        return np.nan, np.nan, np.nan, np.nan, np.nan, np.nan
+
+    # si una variable es constante, I(X;Y)=0 en esta discretización
+    if np.all(x == x[0]) or np.all(y == y[0]):
+        bx = _choose_bins_1d(x, rule=rule, min_bins=min_bins, max_bins=max_bins)
+        by = _choose_bins_1d(y, rule=rule, min_bins=min_bins, max_bins=max_bins)
+        hx = 0.0 if np.all(x == x[0]) else np.nan
+        hy = 0.0 if np.all(y == y[0]) else np.nan
+        return 0.0, np.nan, hx, hy, bx, by
+
+    bx = _choose_bins_1d(x, rule=rule, min_bins=min_bins, max_bins=max_bins)
+    by = _choose_bins_1d(y, rule=rule, min_bins=min_bins, max_bins=max_bins)
+
+    hist2d, _, _ = np.histogram2d(x, y, bins=[bx, by])
+    total = np.sum(hist2d)
+
+    if total <= 0:
+        return np.nan, np.nan, np.nan, np.nan, bx, by
+
+    pxy = hist2d / total
+    px = np.sum(pxy, axis=1)
+    py = np.sum(pxy, axis=0)
+
+    hx = _safe_entropy(px)
+    hy = _safe_entropy(py)
+
+    nz = pxy > 0
+    pxy_nz = pxy[nz]
+
+    # productos px * py para las celdas no nulas
+    px_py = px[:, None] * py[None, :]
+    px_py_nz = px_py[nz]
+
+    mi = np.sum(pxy_nz * np.log(pxy_nz / px_py_nz))
+
+    # NMI con normalización geométrica
+    if np.isfinite(hx) and np.isfinite(hy) and hx > 0 and hy > 0:
+        nmi = mi / np.sqrt(hx * hy)
+    else:
+        nmi = np.nan
+
+    return mi, nmi, hx, hy, bx, by
+
+# =========================================================
+# RESÚMENES ESTADÍSTICOS
+# =========================================================
+def dependence_summary(x, y, min_pairs=MIN_PAIRS):
+    """
+    Calcula Pearson, Spearman e información mutua con limpieza de NaN.
     """
     x = np.asarray(x, dtype=float)
     y = np.asarray(y, dtype=float)
@@ -96,33 +225,51 @@ def correlation_summary(x, y, min_pairs=MIN_PAIRS):
             "pearson_r": np.nan,
             "pearson_p": np.nan,
             "spearman_rho": np.nan,
-            "spearman_p": np.nan
+            "spearman_p": np.nan,
+            "mi_nats": np.nan,
+            "nmi": np.nan,
+            "Hx": np.nan,
+            "Hy": np.nan,
+            "bins_x": np.nan,
+            "bins_y": np.nan
         }
 
-    # Si una variable es constante, scipy puede fallar o devolver nan
+    # Pearson / Spearman
     if np.all(x == x[0]) or np.all(y == y[0]):
-        return {
-            "n": n,
-            "pearson_r": np.nan,
-            "pearson_p": np.nan,
-            "spearman_rho": np.nan,
-            "spearman_p": np.nan
-        }
+        rp, pp = np.nan, np.nan
+        rs, ps = np.nan, np.nan
+    else:
+        rp, pp = pearsonr(x, y)
+        rs, ps = spearmanr(x, y)
 
-    rp, pp = pearsonr(x, y)
-    rs, ps = spearmanr(x, y)
+    # Información mutua
+    mi, nmi, hx, hy, bx, by = mutual_information_hist(
+        x, y,
+        rule=MI_BIN_RULE,
+        min_bins=MIN_BINS,
+        max_bins=MAX_BINS
+    )
 
     return {
         "n": n,
         "pearson_r": rp,
         "pearson_p": pp,
         "spearman_rho": rs,
-        "spearman_p": ps
+        "spearman_p": ps,
+        "mi_nats": mi,
+        "nmi": nmi,
+        "Hx": hx,
+        "Hy": hy,
+        "bins_x": bx,
+        "bins_y": by
     }
 
+# =========================================================
+# CÁLCULO GLOBAL Y POR COMPOSITOR
+# =========================================================
 def compute_global_correlations(panel_dict, min_pairs=MIN_PAIRS):
     """
-    Calcula correlaciones globales entre todos los pares de paneles.
+    Calcula dependencias globales entre todos los pares de paneles.
 
     Global = usar todas las observaciones emparejadas por (composer, serie).
     """
@@ -141,7 +288,7 @@ def compute_global_correlations(panel_dict, min_pairs=MIN_PAIRS):
 
             merged = pd.merge(df1, df2, on=["serie", "composer"], how="inner")
 
-            stats = correlation_summary(
+            stats = dependence_summary(
                 merged["value_1"].to_numpy(),
                 merged["value_2"].to_numpy(),
                 min_pairs=min_pairs
@@ -157,9 +304,9 @@ def compute_global_correlations(panel_dict, min_pairs=MIN_PAIRS):
 
 def compute_correlations_by_composer(panel_dict, min_pairs=MIN_PAIRS):
     """
-    Calcula correlaciones por compositor entre todos los pares de paneles.
+    Calcula dependencias por compositor entre todos los pares de paneles.
 
-    Para cada compositor, correlaciona las series comunes entre dos paneles.
+    Para cada compositor, compara las series comunes entre dos paneles.
     """
     panel_names = list(panel_dict.keys())
     all_composers = sorted(
@@ -187,7 +334,7 @@ def compute_correlations_by_composer(panel_dict, min_pairs=MIN_PAIRS):
                 merged = pd.concat([s1, s2], axis=1, join="inner").reset_index()
                 merged = merged.rename(columns={"index": "serie"})
 
-                stats = correlation_summary(
+                stats = dependence_summary(
                     merged["value_1"].to_numpy(),
                     merged["value_2"].to_numpy(),
                     min_pairs=min_pairs
@@ -202,9 +349,12 @@ def compute_correlations_by_composer(panel_dict, min_pairs=MIN_PAIRS):
 
     return pd.DataFrame(rows)
 
+# =========================================================
+# IMPRESIÓN
+# =========================================================
 def print_global_results(df_global):
     print("\n" + "="*90)
-    print("CORRELACIONES GLOBALES")
+    print("CORRELACIONES / DEPENDENCIAS GLOBALES")
     print("="*90)
 
     if df_global.empty:
@@ -216,10 +366,13 @@ def print_global_results(df_global):
         print(f"  n pares        = {int(row['n'])}")
         print(f"  Pearson  r     = {row['pearson_r']:.6f}   p = {row['pearson_p']:.6g}")
         print(f"  Spearman rho   = {row['spearman_rho']:.6f}   p = {row['spearman_p']:.6g}")
+        print(f"  MI (nats)      = {row['mi_nats']:.6f}")
+        print(f"  NMI            = {row['nmi']:.6f}")
+        print(f"  bins (x, y)    = ({int(row['bins_x'])}, {int(row['bins_y'])})")
 
 def print_results_by_composer(df_by_composer):
     print("\n" + "="*90)
-    print("CORRELACIONES POR COMPOSITOR")
+    print("CORRELACIONES / DEPENDENCIAS POR COMPOSITOR")
     print("="*90)
 
     if df_by_composer.empty:
@@ -240,6 +393,9 @@ def print_results_by_composer(df_by_composer):
             print(f"  n pares        = {int(row['n'])}")
             print(f"  Pearson  r     = {row['pearson_r']:.6f}   p = {row['pearson_p']:.6g}")
             print(f"  Spearman rho   = {row['spearman_rho']:.6f}   p = {row['spearman_p']:.6g}")
+            print(f"  MI (nats)      = {row['mi_nats']:.6f}")
+            print(f"  NMI            = {row['nmi']:.6f}")
+            print(f"  bins (x, y)    = ({int(row['bins_x'])}, {int(row['bins_y'])})")
             print()
 
 # =========================================================
@@ -248,11 +404,6 @@ def print_results_by_composer(df_by_composer):
 if __name__ == "__main__":
     panel_dict = load_panel_csvs(EXPORT_DIR)
 
-    # print("Paneles detectados:")
-    # for name in panel_dict:
-    #     df = panel_dict[name]
-    #     print(f"  - {name}: shape = {df.shape}")
-
     df_global = compute_global_correlations(panel_dict, min_pairs=MIN_PAIRS)
     df_by_composer = compute_correlations_by_composer(panel_dict, min_pairs=MIN_PAIRS)
 
@@ -260,5 +411,5 @@ if __name__ == "__main__":
     # print_results_by_composer(df_by_composer)
 
     # Guardado opcional
-    # df_global.to_csv("correlaciones_globales_paneles.csv", index=False, encoding="utf-8")
-    # df_by_composer.to_csv("correlaciones_por_compositor_paneles.csv", index=False, encoding="utf-8")
+    # df_global.to_csv("dependencias_globales_paneles.csv", index=False, encoding="utf-8")
+    # df_by_composer.to_csv("dependencias_por_compositor_paneles.csv", index=False, encoding="utf-8")
