@@ -66,24 +66,6 @@ def permutation_entropy(arr, m=3, tau=1, norm=True):
     else:
         return H
 
-@njit
-def stable_argsort_by_value_then_index(x):
-    m = x.shape[0]
-    idx = np.arange(m)
-    # insertion sort por clave (valor, índice)
-    for i in range(1, m):
-        key = idx[i]
-        j = i - 1
-        while j >= 0:
-            a = x[idx[j]]
-            b = x[key]
-            if (a > b) or (a == b and idx[j] > key):
-                idx[j + 1] = idx[j]
-                j -= 1
-            else:
-                break
-        idx[j + 1] = key
-    return idx
 
 
 @njit

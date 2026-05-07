@@ -1,5 +1,5 @@
 import numpy as np
-
+from numba import njit
 
 """LOGISTIC"""
 
@@ -63,113 +63,22 @@ import numpy as np
 
 """HENON"""
 
-def henon_map(
-    a=1.4,
-    b=0.3,
-    n_iter=1000,
-    n_transient=0,
-    ruido=None,
-    sigma=0.0,
-    x0=0.1,
-    y0=0.1,
-    random_state=None,
-    clip=False,
-    clip_bounds=(-10.0, 10.0),
-    return_xy=True
-):
-    """
-    clip : bool, default=False
-        Si True, restringe x e y al intervalo definido por clip_bounds.
-        En Hénon normalmente conviene dejarlo en False, salvo que quieras evitar
-        divergencias numéricas en barridos grandes de parámetros.
+@njit
+def henon_map(a, b, x0=0.1, y0=0.1, n_trans=200, n_points=10000):
+    x, y = x0, y0
+    # Transitorio
+    for _ in range(n_trans):
+        x, y = 1 - a * x * x + y, b * x
 
-    clip_bounds : tuple, default=(-10.0, 10.0)
-        Límites usados si clip=True.
+    # Iteraciones para graficar
+    xs = []
+    ys = []
+    for _ in range(n_points):
+        x, y = 1 - a * x * x + y, b * x
+        xs.append(x)
+        ys.append(y)
 
-    return_xy : bool, default=True
-        Si True, retorna dos arrays:
-
-            x, y
-
-        Si False, retorna un array de forma (n_iter, 2):
-
-            serie[:, 0] = x
-            serie[:, 1] = y
-
-    """
-
-    if ruido not in [None, "aditivo", "iterativo"]:
-        raise ValueError("ruido debe ser None, 'aditivo' o 'iterativo'.")
-
-    if n_iter <= 0:
-        raise ValueError("n_iter debe ser mayor que cero.")
-
-    if n_transient < 0:
-        raise ValueError("n_transient debe ser mayor o igual que cero.")
-
-    if np.isscalar(sigma):
-        sigma_x = float(sigma)
-        sigma_y = float(sigma)
-    else:
-        if len(sigma) != 2:
-            raise ValueError("sigma debe ser un float o una tupla/lista (sigma_x, sigma_y).")
-        sigma_x = float(sigma[0])
-        sigma_y = float(sigma[1])
-
-    rng = np.random.default_rng(random_state)
-
-    total_iter = n_iter + n_transient
-
-    x = np.empty(total_iter + 1, dtype=float)
-    y = np.empty(total_iter + 1, dtype=float)
-
-    x[0] = x0
-    y[0] = y0
-
-    lower, upper = clip_bounds
-
-    # Caso 1: ruido iterativo
-    if ruido == "iterativo":
-        for n in range(total_iter):
-            eta_x = rng.normal(0.0, sigma_x)
-            eta_y = rng.normal(0.0, sigma_y)
-
-            x[n + 1] = 1.0 - a * x[n]**2 + y[n] + eta_x
-            y[n + 1] = b * x[n] + eta_y
-
-            if clip:
-                x[n + 1] = np.clip(x[n + 1], lower, upper)
-                y[n + 1] = np.clip(y[n + 1], lower, upper)
-
-        x_out = x[n_transient + 1:]
-        y_out = y[n_transient + 1:]
-
-    # Caso 2: dinámica determinista
-    else:
-        for n in range(total_iter):
-            x[n + 1] = 1.0 - a * x[n]**2 + y[n]
-            y[n + 1] = b * x[n]
-
-            if clip:
-                x[n + 1] = np.clip(x[n + 1], lower, upper)
-                y[n + 1] = np.clip(y[n + 1], lower, upper)
-
-        x_out = x[n_transient + 1:]
-        y_out = y[n_transient + 1:]
-
-        # Caso 3: ruido aditivo posterior
-        if ruido == "aditivo":
-            x_out = x_out + rng.normal(0.0, sigma_x, size=n_iter)
-            y_out = y_out + rng.normal(0.0, sigma_y, size=n_iter)
-
-            if clip:
-                x_out = np.clip(x_out, lower, upper)
-                y_out = np.clip(y_out, lower, upper)
-
-    if return_xy:
-        return x_out, y_out
-
-    return np.column_stack((x_out, y_out))
+    return xs, ys
 
 import numpy as np
 from scipy.integrate import solve_ivp

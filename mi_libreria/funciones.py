@@ -24,9 +24,7 @@ def wrap_pi(a):
 # 2. Construir puntos en el toro: P_i = (f1[i], f2[i])
 # ============================================================
 
-def obtener_fases_fourier(seriex, seriey=None, tau=1,
-                          quitar_dc=True,
-                          quitar_nyquist=True):
+def obtener_fases_fourier(seriex, seriey=None, tau=1):
     """
     Construye las dos secuencias de fases f1 y f2.
 
@@ -64,15 +62,141 @@ def obtener_fases_fourier(seriex, seriey=None, tau=1,
     f2 = np.angle(np.fft.rfft(y1))
 
     # Quitar frecuencia cero, cuya fase usualmente no es informativa.
-    if quitar_dc:
-        f1 = f1[1:]
-        f2 = f2[1:]
+    f1 = f1[1:]
+    f2 = f2[1:]
 
     # Para señales reales de longitud par, la frecuencia de Nyquist también es real.
-    # Su fase suele estar restringida a 0 o pi.
-    if quitar_nyquist and len(x1) % 2 == 0 and len(f1) > 0:
+    if len(x1) % 2 == 0:
         f1 = f1[:-1]
         f2 = f2[:-1]
+
+    return f1, f2
+
+import numpy as np
+from scipy.signal import hilbert
+
+
+def obtener_fases_instantaneas(
+    seriex,
+    seriey=None,
+    tau=1,
+    quitar_media=True,
+    unwrap=False,
+    modo_univariante="global"
+):
+    """
+    Construye dos secuencias de fases instantáneas f1 y f2 usando la transformada de Hilbert.
+
+    Caso univariante:
+        modo_univariante="global":
+            Primero calcula theta = fase instantánea de X completa.
+            Luego:
+                f1 = theta[tau:]
+                f2 = theta[:-tau]
+
+        modo_univariante="segmentos":
+            Calcula fases instantáneas por separado:
+                f1 = fase instantánea de X[tau:]
+                f2 = fase instantánea de X[:-tau]
+
+    Caso bivariante:
+        f1 = fase instantánea de X
+        f2 = fase instantánea de Y
+
+    Parámetros
+    ----------
+    seriex : array_like
+        Serie temporal principal.
+
+    seriey : array_like or None
+        Segunda serie temporal. Si es None, se usa el caso univariante con retardo tau.
+
+    tau : int
+        Retardo temporal para el caso univariante.
+
+    quitar_media : bool
+        Si True, resta la media antes de calcular la transformada de Hilbert.
+        Esto suele ser recomendable, porque un componente DC puede distorsionar
+        la fase instantánea.
+
+    unwrap : bool
+        Si False, devuelve fases envueltas en [-pi, pi].
+        Si True, devuelve fases desenvueltas con np.unwrap.
+
+        Para una caminata sobre el toro, usualmente conviene usar unwrap=False.
+
+    modo_univariante : {"global", "segmentos"}
+        Define cómo calcular la fase instantánea en el caso univariante.
+
+        "global" es el modo recomendado para construir:
+            (theta_i, theta_{i+tau})
+
+        "segmentos" imita más literalmente la lógica de la función de Fourier,
+        pero puede introducir diferencias por efectos de borde en Hilbert.
+
+    Returns
+    -------
+    f1, f2 : np.ndarray
+        Secuencias de fases instantáneas.
+    """
+
+    def fase_instantanea(x):
+        x = np.asarray(x, dtype=np.float64)
+
+        if x.ndim != 1:
+            raise ValueError("La serie debe ser un array unidimensional.")
+
+        if len(x) < 3:
+            raise ValueError("La serie debe tener al menos 3 puntos.")
+
+        if not np.all(np.isfinite(x)):
+            raise ValueError("La serie contiene NaN o infinitos.")
+
+        if quitar_media:
+            x = x - np.mean(x)
+
+        z = hilbert(x)
+        theta = np.angle(z)
+
+        if unwrap:
+            theta = np.unwrap(theta)
+
+        return theta
+
+    seriex = np.asarray(seriex, dtype=np.float64)
+
+    if seriey is None:
+        if tau <= 0:
+            raise ValueError("tau debe ser mayor que cero.")
+
+        if tau >= len(seriex):
+            raise ValueError("tau debe ser menor que la longitud de la serie.")
+
+        if modo_univariante == "global":
+            theta = fase_instantanea(seriex)
+            f1 = theta[tau:]
+            f2 = theta[:-tau]
+
+        elif modo_univariante == "segmentos":
+            x1 = seriex[tau:]
+            y1 = seriex[:-tau]
+
+            f1 = fase_instantanea(x1)
+            f2 = fase_instantanea(y1)
+
+        else:
+            raise ValueError("modo_univariante debe ser 'global' o 'segmentos'.")
+
+    else:
+        seriey = np.asarray(seriey, dtype=np.float64)
+
+        if len(seriex) != len(seriey):
+            raise ValueError(
+                "En el caso bivariante, seriex y seriey deben tener la misma longitud."
+            )
+
+        f1 = fase_instantanea(seriex)
+        f2 = fase_instantanea(seriey)
 
     return f1, f2
 
@@ -119,8 +243,8 @@ def construir_vectores_geodesicos(puntos):
     vectores = np.empty((n_vectores, 2), dtype=np.float64)
 
     for i in range(n_vectores):
-        dx = wrap_pi(puntos[i + 1, 0] - puntos[i, 0])
-        dy = wrap_pi(puntos[i + 1, 1] - puntos[i, 1])
+        dx = wrap_pi(puntos[i + 1, 0] - puntos[i, 0])- puntos[i, 0] 
+        dy = wrap_pi(puntos[i + 1, 1] - puntos[i, 1])- puntos[i, 1]
 
         vectores[i, 0] = dx
         vectores[i, 1] = dy
@@ -217,6 +341,32 @@ def indice_J(seriex, seriey=None, tau=1):
         J = 1.0 - np.abs(np.mean(e))
     return J
 
+
+def indice_H(seriex, seriey=None, tau=1):
+    # 1. Fases de Fourier
+    f1, f2 = obtener_fases_instantaneas(seriex,
+        seriey=seriey,
+        tau=tau,
+        quitar_media=True,
+        unwrap=False,
+        modo_univariante="segmentos")
+
+    # 2. Puntos en el toro
+    puntos = construir_puntos_toro(f1, f2)
+
+    # 3. Vectores geodésicos
+    vectores = construir_vectores_geodesicos(puntos)
+
+    # 4. Ángulos entre vectores consecutivos
+    angulos = calcular_angulos_entre_vectores(vectores)
+
+    if len(angulos) == 0:
+        H = np.nan
+    else:
+        e = np.exp(1j * angulos)
+        H = 1.0 - np.abs(np.mean(e))
+    return H
+
 def angulos_alpha(seriex, seriey, tau = 1):
     f1, f2 = obtener_fases_fourier(
         seriex,
@@ -225,6 +375,19 @@ def angulos_alpha(seriex, seriey, tau = 1):
         quitar_dc=True,
         quitar_nyquist=True
     )
+    puntos = construir_puntos_toro(f1, f2)
+    vectores = construir_vectores_geodesicos(puntos)
+    angulos = calcular_angulos_entre_vectores(vectores)
+    return angulos
+
+def angulos_alpha_H(seriex, seriey, tau = 1):
+    f1, f2 = obtener_fases_instantaneas(
+        seriex,
+        seriey=seriey,
+        tau=tau,
+        quitar_media=True,
+        unwrap=False,
+        modo_univariante="global")
     puntos = construir_puntos_toro(f1, f2)
     vectores = construir_vectores_geodesicos(puntos)
     angulos = calcular_angulos_entre_vectores(vectores)
