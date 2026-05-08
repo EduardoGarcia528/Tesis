@@ -3,15 +3,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # ============================================================
-# Parámetros del sistema de Lorenz
+# Parámetros del sistema de Rössler
 # ============================================================
+a = 0.2
+b = 0.2
 
-sigma = 10
-beta = 8/3
-
-# Variación de rho en el orden indicado
-rho_values = np.array([28.0,99.65,100.5, 160.0, 350])
-# rho_values = np.array([350, 100.5, 160, 99.65, 28.0])
+# Variación de c: de régimen más regular a más caótico
+c_values = np.array([4.0, 6.0, 8.5, 8.7, 9.0, 12.0, 12.6, 13.0, 18.0])
 
 t_max = 1200
 dt = 0.01
@@ -27,72 +25,68 @@ rng = np.random.default_rng(123)
 medida = []
 medida_null = []
 
-for i, rho in enumerate(rho_values):
 
-    t, x, y, z = ml.lorenz_system(
-        sigma=sigma,
-        rho=rho,
-        beta=beta,
+
+for i, c in enumerate(c_values):
+
+    t, x, y, z = ml.rossler_system(
+        a=a,
+        b=b,
+        c=c,
         t_max=t_max,
         dt=dt,
         t_transient=t_transient,
         x0=x0,
         y0=y0,
-        z0=z0
-    )
+        z0=z0    )
 
-    # Submuestreo opcional
-    x_m = x[::subsample]
-    y_m = y[::subsample]
 
     medida.append(
-        ml.indice_H(x_m, y_m)
+        ml.indice_H(x, y)
     )
 
-    medida_null.append(
+    medida_null.append( 
         ml.indice_H(
-            rng.permutation(x_m),
-            rng.permutation(y_m)
+            rng.permutation(x),
+            rng.permutation(y)
         )
     )
+
+
 
 medida = np.asarray(medida)
 medida_null = np.asarray(medida_null)
 
+
 fig, ax1 = plt.subplots(figsize=(8, 5))
 
-casos = np.arange(len(rho_values))
+
+ax1.set_xlabel(r"$c$")
+ax1.set_ylabel(r"Máximos locales de $x(t)$")
+ax1.set_title(
+    rf"Sistema de Rössler: bifurcación al variar $c$ "
+    rf"con $a={a}$, $b={b}$"
+)
+
 
 ax1.plot(
-    casos,
+    c_values,
     medida,
     color="red",
-    marker="o",
     lw=2,
     label=r"$J_{\theta}$"
 )
 
 ax1.plot(
-    casos,
+    c_values,
     medida_null,
     color="blue",
-    marker="o",
     lw=2,
     label=r"$J_{\theta}$ null"
 )
 
-ax1.set_xticks(casos)
-ax1.set_xticklabels([str(rho) for rho in rho_values])
-
-ax1.set_xlabel(r"$\rho$")
-ax1.set_ylabel(r"Medida: $J_{\theta}$")
 ax1.set_ylim(0, 1)
-
-ax1.set_title(
-    rf"Sistema de Lorenz: índice $J_\theta$ para distintos $\rho$ "
-    rf"con $\sigma={sigma}$, $\beta={beta:.3g}$"
-)
-
+ax1.set_ylabel(r"Medida: $J_{\theta}$")
 ax1.legend(loc="upper right")
 
 plt.tight_layout()

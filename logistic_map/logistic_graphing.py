@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import math
 from numba import njit
 import mi_libreria as ml
+from scipy.stats import pearsonr, spearmanr
 
 @njit
 def logistic_map(r, x):
@@ -69,10 +70,12 @@ def bifurcacion_con_J(
             # _,J = gamma_index_jacobs(serie, max_gamma, mu=mu)
             # _, J = gamma_index_rank(serie, max_gamma, mu=mu)
             J_vals[q] = J_vals[q] + J  
-            J_vals_null[q] = J_vals_null[q] + ml.indice_H(np.random.permutation(serie),None)
+            J_vals_null[q] = J_vals_null[q] + ml.indice_H(serie,None,null="shuffle")
     # J_vals = J_vals / 500.0  
         
     # np.save("J_transicion5.npy", np.array([r_vals_J, J_vals]))
+    print("Pearson:", pearsonr(J_vals_null, J_vals))
+    print("Spearman:", spearmanr(J_vals_null, J_vals))
     if graficar:
         fig, ax1 = plt.subplots(figsize=(10, 6))
 

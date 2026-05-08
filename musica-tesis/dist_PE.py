@@ -339,7 +339,7 @@ def pe_stats_for_series(
                 C,_ = ml.gamma_index_rank_ties(x_surr,max_gamma=D,mu=tau)
                 pe_surr = 1-C[-1]
             elif "H_tau" in measure:
-                pe_surr = ml.indice_H(x_surr, None, tau=tau)
+                pe_surr = ml.indice_H(x, None, tau=tau,null="shuffle")
             elif "gamma" in measure:
                 _,C = ml.gamma_index_rank_ties(x_surr,max_gamma=D,mu=tau)
                 pe_surr = 1-C[-1]

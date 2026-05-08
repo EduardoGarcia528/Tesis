@@ -2,6 +2,7 @@ import mi_libreria as ml
 import numpy as np
 import matplotlib.pyplot as plt
 
+# f = ml.rossler_system(a=0.2,b=0.2,c=5.7,t_max=1000,dt=0.01,t_transient=0,x0=0.1,y0=0.1,z0=0.1)
 # Parámetros
 b = 0.3
 a_values = np.linspace(1.0, 1.4, 300)

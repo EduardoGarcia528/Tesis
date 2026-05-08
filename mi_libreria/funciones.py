@@ -82,7 +82,8 @@ def obtener_fases_instantaneas(
     tau=1,
     quitar_media=True,
     unwrap=False,
-    modo_univariante="global"
+    modo_univariante="global",
+    null="no"
 ):
     """
     Construye dos secuencias de fases instantáneas f1 y f2 usando la transformada de Hilbert.
@@ -174,6 +175,7 @@ def obtener_fases_instantaneas(
 
         if modo_univariante == "global":
             theta = fase_instantanea(seriex)
+            dtheta = wrap_pi(np.diff(theta))
             f1 = theta[tau:]
             f2 = theta[:-tau]
 
@@ -181,7 +183,9 @@ def obtener_fases_instantaneas(
             x1 = seriex[tau:]
             y1 = seriex[:-tau]
 
+            # f1 = wrap_pi(np.diff(fase_instantanea(x1)))
             f1 = fase_instantanea(x1)
+            # f2 = wrap_pi(np.diff(fase_instantanea(y1)))
             f2 = fase_instantanea(y1)
 
         else:
@@ -198,6 +202,10 @@ def obtener_fases_instantaneas(
         f1 = fase_instantanea(seriex)
         f2 = fase_instantanea(seriey)
 
+    if null == "shuffle":
+        rng = np.random.default_rng()
+        f1 = rng.permutation(f1)
+        f2 = rng.permutation(f2)
     return f1, f2
 
 
@@ -243,8 +251,8 @@ def construir_vectores_geodesicos(puntos):
     vectores = np.empty((n_vectores, 2), dtype=np.float64)
 
     for i in range(n_vectores):
-        dx = wrap_pi(puntos[i + 1, 0] - puntos[i, 0])- puntos[i, 0] 
-        dy = wrap_pi(puntos[i + 1, 1] - puntos[i, 1])- puntos[i, 1]
+        dx = wrap_pi(puntos[i + 1, 0] - puntos[i, 0])# - puntos[i, 0] 
+        dy = wrap_pi(puntos[i + 1, 1] - puntos[i, 1])# - puntos[i, 1]
 
         vectores[i, 0] = dx
         vectores[i, 1] = dy
@@ -320,9 +328,7 @@ def indice_J(seriex, seriey=None, tau=1):
     f1, f2 = obtener_fases_fourier(
         seriex,
         seriey=seriey,
-        tau=tau,
-        quitar_dc=True,
-        quitar_nyquist=True
+        tau=tau
     )
 
     # 2. Puntos en el toro
@@ -342,14 +348,15 @@ def indice_J(seriex, seriey=None, tau=1):
     return J
 
 
-def indice_H(seriex, seriey=None, tau=1):
+def indice_H(seriex, seriey=None, tau=1,null="no"):
     # 1. Fases de Fourier
     f1, f2 = obtener_fases_instantaneas(seriex,
         seriey=seriey,
         tau=tau,
         quitar_media=True,
         unwrap=False,
-        modo_univariante="segmentos")
+        modo_univariante="segmentos",
+        null=null)
 
     # 2. Puntos en el toro
     puntos = construir_puntos_toro(f1, f2)
@@ -372,22 +379,21 @@ def angulos_alpha(seriex, seriey, tau = 1):
         seriex,
         seriey=seriey,
         tau=tau,
-        quitar_dc=True,
-        quitar_nyquist=True
     )
     puntos = construir_puntos_toro(f1, f2)
     vectores = construir_vectores_geodesicos(puntos)
     angulos = calcular_angulos_entre_vectores(vectores)
     return angulos
 
-def angulos_alpha_H(seriex, seriey, tau = 1):
+def angulos_alpha_H(seriex, seriey, tau = 1,null="no"):
     f1, f2 = obtener_fases_instantaneas(
         seriex,
         seriey=seriey,
         tau=tau,
         quitar_media=True,
         unwrap=False,
-        modo_univariante="global")
+        modo_univariante="global",
+        null=null)
     puntos = construir_puntos_toro(f1, f2)
     vectores = construir_vectores_geodesicos(puntos)
     angulos = calcular_angulos_entre_vectores(vectores)
