@@ -66,11 +66,11 @@ def bifurcacion_con_J(
                 x_vals_plot.extend(serie)
 
             # # Índice J
-            J = ml.indice_H(serie,None)
+            J = ml.indice_H(serie,None,tau=3)
             # _,J = gamma_index_jacobs(serie, max_gamma, mu=mu)
             # _, J = gamma_index_rank(serie, max_gamma, mu=mu)
             J_vals[q] = J_vals[q] + J  
-            J_vals_null[q] = J_vals_null[q] + ml.indice_H(serie,None,null="shuffle")
+            J_vals_null[q] = J_vals_null[q] + ml.indice_H(serie,None,tau=3,null="shuffle")
     # J_vals = J_vals / 500.0  
         
     # np.save("J_transicion5.npy", np.array([r_vals_J, J_vals]))

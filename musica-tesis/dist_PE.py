@@ -48,11 +48,14 @@ ALPHA = 0.05   # sólo se usa si USE_P_RAW_ZERO_FOR_RED = False
 # =========================================================
 
 PANEL_CONFIGS = [
-    {"measure":"H_tau1","D": 2, "tau": 1,"type_null":"shuffle", "title": r"$Indice H_{\tau=1}$ (notes,shuffle)"},
-    # {"measure":"gamma_rank_ties","D": 1, "tau": 2,"type_null":"iaaft", "title": r"$\gamma_1^{(R)}(\mu=2)$ (notes,iaaft)"},
-    {"measure":"Cd_rank","D": 4, "tau": 2,"type_null":"shuffle", "title": fr"mPE (notes,shuffle): $m=5,\ \tau=1$"},
-    {"measure":"mPE","D":5, "tau": 1,"type_null":"shuffle", "title": fr"mPE (notes,shuffle): $m=5,\ \tau=1$"},
-    {"measure":"mPE","D": 4, "tau": 1,"type_null":"shuffle", "title": fr"mPE (notes,shuffle): $m=4,\ \tau=1$"},
+    # {"measure":"H_tau1","D": 2, "tau": 1,"type_null":"shuffle", "title": r"$Indice H_{\tau=1}$ (notes,shuffle)"},
+    {"measure":"gamma_rank_ties","D": 1, "tau": 2,"type_null":"shuffle", "title": r"$\gamma_1^{(R)}(\mu=2)$ (notes,shuffle)"},
+    {"measure":"gamma_rank_ties","D": 2, "tau": 2,"type_null":"shuffle", "title": r"$\gamma_2^{(R)}(\mu=2)$ (notes,shuffle)"},
+    {"measure":"gamma_rank_ties","D": 3, "tau": 2,"type_null":"shuffle", "title": r"$\gamma_3^{(R)}(\mu=2)$ (notes,shuffle)"},
+    {"measure":"gamma_rank_ties","D": 4, "tau": 2,"type_null":"shuffle", "title": r"$\gamma_4^{(R)}(\mu=2)$ (notes,shuffle)"},
+    # {"measure":"Cd_rank","D": 4, "tau": 2,"type_null":"shuffle", "title": fr"mPE (notes,shuffle): $m=5,\ \tau=1$"},
+    # {"measure":"mPE","D":5, "tau": 1,"type_null":"shuffle", "title": fr"mPE (notes,shuffle): $m=5,\ \tau=1$"},
+    # {"measure":"mPE","D": 4, "tau": 1,"type_null":"shuffle", "title": fr"mPE (notes,shuffle): $m=4,\ \tau=1$"},
     # {"measure":"mPE","D": 5, "tau": 4,"type_null":"shuffle", "title": fr"mPE (notes,shuffle): $m=5,\ \tau=4$"},
 ] 
 

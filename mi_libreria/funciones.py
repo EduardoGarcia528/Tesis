@@ -82,7 +82,7 @@ def obtener_fases_instantaneas(
     tau=1,
     quitar_media=True,
     unwrap=False,
-    modo_univariante="global",
+    modo_univariante="segmentos",
     null="no"
 ):
     """
@@ -163,30 +163,25 @@ def obtener_fases_instantaneas(
             theta = np.unwrap(theta)
 
         return theta
-
+    
     seriex = np.asarray(seriex, dtype=np.float64)
 
     if seriey is None:
-        if tau <= 0:
-            raise ValueError("tau debe ser mayor que cero.")
-
-        if tau >= len(seriex):
-            raise ValueError("tau debe ser menor que la longitud de la serie.")
 
         if modo_univariante == "global":
             theta = fase_instantanea(seriex)
             dtheta = wrap_pi(np.diff(theta))
-            f1 = theta[tau:]
-            f2 = theta[:-tau]
+            f1 = dtheta[tau:]
+            f2 = dtheta[:-tau]
 
         elif modo_univariante == "segmentos":
             x1 = seriex[tau:]
             y1 = seriex[:-tau]
 
-            # f1 = wrap_pi(np.diff(fase_instantanea(x1)))
-            f1 = fase_instantanea(x1)
-            # f2 = wrap_pi(np.diff(fase_instantanea(y1)))
-            f2 = fase_instantanea(y1)
+            f1 = wrap_pi(np.diff(fase_instantanea(x1)))
+            # f1 = fase_instantanea(x1)
+            f2 = wrap_pi(np.diff(fase_instantanea(y1)))
+            # f2 = fase_instantanea(y1)
 
         else:
             raise ValueError("modo_univariante debe ser 'global' o 'segmentos'.")
@@ -199,13 +194,17 @@ def obtener_fases_instantaneas(
                 "En el caso bivariante, seriex y seriey deben tener la misma longitud."
             )
 
-        f1 = fase_instantanea(seriex)
-        f2 = fase_instantanea(seriey)
+        f1 = wrap_pi(np.diff(fase_instantanea(seriex)))
+        # f1 = fase_instantanea(seriex)
+        f2 = wrap_pi(np.diff(fase_instantanea(seriey)))
+        # f2 = fase instantanea(seriey)
+
 
     if null == "shuffle":
-        rng = np.random.default_rng()
-        f1 = rng.permutation(f1)
-        f2 = rng.permutation(f2)
+        # rng = np.random.default_rng()
+        f1 = np.random.permutation(f1)
+        f2 = np.random.permutation(f2)
+
     return f1, f2
 
 
@@ -386,13 +385,12 @@ def angulos_alpha(seriex, seriey, tau = 1):
     return angulos
 
 def angulos_alpha_H(seriex, seriey, tau = 1,null="no"):
-    f1, f2 = obtener_fases_instantaneas(
-        seriex,
+    f1, f2 = obtener_fases_instantaneas(seriex,
         seriey=seriey,
         tau=tau,
         quitar_media=True,
         unwrap=False,
-        modo_univariante="global",
+        modo_univariante="segmentos",
         null=null)
     puntos = construir_puntos_toro(f1, f2)
     vectores = construir_vectores_geodesicos(puntos)

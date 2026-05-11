@@ -89,9 +89,9 @@ def lorenz_system(
     sigma=10.0,
     rho=28.0,
     beta=8.0 / 3.0,
-    t_max=100.0,
+    t_max=1200.0,
     dt=0.01,
-    t_transient=0.0,
+    t_transient=200.0,
     x0=1.0,
     y0=1.0,
     z0=1.0,
@@ -333,12 +333,12 @@ from scipy.integrate import solve_ivp
 
 
 def rossler_system(
-    a=0.2,
-    b=0.2,
+    a=0.1,
+    b=0.1,
     c=5.7,
-    t_max=1000.0,
+    t_max=1200.0,
     dt=0.01,
-    t_transient=0.0,
+    t_transient=200.0,
     x0=1.0,
     y0=1.0,
     z0=1.0,
