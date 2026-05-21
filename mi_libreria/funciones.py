@@ -72,141 +72,6 @@ def obtener_fases_fourier(seriex, seriey=None, tau=1):
 
     return f1, f2
 
-import numpy as np
-from scipy.signal import hilbert
-
-
-def obtener_fases_instantaneas(
-    seriex,
-    seriey=None,
-    tau=1,
-    quitar_media=True,
-    unwrap=False,
-    modo_univariante="segmentos",
-    null="no"
-):
-    """
-    Construye dos secuencias de fases instantáneas f1 y f2 usando la transformada de Hilbert.
-
-    Caso univariante:
-        modo_univariante="global":
-            Primero calcula theta = fase instantánea de X completa.
-            Luego:
-                f1 = theta[tau:]
-                f2 = theta[:-tau]
-
-        modo_univariante="segmentos":
-            Calcula fases instantáneas por separado:
-                f1 = fase instantánea de X[tau:]
-                f2 = fase instantánea de X[:-tau]
-
-    Caso bivariante:
-        f1 = fase instantánea de X
-        f2 = fase instantánea de Y
-
-    Parámetros
-    ----------
-    seriex : array_like
-        Serie temporal principal.
-
-    seriey : array_like or None
-        Segunda serie temporal. Si es None, se usa el caso univariante con retardo tau.
-
-    tau : int
-        Retardo temporal para el caso univariante.
-
-    quitar_media : bool
-        Si True, resta la media antes de calcular la transformada de Hilbert.
-        Esto suele ser recomendable, porque un componente DC puede distorsionar
-        la fase instantánea.
-
-    unwrap : bool
-        Si False, devuelve fases envueltas en [-pi, pi].
-        Si True, devuelve fases desenvueltas con np.unwrap.
-
-        Para una caminata sobre el toro, usualmente conviene usar unwrap=False.
-
-    modo_univariante : {"global", "segmentos"}
-        Define cómo calcular la fase instantánea en el caso univariante.
-
-        "global" es el modo recomendado para construir:
-            (theta_i, theta_{i+tau})
-
-        "segmentos" imita más literalmente la lógica de la función de Fourier,
-        pero puede introducir diferencias por efectos de borde en Hilbert.
-
-    Returns
-    -------
-    f1, f2 : np.ndarray
-        Secuencias de fases instantáneas.
-    """
-
-    def fase_instantanea(x):
-        x = np.asarray(x, dtype=np.float64)
-
-        if x.ndim != 1:
-            raise ValueError("La serie debe ser un array unidimensional.")
-
-        if len(x) < 3:
-            raise ValueError("La serie debe tener al menos 3 puntos.")
-
-        if not np.all(np.isfinite(x)):
-            raise ValueError("La serie contiene NaN o infinitos.")
-
-        if quitar_media:
-            x = x - np.mean(x)
-
-        z = hilbert(x)
-        theta = np.angle(z)
-
-        if unwrap:
-            theta = np.unwrap(theta)
-
-        return theta
-    
-    seriex = np.asarray(seriex, dtype=np.float64)
-
-    if seriey is None:
-
-        if modo_univariante == "global":
-            theta = fase_instantanea(seriex)
-            dtheta = wrap_pi(np.diff(theta))
-            f1 = dtheta[tau:]
-            f2 = dtheta[:-tau]
-
-        elif modo_univariante == "segmentos":
-            x1 = seriex[tau:]
-            y1 = seriex[:-tau]
-
-            f1 = wrap_pi(np.diff(fase_instantanea(x1)))
-            # f1 = fase_instantanea(x1)
-            f2 = wrap_pi(np.diff(fase_instantanea(y1)))
-            # f2 = fase_instantanea(y1)
-
-        else:
-            raise ValueError("modo_univariante debe ser 'global' o 'segmentos'.")
-
-    else:
-        seriey = np.asarray(seriey, dtype=np.float64)
-
-        if len(seriex) != len(seriey):
-            raise ValueError(
-                "En el caso bivariante, seriex y seriey deben tener la misma longitud."
-            )
-
-        f1 = wrap_pi(np.diff(fase_instantanea(seriex)))
-        # f1 = fase_instantanea(seriex)
-        f2 = wrap_pi(np.diff(fase_instantanea(seriey)))
-        # f2 = fase instantanea(seriey)
-
-
-    if null == "shuffle":
-        # rng = np.random.default_rng()
-        f1 = np.random.permutation(f1)
-        f2 = np.random.permutation(f2)
-
-    return f1, f2
-
 
 def construir_puntos_toro(f1, f2):
     """
@@ -287,7 +152,6 @@ def calcular_angulos_entre_vectores(vectores):
 
     if n_vectores < 2:
         return np.empty(0, dtype=np.float64)
-
     temp = np.empty(n_vectores - 1, dtype=np.float64)
     count = 0
 
@@ -346,52 +210,12 @@ def indice_J(seriex, seriey=None, tau=1):
         J = 1.0 - np.abs(np.mean(e))
     return J
 
-
-def indice_H(seriex, seriey=None, tau=1,null="no"):
-    # 1. Fases de Fourier
-    f1, f2 = obtener_fases_instantaneas(seriex,
-        seriey=seriey,
-        tau=tau,
-        quitar_media=True,
-        unwrap=False,
-        modo_univariante="segmentos",
-        null=null)
-
-    # 2. Puntos en el toro
-    puntos = construir_puntos_toro(f1, f2)
-
-    # 3. Vectores geodésicos
-    vectores = construir_vectores_geodesicos(puntos)
-
-    # 4. Ángulos entre vectores consecutivos
-    angulos = calcular_angulos_entre_vectores(vectores)
-
-    if len(angulos) == 0:
-        H = np.nan
-    else:
-        e = np.exp(1j * angulos)
-        H = 1.0 - np.abs(np.mean(e))
-    return H
-
 def angulos_alpha(seriex, seriey, tau = 1):
     f1, f2 = obtener_fases_fourier(
         seriex,
         seriey=seriey,
         tau=tau,
     )
-    puntos = construir_puntos_toro(f1, f2)
-    vectores = construir_vectores_geodesicos(puntos)
-    angulos = calcular_angulos_entre_vectores(vectores)
-    return angulos
-
-def angulos_alpha_H(seriex, seriey, tau = 1,null="no"):
-    f1, f2 = obtener_fases_instantaneas(seriex,
-        seriey=seriey,
-        tau=tau,
-        quitar_media=True,
-        unwrap=False,
-        modo_univariante="segmentos",
-        null=null)
     puntos = construir_puntos_toro(f1, f2)
     vectores = construir_vectores_geodesicos(puntos)
     angulos = calcular_angulos_entre_vectores(vectores)
@@ -534,3 +358,88 @@ def random_array(vocabulario, N, q, m, seed=None):
 
 
 
+import numpy as np
+
+def autocorrelacion_tau(serie, tau=1, n_shuffles=10, seed=None):
+    """
+    Calcula la autocorrelación temporal con retraso tau:
+
+        C(tau) = corr(x[tau:], x[:-tau])
+
+    También calcula el mismo índice para versiones random shuffle
+    de la serie original.
+
+    Parámetros
+    ----------
+    serie : array-like
+        Serie temporal unidimensional.
+    tau : int
+        Retraso temporal.
+    n_shuffles : int
+        Número de realizaciones shuffle.
+    seed : int o None
+        Semilla aleatoria.
+
+    Regresa
+    -------
+    resultado : dict
+        {
+            "tau": tau,
+            "autocorr": autocorr_original,
+            "autocorr_shuffle": array con valores shuffle,
+            "media_shuffle": promedio del shuffle,
+            "std_shuffle": desviación estándar del shuffle,
+            "z_score": z-score respecto al shuffle
+        }
+    """
+
+    x = np.asarray(serie, dtype=float)
+
+    if x.ndim != 1:
+        raise ValueError("La serie debe ser unidimensional.")
+
+    if tau <= 0:
+        raise ValueError("tau debe ser un entero positivo.")
+
+    if tau >= len(x):
+        raise ValueError("tau debe ser menor que la longitud de la serie.")
+
+    rng = np.random.default_rng(seed)
+
+    def corr_lag(y, tau):
+        y1 = y[tau:]
+        y2 = y[:-tau]
+
+        # eliminar NaN si existen
+        mask = np.isfinite(y1) & np.isfinite(y2)
+        y1 = y1[mask]
+        y2 = y2[mask]
+
+        if len(y1) < 2:
+            return np.nan
+
+        std1 = np.std(y1)
+        std2 = np.std(y2)
+
+        if std1 == 0 or std2 == 0:
+            return np.nan
+
+        return np.corrcoef(y1, y2)[0, 1]
+
+    autocorr_original = corr_lag(x, tau)
+
+    autocorr_shuffle = np.empty(n_shuffles)
+
+    for i in range(n_shuffles):
+        xs = rng.permutation(x)
+        autocorr_shuffle[i] = corr_lag(xs, tau)
+
+    media_shuffle = np.nanmean(autocorr_shuffle)
+    std_shuffle = np.nanstd(autocorr_shuffle, ddof=1) if n_shuffles > 1 else np.nan
+
+    if n_shuffles > 1 and std_shuffle > 0:
+        z_score = (autocorr_original - media_shuffle) / std_shuffle
+    else:
+        z_score = np.nan
+
+    return autocorr_original, media_shuffle

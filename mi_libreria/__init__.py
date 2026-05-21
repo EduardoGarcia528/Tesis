@@ -9,3 +9,4 @@ from .interpolation import *
 from .musica import *
 from .PE import *
 from .systems import * 
+from .S_eff import * 
