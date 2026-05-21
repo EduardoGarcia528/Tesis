@@ -48,15 +48,15 @@ ALPHA = 0.05   # sólo se usa si USE_P_RAW_ZERO_FOR_RED = False
 # =========================================================
 
 PANEL_CONFIGS = [
-    # {"measure":"H_tau1","D": 2, "tau": 1,"type_null":"shuffle", "title": r"$Indice H_{\tau=1}$ (notes,shuffle)"},
-    {"measure":"gamma_rank_ties","D": 1, "tau": 2,"type_null":"shuffle", "title": r"$\gamma_1^{(R)}(\mu=2)$ (notes,shuffle)"},
-    {"measure":"gamma_rank_ties","D": 2, "tau": 2,"type_null":"shuffle", "title": r"$\gamma_2^{(R)}(\mu=2)$ (notes,shuffle)"},
-    {"measure":"gamma_rank_ties","D": 3, "tau": 2,"type_null":"shuffle", "title": r"$\gamma_3^{(R)}(\mu=2)$ (notes,shuffle)"},
-    {"measure":"gamma_rank_ties","D": 4, "tau": 2,"type_null":"shuffle", "title": r"$\gamma_4^{(R)}(\mu=2)$ (notes,shuffle)"},
+    {"measure":"H_tau5_v2","D": 2, "tau": 5,"type_null":"shuffle", "title": r"$Indice H_{\tau=5}$ (notes,shuffle)"},
+    # {"measure":"gamma_rank_ties","D": 1, "tau": 2,"type_null":"shuffle", "title": r"$\gamma_1^{(R)}(\mu=2)$ (notes,shuffle)"},
+    # {"measure":"gamma_rank_ties","D": 2, "tau": 2,"type_null":"shuffle", "title": r"$\gamma_2^{(R)}(\mu=2)$ (notes,shuffle)"},
+    # {"measure":"gamma_rank_ties","D": 3, "tau": 2,"type_null":"shuffle", "title": r"$\gamma_3^{(R)}(\mu=2)$ (notes,shuffle)"},
+    # {"measure":"gamma_rank_ties","D": 4, "tau": 2,"type_null":"shuffle", "title": r"$\gamma_4^{(R)}(\mu=2)$ (notes,shuffle)"},
     # {"measure":"Cd_rank","D": 4, "tau": 2,"type_null":"shuffle", "title": fr"mPE (notes,shuffle): $m=5,\ \tau=1$"},
-    # {"measure":"mPE","D":5, "tau": 1,"type_null":"shuffle", "title": fr"mPE (notes,shuffle): $m=5,\ \tau=1$"},
-    # {"measure":"mPE","D": 4, "tau": 1,"type_null":"shuffle", "title": fr"mPE (notes,shuffle): $m=4,\ \tau=1$"},
-    # {"measure":"mPE","D": 5, "tau": 4,"type_null":"shuffle", "title": fr"mPE (notes,shuffle): $m=5,\ \tau=4$"},
+    {"measure":"mPE","D":3, "tau": 1,"type_null":"shuffle", "title": fr"mPE (notes,shuffle): $m=3,\ \tau=1$"},
+    {"measure":"mPE","D": 4, "tau": 1,"type_null":"shuffle", "title": fr"mPE (notes,shuffle): $m=4,\ \tau=1$"},
+    {"measure":"mPE","D": 5, "tau": 1,"type_null":"shuffle", "title": fr"mPE (notes,shuffle): $m=5,\ \tau=1$"},
 ] 
 
 # =========================================================
@@ -301,9 +301,9 @@ def pe_stats_for_series(
             pe_obs = ml.modified_permutation_entropy(x, m=D, tau=tau, norm=fafaeg)
     elif "H_tau" in measure:
         if "interval" in measure:
-            pe_obs = ml.indice_H(np.diff(x), None, tau=tau)
+            pe_obs = ml.indice_S_eff_fast(np.diff(x), None, tau=tau)
         else:
-            pe_obs = ml.indice_H(x, None, tau=tau)
+            pe_obs = ml.indice_S_eff_fast(x, None, tau=tau,delta=True)
     elif "Cd" in measure:
         if "interval" in measure:
             # angulos = angulos_alpha(np.diff(x),False)
@@ -342,7 +342,7 @@ def pe_stats_for_series(
                 C,_ = ml.gamma_index_rank_ties(x_surr,max_gamma=D,mu=tau)
                 pe_surr = 1-C[-1]
             elif "H_tau" in measure:
-                pe_surr = ml.indice_H(x, None, tau=tau,null="shuffle")
+                pe_surr = ml.indice_S_eff_fast(x_surr, None, tau=tau,null="no",delta=True)
             elif "gamma" in measure:
                 _,C = ml.gamma_index_rank_ties(x_surr,max_gamma=D,mu=tau)
                 pe_surr = 1-C[-1]
@@ -364,7 +364,7 @@ def pe_stats_for_series(
                 C,_ = ml.gamma_index_rank_ties(x_surr[k,:],max_gamma=D,mu=tau)
                 pe_surr = 1-C[-1]
             elif "H_tau" in measure:
-                pe_surr = ml.indice_H(x_surr[k,:], None, tau=tau)
+                pe_surr = ml.indice_S_eff_fast(x_surr[k,:], None, tau=tau,null="shuffle",delta=True)
             elif "J_tau" in measure:
                 pe_surr = ml.indice_J(x_surr[k,:], None, tau=tau)
             pe_surrogates[k] = pe_surr
@@ -782,7 +782,7 @@ df_medianas = pd.DataFrame(medianas_dict, index=composer_names)
 print("\nMedianas por compositor:")
 print(df_medianas)
 
-print("\nCorrelaciones de Pearson entre series de medianas:")
+print("\nCorrelaciones de Spearman entre series de medianas:")
 for i in range(len(df_medianas.columns)):
     for j in range(i + 1, len(df_medianas.columns)):
         c1 = df_medianas.columns[i]
@@ -793,7 +793,7 @@ for i in range(len(df_medianas.columns)):
             print(f"{c1} vs {c2}: insuficientes datos")
             continue
 
-        r, p = pearsonr(pares[c1], pares[c2])
+        r, p = spearmanr(pares[c1], pares[c2])
         print(f"{c1} vs {c2}: r = {r:.6f}, p = {p:.6g}")
 
 print("\nCorrelaciones de Spearman entre series de medianas:")

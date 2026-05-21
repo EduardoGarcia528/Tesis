@@ -66,11 +66,16 @@ def bifurcacion_con_J(
                 x_vals_plot.extend(serie)
 
             # # Índice J
-            J = ml.indice_H(serie,None,tau=3)
+            # serie2 = np.random.normal(loc=0.5, scale=0.2, size=longitud_serie)
+            # serie = np.random.permutation(serie)
+            J = ml.indice_S_eff_fast(serie,tau=1,delta=False)
             # _,J = gamma_index_jacobs(serie, max_gamma, mu=mu)
             # _, J = gamma_index_rank(serie, max_gamma, mu=mu)
-            J_vals[q] = J_vals[q] + J  
-            J_vals_null[q] = J_vals_null[q] + ml.indice_H(serie,None,tau=3,null="shuffle")
+            J_vals[q] = J_vals[q] + J
+            for _ in range(500):
+                serie = np.random.permutation(serie)
+                J_vals_null[q] = J_vals_null[q] + ml.indice_S_eff_fast(serie,tau=1,null="no",delta=False)
+            J_vals_null[q] = J_vals_null[q] / 500.0
     # J_vals = J_vals / 500.0  
         
     # np.save("J_transicion5.npy", np.array([r_vals_J, J_vals]))
@@ -111,10 +116,10 @@ def bifurcacion_con_J(
         # Bifurcación
         ax2 = ax1.twinx()
         ax2.axvline(x=3.569945672, color='gray', linestyle='--', label=r'$r_\infty = 3.56994...$')
-        ax2.plot(r_vals_J, J_vals, color='red',marker='.', lw=0.5, ms = 2.0,label=r'$J_{\theta}$')
-        ax2.plot(r_vals_J, J_vals_null, color='blue',marker='.', lw=0.5, ms = 2.0,label=r'$J_{\theta ,null}$')
+        # ax2.plot(r_vals_J, J_vals, color='red',marker='.', lw=0.5, ms = 2.0,label=r'$J_{\theta}$')
+        ax2.plot(r_vals_J, 1-(J_vals_null-J_vals), color='blue',marker='.', lw=0.5, ms = 2.0,label=r'$J_{\theta ,null}$')
         # ax2.invert_yaxis()
-        # U = np.log(longitud_serie-(mu-1)*max_gamma)/np.log(math.factorial(mu))
+       # U = np.log(longitud_serie-(mu-1)*max_gamma)/np.log(math.factorial(mu))
         # ax2.axhline(y=U, color='red', linestyle='--', label=r'$U(N,m)$') 
         ax2.set_xlabel('r')
         ax2.set_ylabel('J',rotation=360)
@@ -143,6 +148,6 @@ r_J, J, r_bif, x_bif = bifurcacion_con_J(
     resolucion_r=300, 
     longitud_serie=10000,  
     iter_descartar=1000,
-    var_ruido=1e-05,
-    tipo_ruido="no",  # o "aditivo"
+    var_ruido=1e-4,
+    tipo_ruido="no",  # o "aditivo" o "iterativo" 
     graficar=True)
