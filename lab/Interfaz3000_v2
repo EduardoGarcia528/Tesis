@@ -1,0 +1,433 @@
+#! /usr/bin/env python3
+from tkinter import filedialog
+from tkinter import *
+import tkinter as tk
+import ctypes
+import numpy as np
+from picosdk.ps3000a import ps3000a as ps
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
+from matplotlib.figure import Figure
+from tkinter import messagebox
+import time
+from picosdk.functions import adc2mV, assert_pico_ok
+
+evento = None
+ruta = ''
+
+def guardar():
+     global ruta 
+     fichero = filedialog.asksaveasfile(title="Guardar",mode='w',defaultextension=".txt")
+     ruta=fichero.name
+     return ruta
+
+def informacion_Programa():
+    messagebox.showinfo("Acerca de...", "Este programa esta en su primera versión y es de uso exclusivo del LSD de la UAM Azcapotzalco")
+
+def procesar_datos():
+    global fo,fi,incremento,tiempoInc,tiempoInc,ruta,evento
+
+    ruta = guardar()
+    
+    try:
+        fi = int(entrada1.get())
+        fo = int(entrada2.get())
+        incremento = float(entrada3.get())
+        tiempoInc = float(entrada4.get())
+
+    except ValueError:
+        messagebox.showwarning("Advertencia","Introduce los valores adecuados para que el programa funcione")
+        return
+
+    if evento is None:
+        evento = tk.IntVar(master=ventana, value=0)
+
+    esperar_evento()
+
+ruta2 = ''
+canvas = None
+toolbar = None
+def Abrir_archivo():
+    global ruta2, canvas, toolbar
+    ruta2 = filedialog.askopenfilename()
+    if not ruta2:
+        return  
+    
+    if canvas is not None:
+        canvas.get_tk_widget().destroy()
+        toolbar.destroy()
+
+    fig = Figure(figsize=(5, 5), dpi=100)
+    ax = fig.add_subplot(111)
+
+    x, y = np.loadtxt(ruta2, skiprows=0, usecols=[0,1], unpack= True)
+    ax.plot(x, y, marker='o', linestyle='-')
+    ax.set_title("sistema de medida",fontdict={'fontsize':16})
+    ax.set_xlabel("Frecuencia (Hz)",fontdict={'fontsize':14})
+    ax.set_ylabel("Amplitud (U. Arb.)",fontdict={'fontsize':14})
+
+    canvas = FigureCanvasTkAgg(fig, master=ventanaGrafica)
+    canvas.draw()
+    canvas.get_tk_widget().pack(padx=50,pady=30,anchor='w')
+    toolbar = NavigationToolbar2Tk(canvas,ventanaGrafica)
+    toolbar.update()
+    toolbar.pack()
+
+nextSample = 0
+autoStopOuter = False
+wasCalledBack = False
+
+def picoScope(frec1, frec2, inc, tInc):
+    global nextSample, autoStopOuter, wasCalledBack, ruta
+
+    status = {}
+    chandle = ctypes.c_int16()
+
+    status["openunit"] = ps.ps3000aOpenUnit(ctypes.byref(chandle), None)
+    try:
+        assert_pico_ok(status["openunit"])
+    except:
+        powerStatus = status["openunit"]
+
+        if powerStatus == 282:
+            status["changePowerSource"] = ps.ps3000aChangePowerSource(chandle, 282)
+        elif powerStatus == 286:
+            status["changePowerSource"] = ps.ps3000aChangePowerSource(chandle, 286)
+        else:
+            raise
+
+        assert_pico_ok(status["changePowerSource"])
+
+    # =========================
+    # Generador interno
+    # =========================
+    wavetype = ctypes.c_int16(0)     # seno
+    sweeptype = ctypes.c_int32(0)    # up
+    triggertype = ctypes.c_int32(0)
+    triggersource = ctypes.c_int32(0)
+    extInThreshold = ctypes.c_int16(0)
+
+    status["SetSigGenBuiltIn"] = ps.ps3000aSetSigGenBuiltIn(
+        chandle,
+        0,
+        2000000,
+        wavetype,
+        frec1,
+        frec2,
+        inc,
+        tInc,
+        sweeptype,
+        0,
+        0,
+        0,
+        triggertype,
+        triggersource,
+        extInThreshold
+    )
+    assert_pico_ok(status["SetSigGenBuiltIn"])
+
+    # =========================
+    # Canales
+    # =========================
+    enable = 1
+    analogue_offset = 0.0
+
+    # Canal A: referencia / entrada
+    channel_range_A = ps.PS3000A_RANGE['PS3000A_2V']
+
+    # Canal B: respuesta / sensor
+    # Prueba 200 mV; si satura, sube a 500 mV o 1 V
+    channel_range_B = ps.PS3000A_RANGE['PS3000A_200MV']
+
+    status["setChA"] = ps.ps3000aSetChannel(
+        chandle,
+        ps.PS3000A_CHANNEL['PS3000A_CHANNEL_A'],
+        enable,
+        ps.PS3000A_COUPLING['PS3000A_DC'],
+        channel_range_A,
+        analogue_offset
+    )
+    assert_pico_ok(status["setChA"])
+
+    status["setChB"] = ps.ps3000aSetChannel(
+        chandle,
+        ps.PS3000A_CHANNEL['PS3000A_CHANNEL_B'],
+        enable,
+        ps.PS3000A_COUPLING['PS3000A_DC'],
+        channel_range_B,
+        analogue_offset
+    )
+    assert_pico_ok(status["setChB"])
+
+    # =========================
+    # Muestreo
+    # =========================
+    # Antes: 6*frec2  -> muy bajo
+    # Ahora: 20*frec2 -> mejor resolución temporal
+    FrecuenciaMuestreo = int(20 * frec2)
+
+    # periodo de muestreo en microsegundos
+    periodoMuestra = int((1 / FrecuenciaMuestreo) * 1_000_000)
+    if periodoMuestra < 1:
+        periodoMuestra = 1
+
+    # Frecuencias del barrido para este bloque
+    frecuencias_barrido = np.arange(frec1, frec2, inc, dtype=float)
+
+    # si por redondeo el arreglo queda vacío, salir
+    if len(frecuencias_barrido) == 0:
+        status["stop"] = ps.ps3000aStop(chandle)
+        status["close"] = ps.ps3000aCloseUnit(chandle)
+        return
+
+    muestras_por_frecuencia = int(round(tInc * FrecuenciaMuestreo))
+    totalSamples = len(frecuencias_barrido) * muestras_por_frecuencia
+
+    sizeOfOneBuffer = totalSamples
+    numBuffersToCapture = 1
+    memory_segment = 0
+
+    bufferAMax = np.zeros(shape=sizeOfOneBuffer, dtype=np.int16)
+    bufferBMax = np.zeros(shape=sizeOfOneBuffer, dtype=np.int16)
+
+    status["setDataBuffersA"] = ps.ps3000aSetDataBuffers(
+        chandle,
+        ps.PS3000A_CHANNEL['PS3000A_CHANNEL_A'],
+        bufferAMax.ctypes.data_as(ctypes.POINTER(ctypes.c_int16)),
+        None,
+        sizeOfOneBuffer,
+        memory_segment,
+        ps.PS3000A_RATIO_MODE['PS3000A_RATIO_MODE_NONE']
+    )
+    assert_pico_ok(status["setDataBuffersA"])
+
+    status["setDataBuffersB"] = ps.ps3000aSetDataBuffers(
+        chandle,
+        ps.PS3000A_CHANNEL['PS3000A_CHANNEL_B'],
+        bufferBMax.ctypes.data_as(ctypes.POINTER(ctypes.c_int16)),
+        None,
+        sizeOfOneBuffer,
+        memory_segment,
+        ps.PS3000A_RATIO_MODE['PS3000A_RATIO_MODE_NONE']
+    )
+    assert_pico_ok(status["setDataBuffersB"])
+
+    sampleInterval = ctypes.c_int32(periodoMuestra)
+    sampleUnits = ps.PS3000A_TIME_UNITS['PS3000A_US']
+    maxPreTriggerSamples = 0
+    autoStopOn = 1
+    downsampleRatio = 1
+
+    status["runStreaming"] = ps.ps3000aRunStreaming(
+        chandle,
+        ctypes.byref(sampleInterval),
+        sampleUnits,
+        maxPreTriggerSamples,
+        totalSamples,
+        autoStopOn,
+        downsampleRatio,
+        ps.PS3000A_RATIO_MODE['PS3000A_RATIO_MODE_NONE'],
+        sizeOfOneBuffer
+    )
+    assert_pico_ok(status["runStreaming"])
+
+    bufferCompleteA = np.zeros(shape=totalSamples, dtype=np.int16)
+    bufferCompleteB = np.zeros(shape=totalSamples, dtype=np.int16)
+
+    def streaming_callback(handle, noOfSamples, startIndex, overflow, triggerAt, triggered, autoStop, param):
+        global nextSample, autoStopOuter, wasCalledBack
+        wasCalledBack = True
+        destEnd = nextSample + noOfSamples
+        sourceEnd = startIndex + noOfSamples
+
+        if destEnd > totalSamples:
+            destEnd = totalSamples
+            sourceEnd = startIndex + (destEnd - nextSample)
+
+        bufferCompleteA[nextSample:destEnd] = bufferAMax[startIndex:sourceEnd]
+        bufferCompleteB[nextSample:destEnd] = bufferBMax[startIndex:sourceEnd]
+        nextSample += (destEnd - nextSample)
+
+        if autoStop:
+            autoStopOuter = True
+
+    cFuncPtr = ps.StreamingReadyType(streaming_callback)
+
+    while nextSample < totalSamples and not autoStopOuter:
+        wasCalledBack = False
+        status["getStreamingLatestValues"] = ps.ps3000aGetStreamingLatestValues(chandle, cFuncPtr, None)
+        if not wasCalledBack:
+            time.sleep(0.01)
+
+    maxADC = ctypes.c_int16()
+    status["maximumValue"] = ps.ps3000aMaximumValue(chandle, ctypes.byref(maxADC))
+    assert_pico_ok(status["maximumValue"])
+
+    adc2mVChAMax = adc2mV(bufferCompleteA, channel_range_A, maxADC)
+    adc2mVChBMax = adc2mV(bufferCompleteB, channel_range_B, maxADC)
+
+    status["stop"] = ps.ps3000aStop(chandle)
+    assert_pico_ok(status["stop"])
+
+    status["close"] = ps.ps3000aCloseUnit(chandle)
+    assert_pico_ok(status["close"])
+
+    nextSample = 0
+    autoStopOuter = False
+    wasCalledBack = False
+
+    # =========================
+    # Procesamiento espectral mejorado
+    # =========================
+    amplitudesA = []
+    amplitudesB = []
+
+    N = muestras_por_frecuencia
+    dt = 1.0 / FrecuenciaMuestreo
+    freqs_fft = np.fft.rfftfreq(N, d=dt)
+    ventana_hann = np.hanning(N)
+
+    for j, f_actual in enumerate(frecuencias_barrido):
+        ini = j * N
+        fin = ini + N
+
+        segA = np.array(adc2mVChAMax[ini:fin]).astype(float)
+        segB = np.array(adc2mVChBMax[ini:fin]).astype(float)
+
+        if len(segA) < N or len(segB) < N:
+            break
+
+        # 3) quitar media
+        segA = segA - np.mean(segA)
+        segB = segB - np.mean(segB)
+
+        # 5) ventana de Hann
+        segA = segA * ventana_hann
+        segB = segB * ventana_hann
+
+        YA = np.fft.rfft(segA)
+        YB = np.fft.rfft(segB)
+
+        # 2) amplitud en la frecuencia excitada
+        k = np.argmin(np.abs(freqs_fft - f_actual))
+
+        ampA = np.abs(YA[k])
+        ampB = np.abs(YB[k])
+
+        amplitudesA.append(ampA)
+        amplitudesB.append(ampB)
+
+    # =========================
+    # Guardado
+    # =========================
+    with open(ruta, "a") as new_file:
+        for f_actual, ampA, ampB in zip(frecuencias_barrido, amplitudesA, amplitudesB):
+            if ampA > 1e-15:
+                C = ampB / ampA
+            else:
+                C = 0.0
+
+            new_file.write(f"{f_actual}\t{C}\n")
+
+root = tk.Tk()
+root.geometry("1100x600")
+root.title("PicoSNA")
+root.resizable(width=False,height=False)
+root.grid_rowconfigure(0, weight=1)
+root.grid_columnconfigure(0, weight=1)
+ventana = tk.Frame(root)
+ventana.grid(row=0,column=0,sticky='nsew')
+etiqueta1 = tk.Label(ventana, text="Frecuencia inicial:",justify='left',font=('arial',15))
+etiqueta1.grid(row=0,column=0,padx=5,pady=10)
+entrada1 = tk.Entry(ventana)
+entrada1.grid(row=0,column=1,padx=2)
+unidades1 = tk.Label(ventana,text="Hz")
+unidades1.grid(row=0,column=2,padx=2)
+
+etiqueta2 = tk.Label(ventana, text="Frecuencia final:",justify='left',font=('arial',15))
+etiqueta2.grid(row=1,column=0,padx=5,pady=10)
+entrada2 = tk.Entry(ventana)
+entrada2.grid(row=1,column=1,padx=2)
+unidades2 = tk.Label(ventana,text="Hz")
+unidades2.grid(row=1,column=2,padx=2)
+
+etiqueta3 = tk.Label(ventana, text="Incremento en Hz:",justify='left',font=('arial',15))
+etiqueta3.grid(row=2,column=0,padx=5,pady=10)
+entrada3 = tk.Entry(ventana)
+entrada3.grid(row=2,column=1,padx=2)
+unidades3 = tk.Label(ventana,text="Hz")
+unidades3.grid(row=2,column=2,padx=2)
+
+etiqueta4 = tk.Label(ventana, text="Incremento en tiempo:",justify='left',font=('arial',15))
+etiqueta4.grid(row=3,column=0,padx=5,pady=10)
+entrada4 = tk.Entry(ventana)
+entrada4.grid(row=3,column=1,padx=2)
+unidades4 = tk.Label(ventana,text="S")
+unidades4.grid(row=3,column=2,padx=2)
+
+boton_procesar = tk.Button(ventana, text="Iniciar", command= procesar_datos)
+boton_procesar.grid(row=5,column=1,pady=10)
+
+ventanaGrafica = tk.Frame(root)
+ventanaGrafica.grid(row=0,column=1, sticky='nsew')
+
+menubarra = Menu(ventana)
+root.config(menu=menubarra)
+
+filemenu = Menu(menubarra,tearoff=0)
+filemenu.add_command(label="Abrir",command=Abrir_archivo)
+filemenu.add_separator()
+filemenu.add_command(label="Salir",command=root.quit)
+
+acercade = Menu(menubarra,tearoff=0)
+acercade.add_command(label="Información",command=informacion_Programa)
+
+menubarra.add_cascade(label="Archivo",menu=filemenu)
+menubarra.add_cascade(label="Acerca de...",menu=acercade)
+
+def esperar_evento():
+    global evento, canvas,toolbar
+    ev1 = evento.get()
+    if ev1 == 1:
+        #print("Evento aún no ha ocurrido, esperando...")
+        ventana.after(10000, esperar_evento)  # Espera 10 segundos y vuelve a comprobar
+    else:
+        #print("Evento ha ocurrido")
+        ciclos = (fo-fi) // 100
+        residuo = (fo - fi) % 100
+        fi1 = fi
+        fo1 = fi1 + 100
+
+        if ciclos >= 1:
+            for n in range(ciclos):
+                picoScope(fi1,fo1,incremento,tiempoInc)
+                fi1 = fo1
+                fo1 = fo1 + 100 
+            
+        if residuo != 0:
+            fi1 = fo - residuo
+            #print(f"Llamando a picoScope con fi1={fi1}, fo={fo}")
+            picoScope(fi1,fo,incremento,tiempoInc)
+    
+    fig = Figure(figsize=(5, 5), dpi=100)
+    ax = fig.add_subplot(111)
+
+    # Cargar y graficar datos desde el archivo
+    x, y = np.loadtxt(ruta, skiprows=0, usecols=[0,1], unpack= True)
+    ax.plot(x, y, marker='o', linestyle='-')
+    ax.set_title("Sistema de medida",fontdict={'fontsize':16})
+    ax.set_xlabel("Frecuencia (Hz)",fontdict={'fontsize':14})
+    ax.set_ylabel("Amplitud (U. Arb.)",fontdict={'fontsize':14})
+
+    # Crear lienzo de Matplotlib en la ventana
+    if canvas is not None:
+        canvas.get_tk_widget().destroy()
+        toolbar.destroy()
+    canvas = FigureCanvasTkAgg(fig, master=ventanaGrafica)
+    canvas.draw()
+    canvas.get_tk_widget().pack(padx=50,pady=30,anchor='w')
+    toolbar = NavigationToolbar2Tk(canvas,ventanaGrafica)
+    toolbar.update()
+    toolbar.pack()
+
+
+ventana.mainloop()
