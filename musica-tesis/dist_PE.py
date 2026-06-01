@@ -48,9 +48,9 @@ ALPHA = 0.05   # sólo se usa si USE_P_RAW_ZERO_FOR_RED = False
 # =========================================================
 
 PANEL_CONFIGS = [
-    {"measure":"H_tau5_v3","D": 2, "tau": 5,"type_null":"shuffle", "title": r"$Indice H_{\tau=5}$ (notes,shuffle)"},
     {"measure":"gamma_rank_ties","D": 1, "tau": 2,"type_null":"shuffle", "title": r"$_m\gamma_1^{(R)}(\mu=2)$ (notes,shuffle)"},
     {"measure":"gamma_rank_ties","D": 1, "tau": 2,"type_null":"iaaft", "title": r"$_m\gamma_1^{(R)}(\mu=2)$ (notes,iaaft)"},
+    {"measure":"H_orbit","D": 3, "tau": 5,"type_null":"shuffle", "title": r"$H_{orbit}(m=3)$ (notes,shuffle)"},
     # {"measure":"gamma_rank_ties","D": 2, "tau": 2,"type_null":"shuffle", "title": r"$_m\gamma_2^{(R)}(\mu=2)$ (notes,shuffle)"},
     # {"measure":"gamma_rank_ties","D": 3, "tau": 2,"type_null":"shuffle", "title": r"$_m\gamma_3^{(R)}(\mu=2)$ (notes,shuffle)"},
     # {"measure":"gamma_rank_ties","D": 4, "tau": 2,"type_null":"shuffle", "title": r"$_m\gamma_4^{(R)}(\mu=2)$ (notes,shuffle)"},
@@ -310,6 +310,10 @@ def pe_stats_for_series(
             pe_obs = ml.indice_S_eff_fast(np.diff(x), None, tau=tau)
         else:
             pe_obs = ml.indice_S_eff_fast(x, None, tau=tau,delta=False)
+    elif "H_orbit" in measure:
+        pe_obs = ml.H_orbit(x, m=D)
+        if "interval" in measure:
+            raise ValueError("H_orbit no tiene sentido con intervalos.")
     elif "Cd" in measure:
         if "interval" in measure:
             # angulos = angulos_alpha(np.diff(x),False)
@@ -349,6 +353,8 @@ def pe_stats_for_series(
                 pe_surr = 1-C[-1]
             elif "H_tau" in measure:
                 pe_surr = ml.indice_S_eff_fast(x, None, tau=tau,null="shuffle2",delta=False)
+            elif "H_orbit" in measure:
+                pe_surr = ml.H_orbit(x_surr, m=D)
             elif "gamma" in measure:
                 _,C = ml.gamma_index_rank_ties(x_surr,max_gamma=D,mu=tau)
                 pe_surr = 1-C[-1]
@@ -371,6 +377,8 @@ def pe_stats_for_series(
                 pe_surr = 1-C[-1]
             elif "H_tau" in measure:
                 pe_surr = ml.indice_S_eff_fast(x_surr[k,:], None, tau=tau,null="shuffle",delta=True)
+            elif "H_orbit" in measure:
+                pe_surr = ml.H_orbit(x_surr[k,:], m=D)
             elif "J_tau" in measure:
                 pe_surr = ml.indice_J(x_surr[k,:], None, tau=tau)
             pe_surrogates[k] = pe_surr
@@ -413,6 +421,8 @@ def build_cache_key(measure,D, tau, type_null, normalize, alternative):
         return f"{measure}_d{D+1}_mu{tau}_{type_null}_{alternative}_norm{int(normalize)}"
     elif "gamma" in measure:  
         return f"{measure}_d{D}_mu{tau}_{type_null}_{alternative}_norm{int(normalize)}"
+    elif "H_orbit" in measure:
+        return f"{measure}_d{D}_{type_null}_{alternative}_norm{int(normalize)}"
     else:
         return f"{measure}_{type_null}_{alternative}_norm{int(normalize)}"
 
@@ -571,6 +581,7 @@ def plot_panel(ax, df_panel, composer_names, title,
             continue
 
         zvals = sub["z"].to_numpy(dtype=float)
+        pe_obs_vals = sub["pe_obs"].to_numpy(dtype=float)
         pvals = sub["p_value"].to_numpy(dtype=float)
         praws = sub["p_raw"].to_numpy(dtype=float)
 
@@ -592,7 +603,8 @@ def plot_panel(ax, df_panel, composer_names, title,
         x = np.random.normal(i, JITTER_STD, size=zvals.size)
 
         ax.scatter(
-            x, 1 - zvals,
+            # x, 1 - zvals,
+            x, pe_obs_vals,
             s=DOT_SIZE,
             alpha=EDGE_ALPHA,
             facecolors="none",
@@ -600,7 +612,8 @@ def plot_panel(ax, df_panel, composer_names, title,
             linewidths=0.8
         )
 
-        med = np.median(zvals)
+        # med = np.median(zvals)
+        med = np.median(pe_obs_vals)
         medianas.append(med)
         all_z.extend(zvals.tolist())
 
@@ -628,7 +641,8 @@ def plot_panel(ax, df_panel, composer_names, title,
 
     if np.isfinite(medianas).any():
         ax.scatter(
-            idxs, 1- medianas,
+            # idxs,1 - medianas,
+            idxs, medianas,
             color="black",
             s=DOT_SIZE,
             zorder=3,

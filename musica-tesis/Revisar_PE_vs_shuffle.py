@@ -127,7 +127,7 @@ def plot_pe_vs_shuffle(array, m, tau, n_shuffles=1000, random_state=None, bins=3
     # PE observado
     # pe_obs = modified_permutation_entropy(array, m, tau)
     # pe_obs= 1 - ml.gamma_index_rank_ties(array,m,tau)[1][-1]
-    pe_obs = ml.indice_H(array,seriey=None)
+    pe_obs = ml.H_orbit(array, m = 3)
     # PE de los shuffles
     pe_shuffles = np.empty(n_shuffles)
     # shuffled = ml.iaaft(array,n_shuffles)
@@ -136,7 +136,7 @@ def plot_pe_vs_shuffle(array, m, tau, n_shuffles=1000, random_state=None, bins=3
         # pe_shuffles[i] = modified_permutation_entropy(shuffled[i,:], m, tau)
         # _, g = ml.gamma_index_rank_ties(shuffled,m,tau)
         # pe_shuffles[i] = 1-g[-1]
-        pe_shuffles[i] = ml.indice_H(array,seriey=None,null="shuffle")
+        pe_shuffles[i] = ml.H_orbit(shuffled, m = 3)
 
 
     # Estadísticos

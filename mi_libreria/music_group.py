@@ -1,8 +1,8 @@
 from dataclasses import dataclass
-from typing import Sequence
-import numpy as np
 from collections import Counter
-
+from numba import njit
+import numpy as np
+from typing import Sequence
 
 
 @dataclass(frozen=True)
@@ -63,169 +63,135 @@ def _to_pitch_classes(
     x = x.astype(np.int64)
 
     if np.any((x < 0) | (x > 127)):
-        raise ValueError("Las alturas MIDI deben estar en el rango [0, 127].")
+        print("Las alturas MIDI deben estar en el rango [0, 127].")
+        return np.nan 
 
     return x % 12
 
 
-def apply_transformation(
-    window: Sequence[int],
-    transformation: Transformation) -> tuple[int, ...]:
+@njit(cache=True)
+def _canonical_orbit_sequence_kernel(pcs: np.ndarray, m: int) -> np.ndarray:
     """
-    Aplica una transformación completa a una ventana melódica.
-    """
-    pcs = _to_pitch_classes(window)
-
-    if transformation.inversion:
-        pcs = (-pcs) % 12
-
-    if transformation.retrograde:
-        pcs = pcs[::-1]
-
-    pcs = np.roll(pcs, -transformation.cyclic_shift)
-    pcs = (pcs + transformation.transposition) % 12
-
-    return tuple(int(v) for v in pcs)
-
-
-def orbit_window(
-    window: Sequence[int]) -> set[tuple[int, ...]]:
-    """
-    Construye la órbita completa de una ventana bajo:
-    transposición, inversión, retrogradación y desplazamiento cíclico.
-
-    Returns
-    -------
-    set[tuple[int, ...]]
-        Conjunto de representantes distintos de la órbita.
-    """
-    pcs = _to_pitch_classes(window)
-    m = len(pcs)
-
-    orbit = set()
-    stab = set()
-
-    for inversion in (False, True):
-        for retrograde in (False, True):
-            for shift in range(m):
-                for transposition in range(12):
-                    transformation = Transformation(
-                        inversion=inversion,
-                        retrograde=retrograde,
-                        cyclic_shift=shift,
-                        transposition=transposition,
-                    )
-
-                    candidate = apply_transformation(
-                        pcs,
-                        transformation)
-                    orbit.add(candidate)
-
-    return orbit
-
-
-def canonical_window(
-    window: Sequence[int],
-    *,
-    return_transformation: bool = False
-):
-    """
-    Obtiene la representación canónica de una ventana melódica.
-
-    La representación canónica es el mínimo lexicográfico de la órbita
-    generada por transposición, inversión, retrogradación y
-    desplazamiento cíclico.
-
-    Esta función evita recorrer explícitamente las 12 transposiciones:
-    para cada forma temporal/invertida, la transposición lexicográficamente
-    mínima es aquella que hace que el primer elemento sea 0.
+    Núcleo compilado con Numba.
 
     Parameters
     ----------
-    window : Sequence[int]
-        Ventana de alturas MIDI.
-    return_transformation : bool
-        Si True, también regresa una transformación que produce
-        el representante canónico.
+    pcs : np.ndarray
+        Melodía ya reducida módulo 12.
+    m : int
+        Tamaño de ventana.
 
     Returns
     -------
-    tuple[int, ...]
-        Representación canónica.
-
-    o bien
-
-    tuple[tuple[int, ...], Transformation]
-        Representación canónica y transformación asociada.
+    np.ndarray
+        Arreglo de forma (N - m + 1, m), donde cada fila es el
+        representante canónico de una ventana.
     """
-    pcs = _to_pitch_classes(window)
-    m = len(pcs)
+    n_windows = pcs.size - m + 1
 
-    best_candidate = None
-    best_transformation = None
+    # Las clases de altura están en {0, ..., 11}; int8 es suficiente.
+    result = np.empty((n_windows, m), dtype=np.int8)
 
-    for inversion in (False, True):
+    candidate = np.empty(m, dtype=np.int8)
+    best = np.empty(m, dtype=np.int8)
 
-        if inversion:
-            pitch_form = (-pcs) % 12
-        else:
-            pitch_form = pcs.copy()
+    for i in range(n_windows):
 
-        for retrograde in (False, True):
+        first_candidate = True
 
-            if retrograde:
-                ordered_form = pitch_form[::-1]
-            else:
-                ordered_form = pitch_form
+        # Cuatro formas: identidad, inversión, retrogradación
+        # e inversión + retrogradación.
+        for inversion in range(2):
+            for retrograde in range(2):
 
-            for shift in range(m):
-                shifted_form = np.roll(ordered_form, -shift)
+                # Todos los desplazamientos cíclicos.
+                for shift in range(m):
 
-                # Debido a la equivalencia por transposición,
-                # el representante mínimo debe comenzar en 0.
-                transposition = int((-shifted_form[0]) % 12)
+                    # Índice del primer elemento después del desplazamiento.
+                    k0 = shift
 
-                candidate_array = (shifted_form + transposition) % 12
-                candidate = tuple(int(v) for v in candidate_array)
+                    if retrograde == 1:
+                        k0 = m - 1 - k0
 
-                transformation = Transformation(
-                    inversion=inversion,
-                    retrograde=retrograde,
-                    cyclic_shift=shift,
-                    transposition=transposition,
-                )
+                    first_value = pcs[i + k0]
 
-                if best_candidate is None or candidate < best_candidate:
-                    best_candidate = candidate
-                    best_transformation = transformation
+                    if inversion == 1:
+                        first_value = (-first_value) % 12
 
-    if return_transformation:
-        return best_candidate, best_transformation
+                    # La transposición mínima hace que el primer elemento sea 0.
+                    transposition = (-first_value) % 12
 
-    return best_candidate
+                    # Construir candidato.
+                    for q in range(m):
+
+                        k = (q + shift) % m
+
+                        if retrograde == 1:
+                            k = m - 1 - k
+
+                        value = pcs[i + k]
+
+                        if inversion == 1:
+                            value = (-value) % 12
+
+                        candidate[q] = (value + transposition) % 12
+
+                    # Comparación lexicográfica manual.
+                    if first_candidate:
+                        for q in range(m):
+                            best[q] = candidate[q]
+
+                        first_candidate = False
+
+                    else:
+                        replace = False
+
+                        for q in range(m):
+                            if candidate[q] < best[q]:
+                                replace = True
+                                break
+
+                            if candidate[q] > best[q]:
+                                break
+
+                        if replace:
+                            for q in range(m):
+                                best[q] = candidate[q]
+
+        for q in range(m):
+            result[i, q] = best[q]
+
+    return result
+
 
 def canonical_orbit_sequence(
     melody: Sequence[int],
-    m: int,
-    *,
-    strict_midi: bool = True
-) -> list[tuple[int, ...]]:
+    m: int
+) -> np.ndarray:
     """
     Convierte una melodía en una secuencia de representantes canónicos
-    obtenidos con ventanas deslizantes de tamaño m.
-    """
-    pcs = _to_pitch_classes(melody, strict_midi=strict_midi)
+    usando ventanas deslizantes de tamaño m.
 
-    if not isinstance(m, int) or m < 1:
+    La validación se realiza en Python y el cálculo intensivo se ejecuta
+    mediante Numba.
+
+    Returns
+    -------
+    np.ndarray
+        Arreglo de forma (len(melody) - m + 1, m).
+        Cada fila es una órbita canónica.
+    """
+    pcs = _to_pitch_classes(melody)
+    if pcs is np.nan:
+        return np.nan
+
+    if not isinstance(m, (int, np.integer)) or m < 1:
         raise ValueError("m debe ser un entero positivo.")
 
     if m > len(pcs):
         raise ValueError("m no puede ser mayor que la longitud de la melodía.")
 
-    return [
-        canonical_window(pcs[i:i + m], strict_midi=False)
-        for i in range(len(pcs) - m + 1)
-    ]
+    return _canonical_orbit_sequence_kernel(pcs, int(m))
 
 
 
@@ -380,4 +346,6 @@ def H_orbit(melody: Sequence[int], m: int, return_details: bool = False) -> floa
         Resultados completos, si return_details=True.
     """
     orbit_seq = canonical_orbit_sequence(melody, m)
+    if orbit_seq is np.nan:
+        return np.nan
     return orbit_entropy(orbit_seq, return_details=return_details)
