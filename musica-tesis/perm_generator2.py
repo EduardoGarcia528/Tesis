@@ -156,7 +156,7 @@ def simulate_op_smm(
             else:
                 # uniforme
                 P[s, outs] = 1.0 / len(outs)
-    print(P)
+    # print(P)
 
     # Duraciones
     def sample_duration(s):
@@ -221,43 +221,47 @@ def simulate_op_smm(
 
 import matplotlib.pyplot as plt
 import numpy as np
-from funciones import permutation_entropy
-import scienceplots
+from mi_libreria import permutation_entropy
+import mi_libreria as ml
+# import scienceplots
 from PEs_PDFs import plot_patterns_to_pdf
 
 # 1) Todos los patrones de m=4, duraciones medias = 5 ventanas, poco ruido:
 x, seq, pats = simulate_op_smm(N=5000, m=3, mean_durations=1, noise=0, seed=7)
-
+colors = ["blue","red","green","black"]
 for n in range(3,7):
     PEs = []
+    PEs_null =[]
     print(n)
     for m in range(3,7):
         # if m == 3:
             # x2, seq2, pats2 = simulate_op_smm(N=50000, m=m, mean_durations=1, noise=0, seed=7, tau = 1, allowed_states=[(0,2,1),(1,0,2),(1,2,0)])
         
-        x2, seq2, pats2 = simulate_op_smm(N=50000, m=m, mean_durations=1, noise=0, seed=7, tau = 1)
-        plt.plot(x2, marker = '.')
-        plt.title(f"Simulación OP-SMM (N={len(x2)}, m={m})")
-        plt.show()
+        x2, seq2, pats2 = simulate_op_smm(N=50000, m=n, mean_durations=0, noise=0, seed=7, tau = 1)
         # print(m)
-        PE = permutation_entropy(x2, m=n, tau = 1)
+        # PE = permutation_entropy(x2, m=m, tau = 1)
+        PE = ml.indice_S_eff_fast(x2,None,tau=-m, delta=True)
+        PE_null = ml.indice_S_eff_fast(x2,None,tau=-m, delta=True, null = "shuffle")
         # Supón que ya tienes tu serie 'x' en un np.array
-        if m == 5:
-            res = plot_patterns_to_pdf(
-                arr=x2, m=n, tau=1,
-                pdf_path=f"patrones_m5_tau2{n}.pdf",
-                show_top=None,          # o p.ej. 30 para las 30 más frecuentes
-                sort_by="freq",         # "freq" para ordenar por prob. desc, "code" por índice Lehmer
-                normalize=True,
-                title=None,
-                dpi=200
-            )
+        # if m == 5:
+        #     res = plot_patterns_to_pdf(
+        #         arr=x2, m=n, tau=1,
+        #         pdf_path=f"patrones_m5_tau2{n}.pdf",
+        #         show_top=None,          # o p.ej. 30 para las 30 más frecuentes
+        #         sort_by="freq",         # "freq" para ordenar por prob. desc, "code" por índice Lehmer
+        #         normalize=True,
+        #         title=None,
+        #         dpi=200
+        #     )
         PEs.append(PE)
-    np.save(f"PEs/PEs_op_smm{n}.npy", np.array(PEs))
+        # PEs_null.append(PE_null)
+    # np.save(f"PEs/PEs_op_smm{n}.npy", np.array(PEs))
 
-plt.style.use(['science', 'notebook', 'grid'])
+    # plt.style.use(['science', 'notebook', 'grid'])
 
-plt.plot(range(3,7),PEs)
+    plt.plot(range(3,7),PEs, label = f"OP-SMM m={n}",color= colors[n-3])
+    # plt.plot(range(3,7),PEs_null, label = f"OP-SMM m={n} null", linestyle='dashed',color=colors[n-3])
 # plt.title(f"Simulación OP-SMM (N={len(x)}, m=4) PE = {permutation_entropy(x2, m =4)}")
+plt.legend()
 plt.show()
 

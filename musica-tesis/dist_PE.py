@@ -48,15 +48,21 @@ ALPHA = 0.05   # sólo se usa si USE_P_RAW_ZERO_FOR_RED = False
 # =========================================================
 
 PANEL_CONFIGS = [
-    {"measure":"H_tau5_v2","D": 2, "tau": 5,"type_null":"shuffle", "title": r"$Indice H_{\tau=5}$ (notes,shuffle)"},
-    # {"measure":"gamma_rank_ties","D": 1, "tau": 2,"type_null":"shuffle", "title": r"$\gamma_1^{(R)}(\mu=2)$ (notes,shuffle)"},
-    # {"measure":"gamma_rank_ties","D": 2, "tau": 2,"type_null":"shuffle", "title": r"$\gamma_2^{(R)}(\mu=2)$ (notes,shuffle)"},
-    # {"measure":"gamma_rank_ties","D": 3, "tau": 2,"type_null":"shuffle", "title": r"$\gamma_3^{(R)}(\mu=2)$ (notes,shuffle)"},
-    # {"measure":"gamma_rank_ties","D": 4, "tau": 2,"type_null":"shuffle", "title": r"$\gamma_4^{(R)}(\mu=2)$ (notes,shuffle)"},
-    # {"measure":"Cd_rank","D": 4, "tau": 2,"type_null":"shuffle", "title": fr"mPE (notes,shuffle): $m=5,\ \tau=1$"},
-    {"measure":"mPE","D":3, "tau": 1,"type_null":"shuffle", "title": fr"mPE (notes,shuffle): $m=3,\ \tau=1$"},
-    {"measure":"mPE","D": 4, "tau": 1,"type_null":"shuffle", "title": fr"mPE (notes,shuffle): $m=4,\ \tau=1$"},
-    {"measure":"mPE","D": 5, "tau": 1,"type_null":"shuffle", "title": fr"mPE (notes,shuffle): $m=5,\ \tau=1$"},
+    {"measure":"H_tau5_v3","D": 2, "tau": 5,"type_null":"shuffle", "title": r"$Indice H_{\tau=5}$ (notes,shuffle)"},
+    {"measure":"gamma_rank_ties","D": 1, "tau": 2,"type_null":"shuffle", "title": r"$_m\gamma_1^{(R)}(\mu=2)$ (notes,shuffle)"},
+    {"measure":"gamma_rank_ties","D": 1, "tau": 2,"type_null":"iaaft", "title": r"$_m\gamma_1^{(R)}(\mu=2)$ (notes,iaaft)"},
+    # {"measure":"gamma_rank_ties","D": 2, "tau": 2,"type_null":"shuffle", "title": r"$_m\gamma_2^{(R)}(\mu=2)$ (notes,shuffle)"},
+    # {"measure":"gamma_rank_ties","D": 3, "tau": 2,"type_null":"shuffle", "title": r"$_m\gamma_3^{(R)}(\mu=2)$ (notes,shuffle)"},
+    # {"measure":"gamma_rank_ties","D": 4, "tau": 2,"type_null":"shuffle", "title": r"$_m\gamma_4^{(R)}(\mu=2)$ (notes,shuffle)"},
+    {"measure":"Cd_rank","D": 2, "tau": 2,"type_null":"shuffle", "title": r"$_m C_2^{(R)}(\mu=2)$ (notes,shuffle)"},
+    # {"measure":"Cd_rank","D": 2, "tau": 2,"type_null":"iaaft", "title": r"$_m C_2^{(R)}(\mu=2)$ (notes,iaaft)"},
+    # {"measure":"Cd_rank","D": 3, "tau": 2,"type_null":"shuffle", "title": r"$_m C_3^{(R)}(\mu=2)$ (notes,shuffle)"},
+    # {"measure":"Cd_rank","D": 4, "tau": 2,"type_null":"shuffle", "title": r"$_m C_4^{(R)}(\mu=2)$ (notes,shuffle)"},
+    # {"measure":"Cd_rank","D": 5, "tau": 2,"type_null":"shuffle", "title": r"$_m C_5^{(R)}(\mu=2)$ (notes,shuffle)"},
+    # {"measure":"mPE","D": 5, "tau": 1,"type_null":"shuffle", "title": fr"mPE (notes,shuffle): $m=5,\ \tau=1$"},
+    # {"measure":"mPE_interval","D": 5, "tau": 1,"type_null":"shuffle", "title": fr"mPE (intervals,shuffle): $m=5,\ \tau=1$"},
+    # {"measure":"mPE","D": 5, "tau": 1,"type_null":"iaaft", "title": fr"mPE (notes,iaaft): $m=5,\ \tau=1$"},
+    # {"measure":"mPE_interval","D": 5, "tau": 1,"type_null":"iaaft", "title": fr"mPE (intervals,iaaft): $m=5,\ \tau=1$"},
 ] 
 
 # =========================================================
@@ -303,7 +309,7 @@ def pe_stats_for_series(
         if "interval" in measure:
             pe_obs = ml.indice_S_eff_fast(np.diff(x), None, tau=tau)
         else:
-            pe_obs = ml.indice_S_eff_fast(x, None, tau=tau,delta=True)
+            pe_obs = ml.indice_S_eff_fast(x, None, tau=tau,delta=False)
     elif "Cd" in measure:
         if "interval" in measure:
             # angulos = angulos_alpha(np.diff(x),False)
@@ -342,7 +348,7 @@ def pe_stats_for_series(
                 C,_ = ml.gamma_index_rank_ties(x_surr,max_gamma=D,mu=tau)
                 pe_surr = 1-C[-1]
             elif "H_tau" in measure:
-                pe_surr = ml.indice_S_eff_fast(x_surr, None, tau=tau,null="no",delta=True)
+                pe_surr = ml.indice_S_eff_fast(x, None, tau=tau,null="shuffle2",delta=False)
             elif "gamma" in measure:
                 _,C = ml.gamma_index_rank_ties(x_surr,max_gamma=D,mu=tau)
                 pe_surr = 1-C[-1]
@@ -719,7 +725,7 @@ for cfg in PANEL_CONFIGS:
 # =========================================================
 # PLOTEO 2x2
 # =========================================================
-fig, axs = plt.subplots(2, 2, figsize=(18, 10), sharex=True, sharey=True)
+fig, axs = plt.subplots(2, 2, figsize=(18, 10), sharex=True, sharey=False)
 
 for ax, cfg, df_panel in zip(axs.ravel(), PANEL_CONFIGS, panel_dfs):
     zvals_panel = plot_panel(
@@ -743,7 +749,8 @@ if all_z_global.size > 0:
             ax.set_ylim(*ylim)
 
 for ax in axs.ravel():
-    ax.set_ylabel("Z-score of mPE", fontsize=FONT_GENERAL)
+    ax.set_ylabel(r"$Z$", fontsize=FONT_GENERAL)
+
 
 xticks = np.arange(1, len(labels) + 1)
 for ax in axs[1, :]:

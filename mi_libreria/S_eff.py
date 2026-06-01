@@ -7,10 +7,11 @@ from scipy.signal import hilbert
 
 def shuffle_vectores(vectores, tau):
     N = len(vectores[:,0])
-    indices = np.arange(N)
-    np.random.shuffle(indices)
-    dtheta_shuffled1 = vectores[indices, 0]  
-    dtheta_shuffled2 = vectores[indices, 1]  
+    indices1, indices2 = np.arange(N), np.arange(N)
+    np.random.shuffle(indices1)
+    np.random.shuffle(indices2)
+    dtheta_shuffled1 = vectores[indices1, 0]  
+    dtheta_shuffled2 = vectores[indices1, 1]  
     vectores_shuffled = np.empty((N-np.abs(tau), 2), dtype=np.float64)
     if tau > 0:
         vectores_shuffled[:,0] = dtheta_shuffled1[tau:]
@@ -127,6 +128,7 @@ def obtener_fases_instantaneas(
                 f2 = theta[-tau:]
             else:
                 f1, f2 = theta, theta
+            N = len(f1)
             return f1, f2
 
         elif modo_univariante == "segmentos":
@@ -174,12 +176,8 @@ def obtener_fases_instantaneas(
 
 
     if null == "shuffle":
-        indices = np.arange(len(f1))
-        np.random.shuffle(indices)
-        f1 = f1[indices]
-        f2 = f2[indices]
-        # f1 = np.random.permutation(f1)
-        # f2 = np.random.permutation(f2)
+        f1 = np.random.permutation(f1)
+        f2 = np.random.permutation(f2)
 
     return f1, f2
 
@@ -359,7 +357,7 @@ def S_eff_desde_angulos(
     M = max(1, int(M))
 
     if sigma is None:
-        sigma = M / 3.0
+        sigma = M / 2.0
 
     sigma = float(sigma)
 

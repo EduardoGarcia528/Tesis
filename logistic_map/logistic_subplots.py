@@ -2,10 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 
-from funciones import permutation_entropy, angulos_alpha
-from gamma_4 import gamma_index_jacobs
-from circular_gamma import gamma_index_jacobs_circular
-from gamma_5 import gamma_index_jacobs_rank
+import mi_libreria as ml
 
 # =========================
 # MAPA LOGÍSTICO
@@ -128,19 +125,19 @@ def calcular_curvas_indices(
             x0=x0
         )
 
-        alpha = angulos_alpha(serie, False, tau=1)
+        alpha = ml.angulos_alpha(serie, False, tau=1)
 
         # -------- PE variando m --------
         for m in ms:
-            pe_m[m][i] = permutation_entropy(serie, m=m, tau=1)
-            pe_alpha_m[m][i] = permutation_entropy(alpha, m=m, tau=1)
+            pe_m[m][i] = ml.permutation_entropy(serie, m=m, tau=1)
+            pe_alpha_m[m][i] = ml.permutation_entropy(alpha, m=m, tau=1)
 
         # -------- C_d variando d --------
         # max_gamma = 6 para asegurar tener C_2,...,C_6
-        C, _ = gamma_index_jacobs(serie, max_gamma=6, mu=5.0)
+        C, _ = ml.gamma_index_jacobs(serie, max_gamma=6, mu=5.0)
 
         # Para alpha: versión circular
-        C_alpha, _ = gamma_index_jacobs_circular(alpha, max_gamma=6, nu=5.0)
+        C_alpha, _ = ml.gamma_index_jacobs_circular(alpha, max_gamma=6, nu=5.0)
 
         for d in ds:
             cd[d][i] = C[d]
@@ -148,7 +145,7 @@ def calcular_curvas_indices(
 
         # -------- C_6 variando mu --------
         for mu in mus:
-            C_mu, _ = gamma_index_jacobs(serie, max_gamma=6, mu=float(mu))
+            C_mu, _ = ml.gamma_index_jacobs(serie, max_gamma=6, mu=float(mu))
             c6_mu[mu][i] = C_mu[6]
 
         print(f"{i + 1}/{len(r_grid)}  r = {r:.6f}")

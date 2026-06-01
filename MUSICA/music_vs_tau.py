@@ -131,23 +131,28 @@ for num in range(1,24):
     H_null = []
     auto = []
     auto_null = []
-    tau = range(1,7)
-    for t in range(1,7):
-        H.append(ml.indice_S_eff_fast(melody, tau=t,delta=True))
-        H_null.append(ml.indice_S_eff_fast(np.random.permutation(melody),tau=t, null = "no",delta=True))
+    tau = range(1,10)
+    for t in range(1,10):
+        dmelody = np.diff(melody)
+        # H.append(ml.indice_S_eff_fast(dmelody, tau=t,delta=False))
+        melody_null = np.random.permutation(melody)
+        dmelody_null = np.diff(melody_null)
+        H.append(ml.indice_S_eff_fast(melody, tau=t,delta=False))
+        H_null.append(ml.indice_S_eff_fast(melody_null,tau=t, null = "no",delta=False))
         a = 1-autoinformacion_mutua_tau(melody,tau=t)
         auto.append(a)
         # auto.append(autocorrelacion_tau(melody,tau=t))
-        a_null = 1-autoinformacion_mutua_tau(np.random.permutation(melody), tau=t)
+        a_null = 1-autoinformacion_mutua_tau(melody_null, tau=t)
         auto_null.append(a_null)
         # auto_null.append(autocorrelacion_tau(np.random.permutation(melody), tau=t))
-
+    print(np.mean(H), np.mean(H_null))
     print("spearman: ", spearmanr(auto,H), "pearson: ", pearsonr(auto,H))
     plt.plot(tau,H, label='J_h',color='red')
     plt.plot(tau, H_null, label='J shuffle')
+    # plt.ylim(0.4,1)
     # plt.plot(tau, 1-g, label='gamma')
-    # plt.plot(tau, auto_null,'.-', label = 'Autocorrelation null')
-    # plt.plot(tau, auto, '.-',label='Autocorrelation')
+    plt.plot(tau, auto_null,'.-', label = 'Autocorrelation null')
+    plt.plot(tau, auto, '.-',label='Autocorrelation')
     plt.legend()
     plt.title(str(num))
     plt.show()

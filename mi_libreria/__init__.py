@@ -10,3 +10,4 @@ from .musica import *
 from .PE import *
 from .systems import * 
 from .S_eff import * 
+from .music_group import *

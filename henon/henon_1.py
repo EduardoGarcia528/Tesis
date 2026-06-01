@@ -35,9 +35,9 @@ for r,a,tau in zip(r_values,a_values,range(1,301)):
     # x = (1-r)*x + r*z[tauu:]
     # y = (1-r)*y + r*z[:-tauu]
     # y= ml.logistic_map(r=4.0,n_iter=n_iter,n_transient=n_transient)
-    medida.append(ml.indice_S_eff_fast(x,seriey=y,tau=1))
-    # x,y = np.random.permutation(x), np.random.permutation(y)
-    medida_null.append(ml.indice_S_eff_fast(x,seriey=y,tau=1,null="shuffle2"))
+    medida.append(ml.indice_S_eff_fast(x,seriey=y,tau=0, delta=False))
+    x,y = np.random.permutation(x), np.random.permutation(y)
+    medida_null.append(ml.indice_S_eff_fast(x,seriey=y,tau=0,null="no",delta=False))
 medida = np.asarray(medida)
 medida_null = np.asarray(medida_null)
 print(np.mean(medida),np.mean(medida_null))

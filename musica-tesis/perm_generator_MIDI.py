@@ -338,7 +338,8 @@ def simulate_op_smm_discrete(
 # ============================================
 # 6. Ejemplo de uso con notas MIDI
 # ============================================
-from funciones import permutation_entropy
+from mi_libreria import permutation_entropy
+import mi_libreria as ml
 import matplotlib.pyplot as plt
 if __name__ == "__main__":
     # Escala de Do mayor (C mayor) en una octava
@@ -348,17 +349,18 @@ if __name__ == "__main__":
 
     x_melodia, seq, pats = simulate_op_smm_discrete(
         N=10_000,
-        m=4,
+        m=3,
         vocab=vocab_do_mayor,
         allowed_states='all',
         seed=None,
     )
-    plt.plot(x_melodia, marker='.')
-    plt.show()
+    # plt.plot(x_melodia, marker='.')
+    # plt.show()
 
     PEs = []
     for m in range(3,7):
-        PE = permutation_entropy(x_melodia, m=m, tau=1)
+        # PE = permutation_entropy(x_melodia, m=m, tau=1)
+        PE = ml.indice_S_eff_fast(x_melodia,None,tau=m,delta=True,null="shuffle")
         PEs.append(PE)
     plt.plot(range(3,7),PEs)
     plt.xlabel('m')

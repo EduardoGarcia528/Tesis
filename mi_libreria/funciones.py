@@ -115,8 +115,8 @@ def construir_vectores_geodesicos(puntos):
     vectores = np.empty((n_vectores, 2), dtype=np.float64)
 
     for i in range(n_vectores):
-        dx = wrap_pi(puntos[i + 1, 0] - puntos[i, 0])# - puntos[i, 0] 
-        dy = wrap_pi(puntos[i + 1, 1] - puntos[i, 1])# - puntos[i, 1]
+        dx = wrap_pi(puntos[i + 1, 0] - puntos[i, 0]) - puntos[i, 0] 
+        dy = wrap_pi(puntos[i + 1, 1] - puntos[i, 1]) - puntos[i, 1]
 
         vectores[i, 0] = dx
         vectores[i, 1] = dy
