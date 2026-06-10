@@ -2,7 +2,7 @@ import numpy as np
 from scipy.interpolate import PchipInterpolator
 from numba import njit
 from tqdm import tqdm
-from mi_libreria import construir_puntos_toro, construir_vectores_geodesicos, calcular_angulos_entre_vectores, wrap_pi
+from mi_libreria import construir_puntos_toro, construir_vectores_geodesicos, calcular_angulos_entre_vectores, wrap_pi, obtener_fases_fourier
 from scipy.signal import hilbert
 
 def shuffle_vectores(vectores, tau):
@@ -398,6 +398,44 @@ def indice_S_eff_fast(
         delta=delta,
         modo_univariante=modo_univariante,
         null=null
+    )
+
+    puntos = construir_puntos_toro(f1, f2)
+    vectores = construir_vectores_geodesicos(puntos)
+    if null == "shuffle2":
+        vectores = shuffle_vectores(vectores, tau_null)
+    angulos = calcular_angulos_entre_vectores(vectores)
+
+    return S_eff_desde_angulos(
+        angulos,
+        M=M,
+        n_grid=n_grid,
+        sigma=sigma,
+        usar_pesos=usar_pesos,
+        return_details=return_details
+    )
+
+
+def entropia_J(
+    seriex,
+    seriey=None,
+    tau=1,
+    null="no",
+    delta=False,
+    M=None,
+    n_grid=500,
+    sigma=None,
+    usar_pesos=True,
+    return_details=False,
+    modo_univariante="global"
+):
+    if null == "shuffle2":
+        tau_null = tau
+        tau = 0
+    f1, f2 = obtener_fases_fourier(
+        seriex,
+        seriey=seriey,
+        tau=tau
     )
 
     puntos = construir_puntos_toro(f1, f2)

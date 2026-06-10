@@ -128,7 +128,6 @@ def plot_pe_vs_shuffle(array, m, tau, n_shuffles=1000, random_state=None, bins=3
     # pe_obs = modified_permutation_entropy(array, m, tau)
     # pe_obs= 1 - ml.gamma_index_rank_ties(array,m,tau)[1][-1]
     pe_obs = ml.H_orbit(array, m = 3)
-    beta, res = ml.graficar_espectro_beta(array, fs=1.0)
     plt.show()
 
     # PE de los shuffles
@@ -139,7 +138,6 @@ def plot_pe_vs_shuffle(array, m, tau, n_shuffles=1000, random_state=None, bins=3
         # pe_shuffles[i] = modified_permutation_entropy(shuffled[i,:], m, tau)
         # _, g = ml.gamma_index_rank_ties(shuffled,m,tau)
         # pe_shuffles[i] = 1-g[-1]
-        beta, res = ml.graficar_espectro_beta(shuffled[i,:], fs=1.0)
         plt.show()
         pe_shuffles[i] = ml.H_orbit(shuffled[i,:], m = 3)
 

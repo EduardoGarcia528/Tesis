@@ -443,3 +443,137 @@ def autocorrelacion_tau(serie, tau=1, n_shuffles=10, seed=None):
         z_score = np.nan
 
     return autocorr_original, media_shuffle
+
+import matplotlib.pyplot as plt
+from scipy.signal import welch
+
+
+def graficar_espectro_beta(
+    x,
+    fs=1.0,
+    nperseg=None,
+    fit_range=None,
+    detrend=True,
+    window="hann",
+    ax=None,
+    label=None,
+    plot_fit=True
+):
+    """
+    Grafica el espectro de potencias de una serie y estima el exponente beta
+    de una ley tipo P(f) ~ f^(-beta).
+
+    Parámetros
+    ----------
+    x : array-like
+        Serie temporal.
+    fs : float, opcional
+        Frecuencia de muestreo. Si la serie está indexada por pasos discretos,
+        usar fs=1.
+    nperseg : int or None
+        Tamaño de ventana para Welch. Si None, se usa min(256, len(x)).
+    fit_range : tuple or None
+        Rango de frecuencias para estimar beta: (f_min, f_max).
+        Si None, usa todo el rango válido excepto f=0.
+    detrend : bool
+        Si True, resta la media antes de calcular el espectro.
+    window : str
+        Ventana usada en Welch.
+    ax : matplotlib axis or None
+        Eje donde graficar. Si None, crea uno nuevo.
+    label : str or None
+        Etiqueta para la serie.
+    plot_fit : bool
+        Si True, grafica la recta ajustada.
+
+    Regresa
+    -------
+    beta : float
+        Exponente estimado.
+    resultado : dict
+        Diccionario con frecuencias, PSD, máscara del ajuste, pendiente,
+        intercepto y objeto de figura/eje.
+    """
+
+    x = np.asarray(x, dtype=float)
+
+    if x.ndim != 1:
+        raise ValueError("x debe ser una serie unidimensional.")
+
+    x = x[np.isfinite(x)]
+
+    if len(x) < 4:
+        raise ValueError("La serie es demasiado corta.")
+
+    if detrend:
+        x = x - np.mean(x)
+
+    if nperseg is None:
+        nperseg = min(256, len(x))
+
+    # Espectro de potencias con Welch
+    f, Pxx = welch(
+        x,
+        fs=fs,
+        window=window,
+        nperseg=nperseg,
+        detrend=False,
+        scaling="density"
+    )
+
+    # Quitar frecuencia cero y potencias no positivas
+    mask = (f > 0) & (Pxx > 0)
+
+    if fit_range is not None:
+        f_min, f_max = fit_range
+        mask &= (f >= f_min) & (f <= f_max)
+
+    if np.sum(mask) < 2:
+        raise ValueError("No hay suficientes puntos válidos para ajustar beta.")
+
+    log_f = np.log10(f[mask])
+    log_P = np.log10(Pxx[mask])
+
+    # Ajuste lineal: log P = slope * log f + intercept
+    slope, intercept = np.polyfit(log_f, log_P, 1)
+
+    # Como P(f) ~ f^(-beta), entonces beta = -slope
+    beta = -slope
+
+    # Crear gráfica
+    if ax is None:
+        fig, ax = plt.subplots(figsize=(6, 4))
+    else:
+        fig = ax.figure
+
+    ax.loglog(f[1:], Pxx[1:], marker="o", linestyle="-", label=label)
+
+    if plot_fit:
+        f_fit = f[mask]
+        P_fit = 10**intercept * f_fit**slope
+        ax.loglog(
+            f_fit,
+            P_fit,
+            linestyle="--",
+            linewidth=2,
+            label=rf"Ajuste: $\beta = {beta:.3f}$"
+        )
+
+    ax.set_xlabel("Frecuencia")
+    ax.set_ylabel("Densidad espectral de potencia")
+    ax.set_title("Espectro de potencias")
+    ax.grid(True, which="both", alpha=0.3)
+    ax.legend()
+
+    resultado = {
+        "frecuencias": f,
+        "psd": Pxx,
+        "mask_fit": mask,
+        "slope": slope,
+        "intercept": intercept,
+        "beta": beta,
+        "fig": fig,
+        "ax": ax,
+    }
+
+    return beta, resultado
