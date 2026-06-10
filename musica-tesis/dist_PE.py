@@ -51,10 +51,11 @@ PANEL_CONFIGS = [
     {"measure":"gamma_rank_ties","D": 1, "tau": 2,"type_null":"shuffle", "title": r"$_m\gamma_1^{(R)}(\mu=2)$ (notes,shuffle)"},
     {"measure":"gamma_rank_ties","D": 1, "tau": 2,"type_null":"iaaft", "title": r"$_m\gamma_1^{(R)}(\mu=2)$ (notes,iaaft)"},
     {"measure":"H_orbit","D": 3, "tau": 5,"type_null":"shuffle", "title": r"$H_{orbit}(m=3)$ (notes,shuffle)"},
+    {"measure":"H_orbit","D": 3, "tau": 5,"type_null":"iaaft", "title": r"$H_{orbit}(m=3)$ (notes,iaaft)"},
     # {"measure":"gamma_rank_ties","D": 2, "tau": 2,"type_null":"shuffle", "title": r"$_m\gamma_2^{(R)}(\mu=2)$ (notes,shuffle)"},
     # {"measure":"gamma_rank_ties","D": 3, "tau": 2,"type_null":"shuffle", "title": r"$_m\gamma_3^{(R)}(\mu=2)$ (notes,shuffle)"},
     # {"measure":"gamma_rank_ties","D": 4, "tau": 2,"type_null":"shuffle", "title": r"$_m\gamma_4^{(R)}(\mu=2)$ (notes,shuffle)"},
-    {"measure":"Cd_rank","D": 2, "tau": 2,"type_null":"shuffle", "title": r"$_m C_2^{(R)}(\mu=2)$ (notes,shuffle)"},
+    # {"measure":"Cd_rank","D": 2, "tau": 2,"type_null":"shuffle", "title": r"$_m C_2^{(R)}(\mu=2)$ (notes,shuffle)"},
     # {"measure":"Cd_rank","D": 2, "tau": 2,"type_null":"iaaft", "title": r"$_m C_2^{(R)}(\mu=2)$ (notes,iaaft)"},
     # {"measure":"Cd_rank","D": 3, "tau": 2,"type_null":"shuffle", "title": r"$_m C_3^{(R)}(\mu=2)$ (notes,shuffle)"},
     # {"measure":"Cd_rank","D": 4, "tau": 2,"type_null":"shuffle", "title": r"$_m C_4^{(R)}(\mu=2)$ (notes,shuffle)"},
@@ -464,6 +465,7 @@ def compute_panel_dataframe(
         series_names = sorted(composers[composer].keys(), key=natural_key)
 
         for sname in series_names:
+            print(sname)
             x = np.asarray(composers[composer][sname], dtype=float)
 
             if seed_base is None:
@@ -582,12 +584,15 @@ def plot_panel(ax, df_panel, composer_names, title,
 
         zvals = sub["z"].to_numpy(dtype=float)
         pe_obs_vals = sub["pe_obs"].to_numpy(dtype=float)
+        mu_null_vals = sub["mu_null"].to_numpy(dtype=float)
         pvals = sub["p_value"].to_numpy(dtype=float)
         praws = sub["p_raw"].to_numpy(dtype=float)
 
         finite_mask = np.isfinite(zvals)
         zvals = zvals[finite_mask]
         pvals = pvals[finite_mask]
+        mu_null_vals = mu_null_vals[finite_mask]
+        pe_obs_vals = pe_obs_vals[finite_mask]
         praws = praws[finite_mask]
 
         if zvals.size == 0:
@@ -604,7 +609,8 @@ def plot_panel(ax, df_panel, composer_names, title,
 
         ax.scatter(
             # x, 1 - zvals,
-            x, pe_obs_vals,
+            # x, pe_obs_vals,
+            x, mu_null_vals,
             s=DOT_SIZE,
             alpha=EDGE_ALPHA,
             facecolors="none",
@@ -613,7 +619,8 @@ def plot_panel(ax, df_panel, composer_names, title,
         )
 
         # med = np.median(zvals)
-        med = np.median(pe_obs_vals)
+        # med = np.median(pe_obs_vals)
+        med = np.median(mu_null_vals)
         medianas.append(med)
         all_z.extend(zvals.tolist())
 
@@ -760,10 +767,11 @@ if all_z_global.size > 0:
         pad = 0.08 * zmax
         ylim = (-zmax - pad, zmax + pad)
         for ax in axs.ravel():
-            ax.set_ylim(*ylim)
+            # ax.set_ylim(*ylim)
+            ax.set_ylim(0.0,1.2)
 
 for ax in axs.ravel():
-    ax.set_ylabel(r"$Z$", fontsize=FONT_GENERAL)
+    ax.set_ylabel(r"$H_{orbit}$", fontsize=FONT_GENERAL)
 
 
 xticks = np.arange(1, len(labels) + 1)
