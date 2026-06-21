@@ -69,16 +69,16 @@ def bifurcacion_con_J(
             # serie = np.random.normal(loc=0.0, scale=1.0, size=longitud_serie)
             # serie2 = np.random.normal(loc=0.0, scale=1.0, size=longitud_serie)
             # serie = np.random.permutation(serie)
-            C, g = ml.gamma_index_rank(serie,max_gamma=1,mu=2) # mantengamos mu = 2. C es un array de [1.0, C[1], ..., C[max_gamma+1]] y g es un array de [gamma_1, gamma_2, ..., gamma_max_gamma]
-            J = g[0]
-            # J = ml.indice_S_eff_fast(serie,tau=1,delta=False)
+            # C, g = ml.gamma_index_rank(serie,max_gamma=1,mu=2) # mantengamos mu = 2. C es un array de [1.0, C[1], ..., C[max_gamma+1]] y g es un array de [gamma_1, gamma_2, ..., gamma_max_gamma]
+            # J = g[0]
+            J = ml.indice_S_eff_fast(serie,tau=1,delta=False)
             # _,J = gamma_index_jacobs(serie, max_gamma, mu=mu)
             # _, J = gamma_index_rank(serie, max_gamma, mu=mu)
             J_vals[q] = J_vals[q] + J
             
-            # serie = np.random.permutation(serie)
-            serie = np.mean(ml.iaaft(serie,1), axis = 0)
-            J_vals_null[q] = J_vals_null[q] + ml.gamma_index_rank(serie, max_gamma=1, mu=2)[1][0] #ml.indice_S_eff_fast(serie,tau=1,null="no",delta=False)
+            serie = np.random.permutation(serie)
+            # serie = np.mean(ml.iaaft(serie,1,0.01), axis = 0)
+            J_vals_null[q] = J_vals_null[q] + ml.indice_S_eff_fast(serie,tau=1,null="no",delta=False)
     # J_vals = J_vals / 500.0  
         
     # np.save("J_transicion5.npy", np.array([r_vals_J, J_vals]))

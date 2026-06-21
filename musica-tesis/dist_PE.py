@@ -48,10 +48,11 @@ ALPHA = 0.05   # sólo se usa si USE_P_RAW_ZERO_FOR_RED = False
 # =========================================================
 
 PANEL_CONFIGS = [
-    {"measure":"gamma_rank_ties","D": 1, "tau": 2,"type_null":"shuffle", "title": r"$_m\gamma_1^{(R)}(\mu=2)$ (notes,shuffle)"},
+    # {"measure":"gamma_rank_ties","D": 1, "tau": 2,"type_null":"shuffle", "title": r"$_m\gamma_1^{(R)}(\mu=2)$ (notes,shuffle)"},
     {"measure":"gamma_rank_ties","D": 1, "tau": 2,"type_null":"iaaft", "title": r"$_m\gamma_1^{(R)}(\mu=2)$ (notes,iaaft)"},
     {"measure":"H_orbit","D": 3, "tau": 5,"type_null":"shuffle", "title": r"$H_{orbit}(m=3)$ (notes,shuffle)"},
     {"measure":"H_orbit","D": 3, "tau": 5,"type_null":"iaaft", "title": r"$H_{orbit}(m=3)$ (notes,iaaft)"},
+    {"measure":"H_tau1","D": 2, "tau": 1,"type_null":"shuffle", "title": r"$H_{hibert}(tau=1)$ (notes,shuffle)"},
     # {"measure":"gamma_rank_ties","D": 2, "tau": 2,"type_null":"shuffle", "title": r"$_m\gamma_2^{(R)}(\mu=2)$ (notes,shuffle)"},
     # {"measure":"gamma_rank_ties","D": 3, "tau": 2,"type_null":"shuffle", "title": r"$_m\gamma_3^{(R)}(\mu=2)$ (notes,shuffle)"},
     # {"measure":"gamma_rank_ties","D": 4, "tau": 2,"type_null":"shuffle", "title": r"$_m\gamma_4^{(R)}(\mu=2)$ (notes,shuffle)"},
@@ -353,7 +354,7 @@ def pe_stats_for_series(
                 C,_ = ml.gamma_index_rank_ties(x_surr,max_gamma=D,mu=tau)
                 pe_surr = 1-C[-1]
             elif "H_tau" in measure:
-                pe_surr = ml.indice_S_eff_fast(x, None, tau=tau,null="shuffle2",delta=False)
+                pe_surr = ml.indice_S_eff_fast(x_surr, None, tau=tau,null="no",delta=False)
             elif "H_orbit" in measure:
                 pe_surr = ml.H_orbit(x_surr, m=D)
             elif "gamma" in measure:
@@ -377,7 +378,7 @@ def pe_stats_for_series(
                 C,_ = ml.gamma_index_rank_ties(x_surr[k,:],max_gamma=D,mu=tau)
                 pe_surr = 1-C[-1]
             elif "H_tau" in measure:
-                pe_surr = ml.indice_S_eff_fast(x_surr[k,:], None, tau=tau,null="shuffle",delta=True)
+                pe_surr = ml.indice_S_eff_fast(x_surr[k,:], None, tau=tau,null="no",delta=False)
             elif "H_orbit" in measure:
                 pe_surr = ml.H_orbit(x_surr[k,:], m=D)
             elif "J_tau" in measure:

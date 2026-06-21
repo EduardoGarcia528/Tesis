@@ -34,7 +34,7 @@ import numpy as np
 from tqdm import tqdm
 
 
-def iaaft(x, ns, tol_pc=5., verbose=False, maxiter=1E6, sorttype="quicksort"):
+def iaaft(x, ns, tol_pc=0.1, verbose=False, maxiter=1E6, sorttype="quicksort"):
     """
     Returns iAAFT surrogates of given time series.
 
@@ -47,7 +47,7 @@ def iaaft(x, ns, tol_pc=5., verbose=False, maxiter=1E6, sorttype="quicksort"):
     tol_pc : float
         Tolerance (in percent) level which decides the extent to which the
         difference in the power spectrum of the surrogates to the original
-        power spectrum is allowed (default = 5).
+        power spectrum is allowed (default = 0.1).
     verbose : bool
         Show progress bar (default = `False`).
     maxiter : int

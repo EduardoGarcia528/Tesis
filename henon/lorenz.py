@@ -10,8 +10,8 @@ sigma = 10
 beta = 8/3
 
 # Variación de rho en el orden indicado
-rho_values = np.array([28.0,99.65,100.5, 160.0, 350])
-# rho_values = np.array([350, 100.5, 160, 99.65, 28.0])
+# rho_values = np.array([28.0,99.65,100.5, 160.0, 350])
+rho_values = np.array([350, 100.5, 160, 99.65, 28.0])
 
 t_max = 1200
 dt = 0.01
@@ -46,13 +46,16 @@ for i, rho in enumerate(rho_values):
     y_m = y[::subsample]
 
     medida.append(
-        ml.indice_H(x_m, y_m)
+        ml.indice_S_eff_fast(x_m, seriey=None, tau=1, delta=False)
     )
 
     medida_null.append(
-        ml.indice_H(
-            rng.permutation(x_m),
-            rng.permutation(y_m)
+        ml.indice_S_eff_fast(
+            ml.iaaft(x_m,1)[0],
+            seriey=None,
+            tau=1,
+            null="no",
+            delta=False
         )
     )
 

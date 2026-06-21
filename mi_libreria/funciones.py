@@ -541,14 +541,14 @@ def graficar_espectro_beta(
     beta = -slope
 
     # Crear gráfica
-    if ax is None:
-        fig, ax = plt.subplots(figsize=(6, 4))
-    else:
-        fig = ax.figure
-
-    ax.loglog(f[1:], Pxx[1:], marker="o", linestyle="-", label=label)
-
     if plot_fit:
+        if ax is None:
+            fig, ax = plt.subplots(figsize=(6, 4))
+        else:
+            fig = ax.figure
+
+        ax.loglog(f[1:], Pxx[1:], marker="o", linestyle="-", label=label)
+
         f_fit = f[mask]
         P_fit = 10**intercept * f_fit**slope
         ax.loglog(
@@ -559,21 +559,22 @@ def graficar_espectro_beta(
             label=rf"Ajuste: $\beta = {beta:.3f}$"
         )
 
-    ax.set_xlabel("Frecuencia")
-    ax.set_ylabel("Densidad espectral de potencia")
-    ax.set_title("Espectro de potencias")
-    ax.grid(True, which="both", alpha=0.3)
-    ax.legend()
+        ax.set_xlabel("Frecuencia")
+        ax.set_ylabel("Densidad espectral de potencia")
+        ax.set_title("Espectro de potencias")
+        ax.grid(True, which="both", alpha=0.3)
+        ax.legend()
 
-    resultado = {
-        "frecuencias": f,
-        "psd": Pxx,
-        "mask_fit": mask,
-        "slope": slope,
-        "intercept": intercept,
-        "beta": beta,
-        "fig": fig,
-        "ax": ax,
-    }
-
-    return beta, resultado
+        resultado = {
+            "frecuencias": f,
+            "psd": Pxx,
+            "mask_fit": mask,
+            "slope": slope,
+            "intercept": intercept,
+            "beta": beta,
+            "fig": fig,
+            "ax": ax,
+        }
+        return beta, resultado
+    else:
+        return beta
