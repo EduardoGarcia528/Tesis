@@ -225,6 +225,7 @@ class OrbitEntropyResult:
 def orbit_entropy(
     orbit_sequence: Sequence[tuple[int, ...]],
     *,
+    norm: bool = False,
     return_details: bool = False
 ):
     """
@@ -318,11 +319,12 @@ def orbit_entropy(
             probabilities=dict(probabilities),
             counts=dict(counts),
         )
+    if norm:
+        return float(H_orbit_normalized)
+    return float(H_orbit)
 
-    return float(H_orbit_normalized)
 
-
-def H_orbit(melody: Sequence[int], m: int, return_details: bool = False) -> float | OrbitEntropyResult:
+def H_orbit(melody: Sequence[int], m: int, norm: bool = False, return_details: bool = False) -> float | OrbitEntropyResult:
     """
     Calcula H_orbit para una melodía dada y tamaño de ventana m.
 
@@ -348,4 +350,4 @@ def H_orbit(melody: Sequence[int], m: int, return_details: bool = False) -> floa
     orbit_seq = canonical_orbit_sequence(melody, m)
     if orbit_seq is np.nan:
         return np.nan
-    return orbit_entropy(orbit_seq, return_details=return_details)
+    return orbit_entropy(orbit_seq,norm = norm ,return_details=return_details)

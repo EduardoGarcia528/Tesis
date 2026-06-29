@@ -575,6 +575,7 @@ def graficar_espectro_beta(
             "fig": fig,
             "ax": ax,
         }
+        plt.plot()
         return beta, resultado
     else:
         return beta

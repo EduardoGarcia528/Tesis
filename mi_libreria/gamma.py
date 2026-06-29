@@ -296,6 +296,7 @@ def gamma_index_rank_ties(data, max_gamma, mu=5.0):
     K = int(np.floor(n_unique / (2.0 * mu)))
     if K < 0:
         K = 0
+    K = mu
 
     C = correlation_integrals_rank_ties(data, max_d, K)
     g = np.empty(max_gamma, dtype=np.float64)

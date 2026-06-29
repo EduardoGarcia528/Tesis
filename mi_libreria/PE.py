@@ -162,6 +162,8 @@ def modified_permutation_entropy(arr, m=3, tau=1,norm=True):
 
     # máximo teórico correcto para patrones con empates
     n_states = count_tie_patterns(m)
+    if n_states > denom:
+        n_states = denom
     if norm:
         Hnorm = H / np.log(n_states)
         return Hnorm
