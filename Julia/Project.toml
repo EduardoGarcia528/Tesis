@@ -1,0 +1,5 @@
+[deps]
+CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+MelodicSymmetry = "15a1041c-1329-4cb4-8dd6-748c3d4c17b6"
+NPZ = "15e1cf62-19b3-5cfa-8e77-841668bca605"

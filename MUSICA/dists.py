@@ -52,10 +52,14 @@ METHOD = "hybrid"  # "hybrid" o "complexity"
 PANEL_CONFIGS = [
     # {"measure":"gamma_rank_ties","D": 1, "tau": 2,"type_null":"shuffle", "title": r"$_m\gamma_1^{(R)}(\mu=2)$ (notes,shuffle)"},
     # {"measure":"gamma_rank_ties","D": 1, "tau": 2,"type_null":"iaaft", "title": r"$_m\gamma_1^{(R)}(\mu=2)$ (notes,iaaft)"},
-    {"measure":"H_orbit","D": 5, "tau": 5,"type_null":"shuffle", "title": r"$H_{orbit}(m=5)$ (notes,shuffle)"},
-    {"measure":"H_orbit","D": 5, "tau": 5,"type_null":"iaaft", "title": r"$H_{orbit}(m=5)$ (notes,iaaft)"},
-    {"measure":"H_tau1","D": 2, "tau": 1,"type_null":"shuffle", "title": r"$H_{hibert}(tau=1)$ (notes,shuffle)"},
-    {"measure":"H_tau1","D": 2, "tau": 1,"type_null":"iaaft", "title": r"$H_{hibert}(tau=1)$ (notes,iaaft)"},
+    # {"measure":"H_orbit","D": 5, "tau": 5,"type_null":"shuffle", "title": r"$H_{orbit}(m=5)$ (notes,shuffle)"},
+    # {"measure":"H_orbit","D": 5, "tau": 5,"type_null":"iaaft", "title": r"$H_{orbit}(m=5)$ (notes,iaaft)"},
+    # {"measure":"H_orbit","D": 3, "tau": 5,"type_null":"shuffle", "title": r"$H_{orbit}(m=3)$ (notes,shuffle)"},
+    # {"measure":"H_orbit","D": 3, "tau": 5,"type_null":"iaaft", "title": r"$H_{orbit}(m=3)$ (notes,iaaft)"},
+    # {"measure":"H_tau","D": 2, "tau": 1,"type_null":"shuffle", "title": r"$S_{\theta}(\tau=1)$ (notes,shuffle)"},
+    # {"measure":"H_tau","D": 2, "tau": 1,"type_null":"iaaft", "title": r"$S_{\theta}(\tau=1)$ (notes,iaaft)"},
+    # {"measure":"H_tau","D": 2, "tau": 2,"type_null":"shuffle", "title": r"$S_{\theta}(\tau=2)$ (notes,shuffle)"},
+    # {"measure":"H_tau","D": 2, "tau": 2,"type_null":"iaaft", "title": r"$S_{\theta}(\tau=2)$ (notes,iaaft)"},
     # {"measure":"gamma_rank_ties","D": 2, "tau": 2,"type_null":"shuffle", "title": r"$_m\gamma_2^{(R)}(\mu=2)$ (notes,shuffle)"},
     # {"measure":"gamma_rank_ties","D": 3, "tau": 2,"type_null":"shuffle", "title": r"$_m\gamma_3^{(R)}(\mu=2)$ (notes,shuffle)"},
     # {"measure":"gamma_rank_ties","D": 4, "tau": 2,"type_null":"shuffle", "title": r"$_m\gamma_4^{(R)}(\mu=2)$ (notes,shuffle)"},
@@ -64,10 +68,11 @@ PANEL_CONFIGS = [
     # {"measure":"Cd_rank","D": 3, "tau": 2,"type_null":"shuffle", "title": r"$_m C_3^{(R)}(\mu=2)$ (notes,shuffle)"},
     # {"measure":"Cd_rank","D": 4, "tau": 2,"type_null":"shuffle", "title": r"$_m C_4^{(R)}(\mu=2)$ (notes,shuffle)"},
     # {"measure":"Cd_rank","D": 5, "tau": 2,"type_null":"shuffle", "title": r"$_m C_5^{(R)}(\mu=2)$ (notes,shuffle)"},
-    # {"measure":"mPE","D": 5, "tau": 1,"type_null":"shuffle", "title": fr"mPE (notes,shuffle): $m=5,\ \tau=1$"},
-    # {"measure":"mPE_interval","D": 5, "tau": 1,"type_null":"shuffle", "title": fr"mPE (intervals,shuffle): $m=5,\ \tau=1$"},
-    # {"measure":"mPE","D": 5, "tau": 1,"type_null":"iaaft", "title": fr"mPE (notes,iaaft): $m=5,\ \tau=1$"},
-    # {"measure":"mPE_interval","D": 5, "tau": 1,"type_null":"iaaft", "title": fr"mPE (intervals,iaaft): $m=5,\ \tau=1$"},
+    {"measure":"mPE","D": 5, "tau": 1,"type_null":"shuffle", "title": fr"mPE (notes,shuffle): $m=5,\ \tau=1$"},
+    {"measure":"mPE_interval","D": 5, "tau": 1,"type_null":"shuffle", "title": fr"mPE (intervals,shuffle): $m=5,\ \tau=1$"},
+    {"measure":"mPE","D": 5, "tau": 1,"type_null":"iaaft", "title": fr"mPE (notes,iaaft): $m=5,\ \tau=1$"},
+    {"measure":"mPE_interval","D": 5, "tau": 1,"type_null":"iaaft", "title": fr"mPE (intervals,iaaft): $m=5,\ \tau=1$"},
+    # {"measure":"beta","D": 5, "tau": 1,"type_null":"iaaft", "title": fr"beta (notes,iaaft)"},
 ] 
 
 # =========================================================
@@ -229,6 +234,8 @@ def pe_stats_for_series(
             pe_obs = ml.modified_permutation_entropy(np.diff(x), m=D, tau=tau,norm=fafaeg)
         else:
             pe_obs = ml.modified_permutation_entropy(x, m=D, tau=tau, norm=fafaeg)
+    elif "beta" in measure:
+        pe_obs = ml.graficar_espectro_beta(x, plot_fit = False)
     elif "H_tau" in measure:
         if "interval" in measure:
             pe_obs = ml.indice_S_eff_fast(np.diff(x), None, tau=tau)
@@ -296,6 +303,8 @@ def pe_stats_for_series(
             elif "gamma" in measure:
                 _,C = ml.gamma_index_rank_ties(x_surr[k,:],max_gamma=D,mu=tau)
                 pe_surr = 1-C[-1]
+            elif "beta" in measure:
+                pe_surr = ml.graficar_espectro_beta(x_surr[k,:], plot_fit = False)
             elif "Cd" in measure:
                 C,_ = ml.gamma_index_rank_ties(x_surr[k,:],max_gamma=D,mu=tau)
                 pe_surr = 1-C[-1]
@@ -535,8 +544,8 @@ def plot_panel(ax, df_panel, composer_names, title,
         x = np.random.normal(i, JITTER_STD, size=zvals.size)
 
         ax.scatter(
-            x, 1 - zvals,
-            # x, pe_obs_vals,
+            # x, 1 - zvals,
+            x, mu_null_vals- pe_obs_vals,
             # x, mu_null_vals,
             s=DOT_SIZE,
             alpha=EDGE_ALPHA,
@@ -545,9 +554,9 @@ def plot_panel(ax, df_panel, composer_names, title,
             linewidths=0.8
         )
 
-        med = np.median(zvals)
+        # med = np.median(zvals)
         # med = np.median(pe_obs_vals)
-        # med = np.median(mu_null_vals)
+        med = np.median(mu_null_vals-pe_obs_vals)
         medianas.append(med)
         all_z.extend(zvals.tolist())
 
@@ -575,8 +584,8 @@ def plot_panel(ax, df_panel, composer_names, title,
 
     if np.isfinite(medianas).any():
         ax.scatter(
-            idxs,1 - medianas,
-            # idxs, medianas,
+            # idxs,1 - medianas,
+            idxs, medianas,
             color="black",
             s=DOT_SIZE,
             zorder=3,
@@ -606,6 +615,7 @@ def plot_panel(ax, df_panel, composer_names, title,
 
     ax.set_title(title, fontsize=TITLE_SIZE)
     ax.grid(axis='y', alpha=0.4)
+    ax.grid(axis='x', alpha=0.4)
     ax.set_xticks(np.arange(1, len(composer_names) + 1))
     ax.tick_params(axis='both', labelsize=FONT_TICKS)
 
@@ -689,12 +699,12 @@ if all_z_global.size > 0:
         pad = 0.08 * zmax
         ylim = (-zmax - pad, zmax + pad)
         for ax in axs.ravel():
-            ax.set_ylim(*ylim)
-            # ax.set_ylim(0.0,1.2)
+            # ax.set_ylim(*ylim)
+            ax.set_ylim(-0.5,1.5)
 
 for ax in axs.ravel():
     ax.set_ylabel(r" ", fontsize=FONT_GENERAL)
-    # ax.set_ylabel(r"$H_{orbit}$", fontsize=FONT_GENERAL)
+    ax.set_ylabel(r"$D_M$", fontsize=FONT_GENERAL)
 
 
 xticks = np.arange(1, len(labels) + 1)
@@ -723,41 +733,135 @@ plt.subplots_adjust(
 plt.margins(x=0.02)
 plt.show()
 
-medianas_dict = {}
+# =========================================================
+# CORRELACIONES ENTRE PANELES SIN MEDIANAS
+# =========================================================
+# Columna usada para correlacionar.
+# Opciones directas: "z", "pe_obs", "mu_null", "sigma_null", "p_value", "p_raw".
+# Opción derivada: "delta_null_obs" = mu_null - pe_obs.
+CORR_VALUE_COL = "delta_null_obs"
 
-for cfg, df_panel in zip(PANEL_CONFIGS, panel_dfs):
-    nombre_panel = cfg["title"]
-    medianas_dict[nombre_panel] = medianas_por_compositor(df_panel, composer_names)
 
-df_medianas = pd.DataFrame(medianas_dict, index=composer_names)
+def panel_values_long(df_panel, panel_name, value_col=CORR_VALUE_COL):
+    """
+    Devuelve una tabla larga con una fila por cálculo individual:
+      composer, serie, panel, valor_corr
+    No agrega por mediana ni por promedio.
+    """
+    df = df_panel.copy()
 
-print("\nMedianas por compositor:")
-print(df_medianas)
+    if value_col == "delta_null_obs":
+        df["valor_corr"] = (
+            pd.to_numeric(df["mu_null"], errors="coerce")
+            - pd.to_numeric(df["pe_obs"], errors="coerce")
+        )
+    else:
+        if value_col not in df.columns:
+            raise ValueError(
+                f"value_col='{value_col}' no está en df_panel. "
+                f"Columnas disponibles: {list(df.columns)}"
+            )
+        df["valor_corr"] = pd.to_numeric(df[value_col], errors="coerce")
 
-print("\nCorrelaciones de Spearman entre series de medianas:")
-for i in range(len(df_medianas.columns)):
-    for j in range(i + 1, len(df_medianas.columns)):
-        c1 = df_medianas.columns[i]
-        c2 = df_medianas.columns[j]
+    df["panel"] = panel_name
+    return df[["composer", "serie", "panel", "valor_corr"]]
 
-        pares = df_medianas[[c1, c2]].dropna()
-        if len(pares) < 2:
-            print(f"{c1} vs {c2}: insuficientes datos")
-            continue
 
-        r, p = spearmanr(pares[c1], pares[c2])
-        print(f"{c1} vs {c2}: r = {r:.6f}, p = {p:.6g}")
+def build_global_values_matrix(panel_dfs, panel_configs, value_col=CORR_VALUE_COL):
+    """
+    Construye una matriz:
+      índice   = (composer, serie)
+      columnas = paneles/medidas
+      valores  = valor_corr de cada cálculo individual
 
-print("\nCorrelaciones de Spearman entre series de medianas:")
-for i in range(len(df_medianas.columns)):
-    for j in range(i + 1, len(df_medianas.columns)):
-        c1 = df_medianas.columns[i]
-        c2 = df_medianas.columns[j]
+    Ésta es la matriz global: usa todas las series de todos los compositores.
+    """
+    frames = []
+    for cfg, df_panel in zip(panel_configs, panel_dfs):
+        frames.append(panel_values_long(df_panel, cfg["title"], value_col=value_col))
 
-        pares = df_medianas[[c1, c2]].dropna()
-        if len(pares) < 2:
-            print(f"{c1} vs {c2}: insuficientes datos")
-            continue
+    df_long = pd.concat(frames, ignore_index=True)
 
-        rho, p = spearmanr(pares[c1], pares[c2])
-        print(f"{c1} vs {c2}: rho = {rho:.6f}, p = {p:.6g}")
+    df_wide = df_long.pivot_table(
+        index=["composer", "serie"],
+        columns="panel",
+        values="valor_corr",
+        aggfunc="first"
+    )
+
+    # Ordenar compositores según composer_names y series con orden natural.
+    composer_order = {c: i for i, c in enumerate(composer_names)}
+    df_wide = df_wide.reset_index()
+    df_wide["_composer_order"] = df_wide["composer"].map(composer_order).fillna(np.inf)
+    df_wide["_serie_order"] = df_wide["serie"].map(lambda s: tuple(natural_key(s)))
+    df_wide = df_wide.sort_values(
+        by=["_composer_order", "_serie_order"],
+        kind="mergesort"
+    )
+    df_wide = df_wide.drop(columns=["_composer_order", "_serie_order"])
+    df_wide = df_wide.set_index(["composer", "serie"])
+
+    return df_wide
+
+
+def print_pairwise_spearman(df_values, titulo):
+    """
+    Imprime correlaciones de Spearman entre columnas de df_values.
+    Cada columna es un panel/medida.
+    Cada fila es un cálculo individual alineado por composer-serie.
+    """
+    print(f"\n{titulo}")
+
+    cols = list(df_values.columns)
+    if len(cols) < 2:
+        print("Insuficientes columnas para correlacionar.")
+        return
+
+    for i in range(len(cols)):
+        for j in range(i + 1, len(cols)):
+            c1 = cols[i]
+            c2 = cols[j]
+
+            pares = df_values[[c1, c2]].replace([np.inf, -np.inf], np.nan).dropna()
+
+            if len(pares) < 2:
+                print(f"{c1} vs {c2}: insuficientes datos")
+                continue
+
+            if pares[c1].nunique() < 2 or pares[c2].nunique() < 2:
+                print(f"{c1} vs {c2}: correlación indefinida, alguna columna es constante")
+                continue
+
+            rho, p = spearmanr(pares[c1], pares[c2])
+            print(f"{c1} vs {c2}: rho = {rho:.6f}, p = {p:.6g}, n = {len(pares)}")
+
+
+# Matriz global: todos los cálculos individuales, sin medianas.
+df_valores_global = build_global_values_matrix(
+    panel_dfs=panel_dfs,
+    panel_configs=PANEL_CONFIGS,
+    value_col=CORR_VALUE_COL
+)
+
+print(f"\nColumna usada para correlaciones: {CORR_VALUE_COL}")
+
+# 1) Correlaciones globales entre paneles/medidas usando todas las series de todos los compositores.
+print_pairwise_spearman(
+    df_valores_global,
+    "Correlaciones de Spearman globales entre paneles, usando valores individuales:"
+)
+
+# 2) Correlaciones por compositor, usando las series individuales de cada compositor.
+# print("\nCorrelaciones de Spearman por compositor, usando valores individuales:")
+# for composer in composer_names:
+#     if composer not in df_valores_global.index.get_level_values("composer"):
+#         continue
+
+#     df_comp = df_valores_global.xs(composer, level="composer")
+
+#     # Evita imprimir compositores con muy pocas series útiles.
+#     if len(df_comp.dropna(how="all")) < 2:
+#         print(f"\n[{composer}] insuficientes series")
+#         continue
+
+#     print_pairwise_spearman(df_comp, f"[{composer}]")

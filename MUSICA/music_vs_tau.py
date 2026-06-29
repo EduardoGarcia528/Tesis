@@ -3,6 +3,7 @@ import mi_libreria as ml
 import matplotlib.pyplot as plt
 from scipy.stats import pearsonr, spearmanr
 import numpy as np
+import automutualinformation as MI
 
 def autocorrelacion_tau(x, tau=1):
     """
@@ -41,7 +42,7 @@ def autocorrelacion_tau(x, tau=1):
 
 import numpy as np
 
-def autoinformacion_mutua_tau(x, tau=1, bins=32, base=2, normalized=False):
+def autoinformacion_mutua_tau(x, tau=1, bins="sturges", base=2, normalized=False):
     """
     Calcula la autoinformación mutua I(x_t ; x_{t+tau}) de una serie.
 
@@ -125,34 +126,44 @@ def autoinformacion_mutua_tau(x, tau=1, bins=32, base=2, normalized=False):
 for num in range(1,24):
     melody = np.load(f"melodies/{str(num)}.npy")
 
-    C,g = ml.gamma_index_rank_ties(melody,6,mu=2)
+    # C,g = ml.gamma_index_rank_ties(melody,6,mu=2)
+    S = []
+    S_null = []
+    for i in range(3,8):
+        # S.append(ml.H_orbit(melody, m=i))
+        # S_null.append(ml.H_orbit(np.random.permutation(melody), m=i))
+        S.append(ml.modified_permutation_entropy(melody, m=i, tau=1,norm=False))
+        S_null.append(ml.modified_permutation_entropy(np.random.permutation(melody), m=i, tau=1,norm=False))
+        # S.append(ml.indice_S_eff_fast(melody, tau=i, delta=False))
+        # S_null.append(ml.indice_S_eff_fast(np.random.permutation(melody), tau=i, delta=False))
 
     H = []
     H_null = []
     auto = []
     auto_null = []
-    tau = range(1,10)
-    for t in range(1,10):
-        dmelody = np.diff(melody)
-        # H.append(ml.indice_S_eff_fast(dmelody, tau=t,delta=False))
+    tau = range(3,8)
+    for t in range(3,8):
+    #     dmelody = np.diff(melody)
+    #     # H.append(ml.indice_S_eff_fast(dmelody, tau=t,delta=False))
         melody_null = np.random.permutation(melody)
-        dmelody_null = np.diff(melody_null)
-        H.append(ml.indice_S_eff_fast(melody, tau=t,delta=False))
-        H_null.append(ml.indice_S_eff_fast(melody_null,tau=t, null = "no",delta=False))
-        a = 1-autoinformacion_mutua_tau(melody,tau=t)
+    #     dmelody_null = np.diff(melody_null)
+    #     H.append(ml.indice_S_eff_fast(melody, tau=t,delta=False))
+    #     H_null.append(ml.indice_S_eff_fast(melody_null,tau=t, null = "no",delta=False))
         auto.append(a)
-        # auto.append(autocorrelacion_tau(melody,tau=t))
-        a_null = 1-autoinformacion_mutua_tau(melody_null, tau=t)
+    #     # auto.append(autocorrelacion_tau(melody,tau=t))
+        a_null = autoinformacion_mutua_tau(melody_null, tau=t)
         auto_null.append(a_null)
-        # auto_null.append(autocorrelacion_tau(np.random.permutation(melody), tau=t))
-    print(np.mean(H), np.mean(H_null))
-    print("spearman: ", spearmanr(auto,H), "pearson: ", pearsonr(auto,H))
-    plt.plot(tau,H, label='J_h',color='red')
-    plt.plot(tau, H_null, label='J shuffle')
-    # plt.ylim(0.4,1)
+    #     # auto_null.append(autocorrelacion_tau(np.random.permutation(melody), tau=t))
+    # print(np.mean(H), np.mean(H_null))
+    # print("spearman: ", spearmanr(auto,H), "pearson: ", pearsonr(auto,H))
+    # plt.plot(tau,H, label='J_h',color='red')
+    # plt.plot(tau, H_null, label='J shuffle')
+    # plt.ylim(-0.5,0.5)
     # plt.plot(tau, 1-g, label='gamma')
     plt.plot(tau, auto_null,'.-', label = 'Autocorrelation null')
     plt.plot(tau, auto, '.-',label='Autocorrelation')
+    # plt.plot(tau, S, '.-', label='S_eff')
+    # plt.plot(tau, np.array(S_null), '.-', label='S_eff null')
     plt.legend()
     plt.title(str(num))
     plt.show()

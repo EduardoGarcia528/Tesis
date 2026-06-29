@@ -71,14 +71,14 @@ def bifurcacion_con_J(
             # serie = np.random.permutation(serie)
             # C, g = ml.gamma_index_rank(serie,max_gamma=1,mu=2) # mantengamos mu = 2. C es un array de [1.0, C[1], ..., C[max_gamma+1]] y g es un array de [gamma_1, gamma_2, ..., gamma_max_gamma]
             # J = g[0]
-            J = ml.indice_S_eff_fast(serie,tau=1,delta=False)
+            J = ml.indice_S_eff_fast(serie,tau=1)
             # _,J = gamma_index_jacobs(serie, max_gamma, mu=mu)
             # _, J = gamma_index_rank(serie, max_gamma, mu=mu)
             J_vals[q] = J_vals[q] + J
             
-            serie = np.random.permutation(serie)
-            # serie = np.mean(ml.iaaft(serie,1,0.01), axis = 0)
-            J_vals_null[q] = J_vals_null[q] + ml.indice_S_eff_fast(serie,tau=1,null="no",delta=False)
+            # serie = np.random.permutation(serie)
+            serie = np.mean(ml.iaaft(serie,1), axis = 0)
+            J_vals_null[q] = J_vals_null[q] + ml.indice_S_eff_fast(serie,tau=1)
     # J_vals = J_vals / 500.0  
         
     # np.save("J_transicion5.npy", np.array([r_vals_J, J_vals]))
@@ -121,8 +121,8 @@ def bifurcacion_con_J(
         # Bifurcación
         ax2 = ax1.twinx()
         ax2.axvline(x=3.569945672, color='gray', linestyle='--', label=r'$r_\infty = 3.56994...$')
-        ax2.plot(r_vals_J, J_vals, color='red',marker='.', lw=0.5, ms = 2.0,label=r'$J_{\theta}$')
-        ax2.plot(r_vals_J, J_vals_null, color='blue',marker='.', lw=0.5, ms = 2.0,label=r'$J_{\theta ,null}$')
+        ax2.plot(r_vals_J, J_vals, color='red',marker='.', lw=0.5, ms = 2.0,label=r'$S_{\theta}$')
+        ax2.plot(r_vals_J, J_vals_null, color='blue',marker='.', lw=0.5, ms = 2.0,label=r'$S_\theta^{(\mathrm{IAAFT})}$')
         # ax2.plot(r_vals_J, Z['mu_null']-Z['S_obs'], color='black',marker='.', lw=0.5, ms = 2.0,label=r'$J_{\theta ,null}$')
         # ax2.invert_yaxis()
        # U = np.log(longitud_serie-(mu-1)*max_gamma)/np.log(math.factorial(mu))
