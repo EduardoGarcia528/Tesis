@@ -68,10 +68,10 @@ PANEL_CONFIGS = [
     # {"measure":"Cd_rank","D": 3, "tau": 2,"type_null":"shuffle", "title": r"$_m C_3^{(R)}(\mu=2)$ (notes,shuffle)"},
     # {"measure":"Cd_rank","D": 4, "tau": 2,"type_null":"shuffle", "title": r"$_m C_4^{(R)}(\mu=2)$ (notes,shuffle)"},
     # {"measure":"Cd_rank","D": 5, "tau": 2,"type_null":"shuffle", "title": r"$_m C_5^{(R)}(\mu=2)$ (notes,shuffle)"},
-    {"measure":"mPE","D": 3, "tau": 1,"type_null":"shuffle", "title": fr"mPE (notes,shuffle): $m=3,\ \tau=1$"},
-    {"measure":"mPE_interval","D": 3, "tau": 1,"type_null":"shuffle", "title": fr"mPE (intervals,shuffle): $m=3,\ \tau=1$"},
-    {"measure":"mPE","D": 3, "tau": 1,"type_null":"iaaft", "title": fr"mPE (notes,iaaft): $m=3,\ \tau=1$"},
-    {"measure":"mPE_interval","D": 3, "tau": 1,"type_null":"iaaft", "title": fr"mPE (intervals,iaaft): $m=3,\ \tau=1$"},
+    {"measure":"mPE","D": 5, "tau": 1,"type_null":"shuffle", "title": fr"mPE (notes,shuffle): $m=5,\ \tau=1$"},
+    {"measure":"mPE_interval","D": 5, "tau": 1,"type_null":"shuffle", "title": fr"mPE (intervals,shuffle): $m=5,\ \tau=1$"},
+    {"measure":"mPE","D": 5, "tau": 1,"type_null":"iaaft", "title": fr"mPE (notes,iaaft): $m=5,\ \tau=1$"},
+    {"measure":"mPE_interval","D": 5, "tau": 1,"type_null":"iaaft", "title": fr"mPE (intervals,iaaft): $m=5,\ \tau=1$"},
     # {"measure":"beta","D": 5, "tau": 1,"type_null":"iaaft", "title": fr"beta (notes,iaaft)"},
 ] 
 
