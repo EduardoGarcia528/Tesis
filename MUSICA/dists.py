@@ -56,22 +56,25 @@ PANEL_CONFIGS = [
     # {"measure":"H_orbit","D": 5, "tau": 5,"type_null":"iaaft", "title": r"$H_{orbit}(m=5)$ (notes,iaaft)"},
     # {"measure":"H_orbit","D": 3, "tau": 5,"type_null":"shuffle", "title": r"$H_{orbit}(m=3)$ (notes,shuffle)"},
     # {"measure":"H_orbit","D": 3, "tau": 5,"type_null":"iaaft", "title": r"$H_{orbit}(m=3)$ (notes,iaaft)"},
-    # {"measure":"H_tau","D": 2, "tau": 1,"type_null":"shuffle", "title": r"$S_{\theta}(\tau=1)$ (notes,shuffle)"},
-    # {"measure":"H_tau","D": 2, "tau": 1,"type_null":"iaaft", "title": r"$S_{\theta}(\tau=1)$ (notes,iaaft)"},
-    # {"measure":"H_tau","D": 2, "tau": 2,"type_null":"shuffle", "title": r"$S_{\theta}(\tau=2)$ (notes,shuffle)"},
-    # {"measure":"H_tau","D": 2, "tau": 2,"type_null":"iaaft", "title": r"$S_{\theta}(\tau=2)$ (notes,iaaft)"},
+    # {"measure":"H_tau_intervalabs","D": 2, "tau": 1,"type_null":"shuffle", "title": r"$S_{\theta}(\tau=1)$ (abs(intervals),shuffle)"},
+    # {"measure":"H_tau_intervalabs","D": 2, "tau": 1,"type_null":"iaaft", "title": r"$S_{\theta}(\tau=1)$ (abs(intervals),iaaft)"},
+    # {"measure":"H_tau_intervalabs","D": 2, "tau": 2,"type_null":"shuffle", "title": r"$S_{\theta}(\tau=2)$ (abs(intervals),shuffle)"},
+    # {"measure":"H_tau_intervalabs","D": 2, "tau": 2,"type_null":"iaaft", "title": r"$S_{\theta}(\tau=2)$ (abs(intervals),iaaft)"},
+    # {"measure":"gamma_rank_ties","D": 1, "tau": 2,"type_null":"shuffle", "title": r"$_m\gamma_1^{(R)}(\mu=2)$ (notes,shuffle)"},
     # {"measure":"gamma_rank_ties","D": 2, "tau": 2,"type_null":"shuffle", "title": r"$_m\gamma_2^{(R)}(\mu=2)$ (notes,shuffle)"},
     # {"measure":"gamma_rank_ties","D": 3, "tau": 2,"type_null":"shuffle", "title": r"$_m\gamma_3^{(R)}(\mu=2)$ (notes,shuffle)"},
     # {"measure":"gamma_rank_ties","D": 4, "tau": 2,"type_null":"shuffle", "title": r"$_m\gamma_4^{(R)}(\mu=2)$ (notes,shuffle)"},
     # {"measure":"Cd_rank","D": 2, "tau": 2,"type_null":"shuffle", "title": r"$_m C_2^{(R)}(\mu=2)$ (notes,shuffle)"},
-    # {"measure":"Cd_rank","D": 2, "tau": 2,"type_null":"iaaft", "title": r"$_m C_2^{(R)}(\mu=2)$ (notes,iaaft)"},
+    # {"measure":"Cd_rank","D": 2, "tau": 2,"type_null":"shuffle", "title": r"$_m C_2^{(R)}(\mu=2)$ (notes,shuffle)"},
     # {"measure":"Cd_rank","D": 3, "tau": 2,"type_null":"shuffle", "title": r"$_m C_3^{(R)}(\mu=2)$ (notes,shuffle)"},
     # {"measure":"Cd_rank","D": 4, "tau": 2,"type_null":"shuffle", "title": r"$_m C_4^{(R)}(\mu=2)$ (notes,shuffle)"},
     # {"measure":"Cd_rank","D": 5, "tau": 2,"type_null":"shuffle", "title": r"$_m C_5^{(R)}(\mu=2)$ (notes,shuffle)"},
-    {"measure":"mPE","D": 5, "tau": 1,"type_null":"shuffle", "title": fr"mPE (notes,shuffle): $m=5,\ \tau=1$"},
+    # {"measure":"mPE","D": 5, "tau": 1,"type_null":"shuffle", "title": fr"mPE (notes,shuffle): $m=5,\ \tau=1$"},
     {"measure":"mPE_interval","D": 5, "tau": 1,"type_null":"shuffle", "title": fr"mPE (intervals,shuffle): $m=5,\ \tau=1$"},
-    {"measure":"mPE","D": 5, "tau": 1,"type_null":"iaaft", "title": fr"mPE (notes,iaaft): $m=5,\ \tau=1$"},
+    {"measure":"mPE_intervalabs","D": 5, "tau": 1,"type_null":"shuffle", "title": fr"mPE (absintervals,shuffle): $m=5,\ \tau=1$"},
+    # {"measure":"mPE","D": 5, "tau": 1,"type_null":"iaaft", "title": fr"mPE (notes,iaaft): $m=5,\ \tau=1$"},
     {"measure":"mPE_interval","D": 5, "tau": 1,"type_null":"iaaft", "title": fr"mPE (intervals,iaaft): $m=5,\ \tau=1$"},
+    {"measure":"mPE_intervalabs","D": 5, "tau": 1,"type_null":"iaaft", "title": fr"mPE (absintervals,iaaft): $m=5,\ \tau=1$"},
     # {"measure":"beta","D": 5, "tau": 1,"type_null":"iaaft", "title": fr"beta (notes,iaaft)"},
 ] 
 
@@ -229,51 +232,41 @@ def pe_stats_for_series(
         fafaeg = False
     else:
         fafaeg = True
+    if "interval" in measure:
+        x = np.diff(x)
+        if "abs" in measure:
+
+
+
+            x = np.abs(x)
     if "PE" in measure:
-        if "interval" in measure:
-            pe_obs = ml.modified_permutation_entropy(np.diff(x), m=D, tau=tau,norm=fafaeg)
-        else:
-            pe_obs = ml.modified_permutation_entropy(x, m=D, tau=tau, norm=fafaeg)
+        pe_obs = ml.modified_permutation_entropy(x, m=D, tau=tau, norm=fafaeg)
     elif "beta" in measure:
         pe_obs = ml.graficar_espectro_beta(x, plot_fit = False)
     elif "H_tau" in measure:
-        if "interval" in measure:
-            pe_obs = ml.indice_S_eff_fast(np.diff(x), None, tau=tau)
-        else:
-            pe_obs = ml.indice_S_eff_fast(x, None, tau=tau,delta=False)
+        pe_obs = ml.indice_S_eff_fast(x, None, tau=tau,delta=False)
     elif "H_orbit" in measure:
         pe_obs = ml.H_orbit(x, m=D)
         if "interval" in measure:
             raise ValueError("H_orbit no tiene sentido con intervalos.")
     elif "Cd" in measure:
-        if "interval" in measure:
-            # angulos = angulos_alpha(np.diff(x),False)
-            C,_ = ml.gamma_index_rank_ties(np.diff(x),max_gamma=D,mu=tau)
-            pe_obs = 1-C[-1]
-        else:
-            # angulos = angulos_alpha(x,False)
-            C,_ = ml.gamma_index_rank_ties(x,max_gamma=D,mu=tau)
-            pe_obs = 1-C[-1]
+        # angulos = angulos_alpha(x,False)
+        C,_ = ml.gamma_index_rank_ties(x,max_gamma=D,mu=tau)
+        pe_obs = 1-C[-1]
     elif "gamma" in measure:
-        if "interval" in measure:
-            # angulos = angulos_alpha(np.diff(x),False)
-            _,C = ml.gamma_index_rank_ties(np.diff(x),max_gamma=D,mu=tau)
-            pe_obs = 1-C[-1]
-        else:
-            # angulos = angulos_alpha(x,False)
-            _,C = ml.gamma_index_rank_ties(x,max_gamma=D,mu=tau)
-            pe_obs = 1-C[-1]
+        # angulos = angulos_alpha(x,False)
+        _,C = ml.gamma_index_rank_ties(x,max_gamma=D,mu=tau)
+        pe_obs = 1-C[-1]
     elif "J_tau" in measure:
-        if "interval" in measure:
-            x_input = np.diff(x)
-        else:
-            x_input = x
-        pe_obs = ml.indice_J(x_input, None, tau=tau)
+        pe_obs = ml.indice_J(x, None, tau=tau)
     pe_surrogates = np.empty(n_surrogates, dtype=float)
     if type_null == "shuffle":
         for k in range(n_surrogates):
             if "interval" in measure:
-                x_surr = rng.permutation(np.diff(x))
+                x_surr = rng.permutation(x)
+                x_surr = np.diff(x_surr)
+                if "abs" in measure:
+                    x_surr = np.abs(x_surr)
             else:
                 x_surr = rng.permutation(x)
             if "PE" in measure:
@@ -294,7 +287,10 @@ def pe_stats_for_series(
             pe_surrogates[k] = pe_surr
     if type_null == "iaaft":
         if "interval" in measure:    
-            x_surr = ml.iaaft(np.diff(x),n_surrogates,tol_pc=1)
+            x_surr = ml.iaaft(x,n_surrogates,tol_pc=1)
+            x_surr = np.diff(x_surr,axis=1)
+            if "abs" in measure:
+                x_surr = np.abs(x_surr)
         else:
             x_surr = ml.iaaft(x,n_surrogates, tol_pc=1)
         for k in range(n_surrogates):
@@ -517,15 +513,15 @@ def plot_panel(ax, df_panel, composer_names, title,
             medianas.append(np.nan)
             continue
 
-        zvals = sub["mu_null"].to_numpy(dtype=float) - sub["pe_obs"].to_numpy(dtype=float)
-        # zvals = sub["z"].to_numpy(dtype=float)
+        # zvals = sub["mu_null"].to_numpy(dtype=float) - sub["pe_obs"].to_numpy(dtype=float)
+        zvals = sub["z"].to_numpy(dtype=float)
         pe_obs_vals = sub["pe_obs"].to_numpy(dtype=float)
         mu_null_vals = sub["mu_null"].to_numpy(dtype=float)
         pvals = sub["p_value"].to_numpy(dtype=float)
         praws = sub["p_raw"].to_numpy(dtype=float)
 
         finite_mask = np.isfinite(zvals)
-        zvals = zvals[finite_mask]
+        zvals = -zvals[finite_mask]
         pvals = pvals[finite_mask]
         mu_null_vals = mu_null_vals[finite_mask]
         pe_obs_vals = pe_obs_vals[finite_mask]
@@ -544,7 +540,7 @@ def plot_panel(ax, df_panel, composer_names, title,
         x = np.random.normal(i, JITTER_STD, size=zvals.size)
 
         ax.scatter(
-            # x, 1 - zvals,
+            # x, zvals,
             x, mu_null_vals- pe_obs_vals,
             # x, mu_null_vals,
             s=DOT_SIZE,
