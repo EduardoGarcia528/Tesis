@@ -34,7 +34,7 @@ TOP_MARGIN = 0.90
 # =========================================================
 MEASURE = "mPE"
 TYPE_NULL = "shuffle"
-N_SURROGATES = 800
+N_SURROGATES = 200
 RANDOM_STATE = 12345
 ALTERNATIVE = "less"   # 'two-sided', 'greater', 'less'
 NORMALIZE = True
@@ -69,12 +69,14 @@ PANEL_CONFIGS = [
     # {"measure":"Cd_rank","D": 3, "tau": 2,"type_null":"shuffle", "title": r"$_m C_3^{(R)}(\mu=2)$ (notes,shuffle)"},
     # {"measure":"Cd_rank","D": 4, "tau": 2,"type_null":"shuffle", "title": r"$_m C_4^{(R)}(\mu=2)$ (notes,shuffle)"},
     # {"measure":"Cd_rank","D": 5, "tau": 2,"type_null":"shuffle", "title": r"$_m C_5^{(R)}(\mu=2)$ (notes,shuffle)"},
-    # {"measure":"mPE","D": 5, "tau": 1,"type_null":"shuffle", "title": fr"mPE (notes,shuffle): $m=5,\ \tau=1$"},
+    # {"measure":"mPE_median","D": 5, "tau": 1,"type_null":"shuffle", "title": fr"mPE (notes,shuffle): $m=5,\ \tau=1$"},
     {"measure":"mPE_interval","D": 5, "tau": 1,"type_null":"shuffle", "title": fr"mPE (intervals,shuffle): $m=5,\ \tau=1$"},
-    {"measure":"mPE_intervalabs","D": 5, "tau": 1,"type_null":"shuffle", "title": fr"mPE (absintervals,shuffle): $m=5,\ \tau=1$"},
-    # {"measure":"mPE","D": 5, "tau": 1,"type_null":"iaaft", "title": fr"mPE (notes,iaaft): $m=5,\ \tau=1$"},
+    # {"measure":"mPE_intervalabs","D": 5, "tau": 1,"type_null":"shuffle", "title": fr"mPE (absintervals,shuffle): $m=5,\ \tau=1$"},
+    {"measure":"mPE","D": 5, "tau": 1,"type_null":"iaaft", "title": fr"mPE (notes,iaaft): $m=5,\ \tau=1$"},
+    {"measure":"Cd_intervalabs_decay","D": 7, "tau": 2,"type_null":"shuffle", "title": r"$C_d = Ae^{-\lambda d}, \lambda$ (absintervals,shuffle)"},
+    {"measure":"Cd_interval_decay","D": 7, "tau": 2,"type_null":"shuffle", "title": r"$C_d = Ae^{-\lambda d}, \lambda$ (intervals,shuffle)"},
     {"measure":"mPE_interval","D": 5, "tau": 1,"type_null":"iaaft", "title": fr"mPE (intervals,iaaft): $m=5,\ \tau=1$"},
-    {"measure":"mPE_intervalabs","D": 5, "tau": 1,"type_null":"iaaft", "title": fr"mPE (absintervals,iaaft): $m=5,\ \tau=1$"},
+    # {"measure":"mPE_intervalabs","D": 5, "tau": 1,"type_null":"iaaft", "title": fr"mPE (absintervals,iaaft): $m=5,\ \tau=1$"},
     # {"measure":"beta","D": 5, "tau": 1,"type_null":"iaaft", "title": fr"beta (notes,iaaft)"},
 ] 
 
@@ -228,53 +230,61 @@ def pe_stats_for_series(
     """
     rng = np.random.default_rng(random_state)
     x = np.asarray(x, dtype=float)
+    x_obs = x.copy()
+    if "mod12" in measure:
+        x_obs = x_obs % 12
     if "noNorm" in measure:
         fafaeg = False
     else:
         fafaeg = True
     if "interval" in measure:
-        x = np.diff(x)
+        x_obs = np.diff(x_obs)
         if "abs" in measure:
+            x_obs = np.abs(x_obs)
 
-
-
-            x = np.abs(x)
     if "PE" in measure:
-        pe_obs = ml.modified_permutation_entropy(x, m=D, tau=tau, norm=fafaeg)
+        pe_obs = ml.modified_permutation_entropy(x_obs, m=D, tau=tau, norm=fafaeg)
     elif "beta" in measure:
-        pe_obs = ml.graficar_espectro_beta(x, plot_fit = False)
+        pe_obs = ml.graficar_espectro_beta(x_obs, plot_fit = False)
     elif "H_tau" in measure:
-        pe_obs = ml.indice_S_eff_fast(x, None, tau=tau,delta=False)
+        pe_obs = ml.indice_S_eff_fast(x_obs, None, tau=tau,delta=False)
     elif "H_orbit" in measure:
-        pe_obs = ml.H_orbit(x, m=D)
+        pe_obs = ml.H_orbit(x_obs, m=D)
         if "interval" in measure:
             raise ValueError("H_orbit no tiene sentido con intervalos.")
     elif "Cd" in measure:
         # angulos = angulos_alpha(x,False)
-        C,_ = ml.gamma_index_rank_ties(x,max_gamma=D,mu=tau)
+        C,_ = ml.gamma_index_rank_ties(x_obs,max_gamma=D,mu=tau)
         pe_obs = 1-C[-1]
+        if "decay" in measure:
+            pe_obs = ml.exp_decay(C[1:])
     elif "gamma" in measure:
         # angulos = angulos_alpha(x,False)
-        _,C = ml.gamma_index_rank_ties(x,max_gamma=D,mu=tau)
+        _,C = ml.gamma_index_rank_ties(x_obs,max_gamma=D,mu=tau)
         pe_obs = 1-C[-1]
     elif "J_tau" in measure:
-        pe_obs = ml.indice_J(x, None, tau=tau)
+        pe_obs = ml.indice_J(x_obs, None, tau=tau)
     pe_surrogates = np.empty(n_surrogates, dtype=float)
     if type_null == "shuffle":
         for k in range(n_surrogates):
+            x_surr = x.copy()
+            if "mod12" in measure:
+                x_surr = x_surr % 12
             if "interval" in measure:
-                x_surr = rng.permutation(x)
-                x_surr = np.diff(x_surr)
+                x_surr = rng.permutation(np.diff(x_surr))
+                # x_surr = np.diff(x_surr)
                 if "abs" in measure:
                     x_surr = np.abs(x_surr)
             else:
-                x_surr = rng.permutation(x)
+                x_surr = rng.permutation(x_surr)
             if "PE" in measure:
                 pe_surr = ml.modified_permutation_entropy(x_surr, m=D, tau=tau, norm=fafaeg)
             elif "Cd" in measure:
                 # angulos_surr = angulos_alpha(x_surr,False)
                 C,_ = ml.gamma_index_rank_ties(x_surr,max_gamma=D,mu=tau)
                 pe_surr = 1-C[-1]
+                if "decay" in measure:
+                    pe_surr = ml.exp_decay(C[1:])
             elif "H_tau" in measure:
                 pe_surr = ml.indice_S_eff_fast(x_surr, None, tau=tau,null="no",delta=False)
             elif "H_orbit" in measure:
@@ -314,7 +324,7 @@ def pe_stats_for_series(
 
 
 
-    mu_null = np.mean(pe_surrogates)
+    mu_null = np.median(pe_surrogates)
     sigma_null = np.std(pe_surrogates, ddof=1)
 
     if sigma_null == 0:
@@ -395,6 +405,7 @@ def compute_panel_dataframe(
         series_names = sorted(composers[composer].keys(), key=natural_key)
 
         for sname in series_names:
+            # print(sname)
             x = np.asarray(composers[composer][sname], dtype=float)
 
             if seed_base is None:
@@ -541,8 +552,9 @@ def plot_panel(ax, df_panel, composer_names, title,
 
         ax.scatter(
             # x, zvals,
-            x, mu_null_vals- pe_obs_vals,
             # x, mu_null_vals,
+            x, pe_obs_vals/mu_null_vals,
+            # x, pe_obs_vals,
             s=DOT_SIZE,
             alpha=EDGE_ALPHA,
             facecolors="none",
@@ -551,8 +563,9 @@ def plot_panel(ax, df_panel, composer_names, title,
         )
 
         # med = np.median(zvals)
-        # med = np.median(pe_obs_vals)
-        med = np.median(mu_null_vals-pe_obs_vals)
+        # med = np.median(mu_null_vals)
+        med = np.median(pe_obs_vals/mu_null_vals)
+        # med = np.median(mu_null_vals-pe_obs_vals)
         medianas.append(med)
         all_z.extend(zvals.tolist())
 
@@ -696,11 +709,12 @@ if all_z_global.size > 0:
         ylim = (-zmax - pad, zmax + pad)
         for ax in axs.ravel():
             # ax.set_ylim(*ylim)
-            ax.set_ylim(-0.5,1.5)
+            ax.set_ylim(0.0,1.0)
 
 for ax in axs.ravel():
     ax.set_ylabel(r" ", fontsize=FONT_GENERAL)
-    ax.set_ylabel(r"$D_M$", fontsize=FONT_GENERAL)
+    ax.set_ylabel(r"$\lambda_{obs}/\lambda_{null}$", fontsize=FONT_GENERAL)
+    # ax.set_ylabel(r"$Z_{score}$", fontsize=FONT_GENERAL)
 
 
 xticks = np.arange(1, len(labels) + 1)

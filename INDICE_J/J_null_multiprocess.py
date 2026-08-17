@@ -4,8 +4,11 @@ import multiprocessing as mp
 import mi_libreria as ml
 
 def caminata_aleatoria(N):
-    ff1 = np.random.uniform(-np.pi, np.pi, N)
-    ff2 = np.random.uniform(-np.pi, np.pi, N)
+    x1, y1 = np.random.uniform(0, 1, N), np.random.uniform(0, 1, N)
+    # ff1 = np.random.uniform(-np.pi, np.pi, N)
+    # ff2 = np.random.uniform(-np.pi, np.pi, N)
+    ff1 = np.fft.rfft(x1)[1:]
+    ff2 = ff1[:-1]
     n = len(ff1) - 1
     vectores = np.empty((n,2)) #(n,2)
     for i in range(n):
@@ -17,9 +20,9 @@ def caminata_aleatoria(N):
 
 def main(X):
     x1 = np.random.uniform(0, 1, X)
-    y1 = np.random.uniform(0, 1, X)
+    # y1 = np.random.uniform(0, 1, X)
     # angulos = ml.angulos_alpha(x1,y1)
-    J = ml.indice_J(x1, y1)
+    J = ml.entropia_J(x1, None)
     # J, _ = ml.gamma_index_circular(angulos,5,3)
     return J    
 
