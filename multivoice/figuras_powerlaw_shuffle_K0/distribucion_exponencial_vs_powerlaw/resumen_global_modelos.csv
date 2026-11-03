@@ -1,0 +1,2 @@
+n_total,n_exponential,n_powerlaw,fraction_exponential,fraction_powerlaw,percent_powerlaw,powerlaw_ci95_low,powerlaw_ci95_high,mean_delta_rmse,median_delta_rmse,n_composers,n_periods,n_voices,n_movements,n_works
+464,32,432,0.06896551724137931,0.9310344827586207,93.10344827586206,0.9042627208096988,0.9507277732099958,0.2775186236461225,0.31366670287638504,8,5,4,116,29

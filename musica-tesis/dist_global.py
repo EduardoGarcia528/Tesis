@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 # =========================
 # CONFIG
 # =========================
-CACHE_DIR = "cache_pe_zscore"   # carpeta donde guardaste los .pkl
+CACHE_DIR = "cache_pe_score"   # carpeta donde guardaste los .pkl
 
 FONT_GENERAL = 12
 FONT_TICKS = 11
@@ -47,7 +47,7 @@ def load_z_values(pkl_path):
         raise ValueError(f"El archivo no contiene columna 'z': {pkl_path}")
     z = df["z"].to_numpy(dtype=float)
     z = z[np.isfinite(z)]
-    return z
+    return -z
 
 def choose_grid(n_panels):
     """
@@ -79,6 +79,7 @@ for ax, fname in zip(axs, pkls):
     z = load_z_values(pkl_path)
 
     title = parse_panel_title_from_filename(fname)
+    # title = r"Entropia pemutacional modificada (mPE) - Distribución de Z-score (m=4, $\tau=2$)"
     ax.set_title(title, fontsize=TITLE_SIZE)
 
     if z.size == 0:
@@ -92,8 +93,8 @@ for ax, fname in zip(axs, pkls):
 
     ax.hist(z, bins=BINS, density=DENSITY, alpha=0.9)
     ax.set_xlim(min(z) - 0.5, max(z) + 0.5)
-    ax.axvline(0.0, linestyle="--", linewidth=LINE_WIDTH, color="black", alpha=0.9)
-    ax.axvline(med, linestyle="-", linewidth=LINE_WIDTH, color="black", alpha=0.9)
+    ax.axvline(1.0, linestyle="--", linewidth=LINE_WIDTH, color="black", alpha=0.9)
+    # ax.axvline(med, linestyle="-", linewidth=LINE_WIDTH, color="black", alpha=0.9)
 
     ax.grid(alpha=0.3)
     ax.tick_params(axis="both", labelsize=FONT_TICKS)
@@ -103,7 +104,7 @@ for ax in axs[n:]:
     ax.axis("off")
 
 # Etiquetas globales
-fig.text(0.5, 0.02, "Z-score (PE)", ha="center", fontsize=FONT_GENERAL)
+fig.text(0.5, 0.02, "Z-score (mPE)", ha="center", fontsize=FONT_GENERAL)
 fig.text(0.02, 0.5, "Densidad" if DENSITY else "Conteo", va="center", rotation="vertical",
          fontsize=FONT_GENERAL)
 

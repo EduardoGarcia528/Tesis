@@ -10,4 +10,7 @@ from .musica import *
 from .PE import *
 from .systems import * 
 from .S_eff import * 
+from .beta import *
 from .music_group import *
+from .funciones_trayectorias_fases import *
+from .indice_no_linealidad_mdfa import *

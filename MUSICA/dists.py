@@ -73,7 +73,7 @@ PANEL_CONFIGS = [
     {"measure":"mPE_interval","D": 5, "tau": 1,"type_null":"shuffle", "title": fr"mPE (intervals,shuffle): $m=5,\ \tau=1$"},
     # {"measure":"mPE_intervalabs","D": 5, "tau": 1,"type_null":"shuffle", "title": fr"mPE (absintervals,shuffle): $m=5,\ \tau=1$"},
     {"measure":"mPE","D": 5, "tau": 1,"type_null":"iaaft", "title": fr"mPE (notes,iaaft): $m=5,\ \tau=1$"},
-    {"measure":"Cd_intervalabs_decay","D": 7, "tau": 2,"type_null":"shuffle", "title": r"$C_d = Ae^{-\lambda d}, \lambda$ (absintervals,shuffle)"},
+    {"measure":"Cd_decay","D": 7, "tau": 2,"type_null":"shuffle", "title": r"$C_d = Ae^{-\lambda d}, \lambda$ (absintervals,shuffle)"},
     {"measure":"Cd_interval_decay","D": 7, "tau": 2,"type_null":"shuffle", "title": r"$C_d = Ae^{-\lambda d}, \lambda$ (intervals,shuffle)"},
     {"measure":"mPE_interval","D": 5, "tau": 1,"type_null":"iaaft", "title": fr"mPE (intervals,iaaft): $m=5,\ \tau=1$"},
     # {"measure":"mPE_intervalabs","D": 5, "tau": 1,"type_null":"iaaft", "title": fr"mPE (absintervals,iaaft): $m=5,\ \tau=1$"},

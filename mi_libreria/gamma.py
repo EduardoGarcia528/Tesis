@@ -124,7 +124,7 @@ def gamma_index_rank(data, max_gamma, mu=5.0):
     N = len(data)
 
     max_d = max_gamma + 1
-    K = int(np.floor(N / (2.0 * mu)))
+    K = int(np.floor(N / (mu)))
 
     # Evitar K negativo o degenerado
     if K < 0:
@@ -238,10 +238,13 @@ def ranks_with_ties(x):
 
 
 @njit
-def correlation_integrals_rank_ties(x, max_d, K):
+def correlation_integrals_rank_ties(x, max_d, K, usar_rangos=True):
     """
-    Integrales de correlación por rangos C_d^(R), tratando empates
-    con el mismo rango.
+    Calcula las integrales de correlación C_d con una tolerancia K.
+
+    Si usar_rangos=True (predeterminado), compara rangos densos: los
+    valores repetidos reciben el mismo rango. Si usar_rangos=False,
+    compara directamente los valores originales de x.
 
     Parámetros
     ----------
@@ -249,10 +252,13 @@ def correlation_integrals_rank_ties(x, max_d, K):
         Serie de tiempo.
     max_d : int
         Máxima dimensión d requerida en C[d].
-    K : int
-        Ventana de cercanía en rangos.
+    K : int o float
+        Tolerancia de cercanía: unidades de rango si usar_rangos=True,
+        unidades de los datos originales si usar_rangos=False.
+    usar_rangos : bool, opcional
+        True para rangos con empates, False para la serie original.
 
-    Regresa
+    Retorna
     -------
     C : ndarray
         C[0], C[1], ..., C[max_d], con C[0] = 1.
@@ -268,7 +274,11 @@ def correlation_integrals_rank_ties(x, max_d, K):
             C[d] = np.nan
         return C
 
-    ord_ = ranks_with_ties(x)
+    # Convertimos ambos modos a float64 para usar el mismo bucle JIT.
+    if usar_rangos:
+        serie = ranks_with_ties(x).astype(np.float64)
+    else:
+        serie = x.astype(np.float64)
 
     Ci = np.zeros(max_d + 1, dtype=np.int64)
 
@@ -276,7 +286,7 @@ def correlation_integrals_rank_ties(x, max_d, K):
     for i in range(Nv):
         for j in range(i + 1, Nv):
             k = 0
-            while k < max_d and abs(ord_[i + k] - ord_[j + k]) <= K:
+            while k < max_d and abs(serie[i + k] - serie[j + k]) <= K:
                 k += 1
                 Ci[k] += 1
 
@@ -287,21 +297,108 @@ def correlation_integrals_rank_ties(x, max_d, K):
 
     return C
 
-def gamma_index_rank_ties(data, max_gamma, mu=5.0):
-    data = np.asarray(data, dtype=np.float64)
-    ord_ = ranks_with_ties(data)
-    n_unique = int(ord_.max()) + 1 if len(ord_) > 0 else 0
 
+def gamma_index_rank_ties(data, max_gamma, mu=4.0, K=None, usar_rangos=True):
+    """
+    Calcula C_d y gamma_j con o sin transformación previa a rangos.
+
+    Si K=None, la tolerancia se calcula de acuerdo al modo:
+    - usar_rangos=True: K = floor(n_unique / mu) (comportamiento original).
+    - usar_rangos=False: K = std(data) / mu (en unidades de data).
+
+    Si K se especifica explícitamente, se utiliza tal cual en ambos modos.
+
+    Retorna
+    -------
+    C : ndarray
+        Integrales de correlación C[0], ..., C[max_gamma+1].
+    g : ndarray
+        Índices gamma_1, ..., gamma_max_gamma.
+    """
+    data = np.asarray(data, dtype=np.float64)
     max_d = max_gamma + 1
-    K = int(np.floor(n_unique / (2.0 * mu)))
+
+    if K is None:
+        if mu <= 0:
+            raise ValueError("mu debe ser positivo cuando K=None.")
+        if usar_rangos:
+            ord_ = ranks_with_ties(data)
+            n_unique = int(ord_.max()) + 1 if len(ord_) > 0 else 0
+            K = int(np.floor(n_unique / mu))
+        else:
+            K = float(np.std(data) / mu)
+
     if K < 0:
         K = 0
-    K = mu
 
-    C = correlation_integrals_rank_ties(data, max_d, K)
+    C = correlation_integrals_rank_ties(data, max_d, K, usar_rangos=usar_rangos)
     g = np.empty(max_gamma, dtype=np.float64)
 
     for j in range(1, max_gamma + 1):
         g[j - 1] = gamma(C, j)
 
     return C, g
+
+
+import numpy as np
+from scipy.optimize import curve_fit
+
+
+def exp_decay(arr):
+    """
+    Ajusta arr al modelo:
+
+        y(d) = A * exp(-lambda * d)
+
+    Parámetros
+    ----------
+    arr : array_like
+        Serie unidimensional con valores positivos.
+
+    Retorna
+    -------
+    lambda_decay : float
+        Constante de decaimiento exponencial.
+        Un valor mayor implica un decaimiento más rápido.
+    """
+    y = np.asarray(arr, dtype=float)
+
+    if y.ndim != 1:
+        raise ValueError("arr debe ser un array unidimensional.")
+
+    if len(y) < 2:
+        raise ValueError("Se necesitan al menos dos elementos.")
+
+    if not np.all(np.isfinite(y)):
+        raise ValueError("arr contiene valores NaN o infinitos.")
+
+    if np.any(y <= 0):
+        raise ValueError(
+            "Todos los valores deben ser positivos para el ajuste exponencial."
+        )
+
+    # Si arr = [C_1, C_2, ..., C_n], entonces d = 1, 2, ..., n
+    d = np.arange(1, len(y) + 1, dtype=float)
+
+    def modelo_exponencial(d, A, lambda_decay):
+        return A * np.exp(-lambda_decay * d)
+
+    # Estimación inicial mediante el ajuste:
+    # log(y) = log(A) - lambda*d
+    pendiente, intercepto = np.polyfit(d, np.log(y), 1)
+
+    lambda_inicial = max(-pendiente, 1e-12)
+    A_inicial = np.exp(intercepto)
+
+    parametros, _ = curve_fit(
+        modelo_exponencial,
+        d,
+        y,
+        p0=(A_inicial, lambda_inicial),
+        bounds=([0.0, 0.0], [np.inf, np.inf]),
+        maxfev=10000
+    )
+
+    _, lambda_decay = parametros
+
+    return float(lambda_decay)

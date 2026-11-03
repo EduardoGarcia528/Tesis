@@ -1,13 +1,16 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+import mi_libreria as ml
 
+A = [2,5,-3,5,-3,-1,6,-4,-5,-1,-1,2,5,1]
+print(ml.gamma_index_rank_ties(A,2,K=5))
 # ============================================================
 # Configuración
 # ============================================================
-
-archivo = "figuras_Cd_shuffle_absinterv_exponencial_shuffle/resumen_ajuste_exponencial_Cd_observado_y_shuffle.csv"
-
+archivo = "figuras_C1null_iaaft_intervals/resumen_ajuste_exponencial_Cd_observado_y_shuffle.csv"
+# archivo = "figuras_C1null_shuffle_intervals/resumen_ajuste_exponencial_Cd_observado_y_shuffle.csv"
+# archivo = "figuras_Cd_shuffle_intervals_K2/resumen_ajuste_exponencial_Cd_observado_y_shuffle.csv"
 orden_voces = ["vln I", "vln II", "viola", "cello"]
 
 nombres_voces = {

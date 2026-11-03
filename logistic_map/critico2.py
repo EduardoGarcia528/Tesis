@@ -113,7 +113,7 @@ def ajuste_lineal_doble(x, y, min_puntos=5, graficar=True):
 
 Rs = []
 for i in ['', '2', '3', '4', '5']:
-    x, y  = np.load(f"J_transicion{i}.npy")
+    x, y  = np.load(f"data/J_transicion/J_transicion{i}.npy")
     resultado = ajuste_lineal_doble(x, y, min_puntos=130, graficar=True)
     Rs.append(resultado["x_interseccion"])
     print("Intersección en x:", resultado["x_interseccion"])

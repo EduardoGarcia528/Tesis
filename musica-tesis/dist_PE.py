@@ -49,10 +49,10 @@ ALPHA = 0.05   # sólo se usa si USE_P_RAW_ZERO_FOR_RED = False
 
 PANEL_CONFIGS = [
     # {"measure":"gamma_rank_ties","D": 1, "tau": 2,"type_null":"shuffle", "title": r"$_m\gamma_1^{(R)}(\mu=2)$ (notes,shuffle)"},
-    {"measure":"gamma_rank_ties","D": 1, "tau": 2,"type_null":"iaaft", "title": r"$_m\gamma_1^{(R)}(\mu=2)$ (notes,iaaft)"},
-    {"measure":"H_orbit","D": 3, "tau": 5,"type_null":"shuffle", "title": r"$H_{orbit}(m=3)$ (notes,shuffle)"},
-    {"measure":"H_orbit","D": 3, "tau": 5,"type_null":"iaaft", "title": r"$H_{orbit}(m=3)$ (notes,iaaft)"},
-    {"measure":"H_tau1","D": 2, "tau": 1,"type_null":"shuffle", "title": r"$H_{hibert}(tau=1)$ (notes,shuffle)"},
+    # {"measure":"gamma_rank_ties","D": 1, "tau": 2,"type_null":"iaaft", "title": r"$_m\gamma_1^{(R)}(\mu=2)$ (notes,iaaft)"},
+    # {"measure":"H_orbit","D": 3, "tau": 5,"type_null":"shuffle", "title": r"$H_{orbit}(m=3)$ (notes,shuffle)"},
+    # {"measure":"H_orbit","D": 3, "tau": 5,"type_null":"iaaft", "title": r"$H_{orbit}(m=3)$ (notes,iaaft)"},
+    # {"measure":"H_tau1","D": 2, "tau": 1,"type_null":"shuffle", "title": r"$H_{hibert}(tau=1)$ (notes,shuffle)"},
     # {"measure":"gamma_rank_ties","D": 2, "tau": 2,"type_null":"shuffle", "title": r"$_m\gamma_2^{(R)}(\mu=2)$ (notes,shuffle)"},
     # {"measure":"gamma_rank_ties","D": 3, "tau": 2,"type_null":"shuffle", "title": r"$_m\gamma_3^{(R)}(\mu=2)$ (notes,shuffle)"},
     # {"measure":"gamma_rank_ties","D": 4, "tau": 2,"type_null":"shuffle", "title": r"$_m\gamma_4^{(R)}(\mu=2)$ (notes,shuffle)"},
@@ -61,9 +61,10 @@ PANEL_CONFIGS = [
     # {"measure":"Cd_rank","D": 3, "tau": 2,"type_null":"shuffle", "title": r"$_m C_3^{(R)}(\mu=2)$ (notes,shuffle)"},
     # {"measure":"Cd_rank","D": 4, "tau": 2,"type_null":"shuffle", "title": r"$_m C_4^{(R)}(\mu=2)$ (notes,shuffle)"},
     # {"measure":"Cd_rank","D": 5, "tau": 2,"type_null":"shuffle", "title": r"$_m C_5^{(R)}(\mu=2)$ (notes,shuffle)"},
-    # {"measure":"mPE","D": 5, "tau": 1,"type_null":"shuffle", "title": fr"mPE (notes,shuffle): $m=5,\ \tau=1$"},
-    # {"measure":"mPE_interval","D": 5, "tau": 1,"type_null":"shuffle", "title": fr"mPE (intervals,shuffle): $m=5,\ \tau=1$"},
-    # {"measure":"mPE","D": 5, "tau": 1,"type_null":"iaaft", "title": fr"mPE (notes,iaaft): $m=5,\ \tau=1$"},
+    {"measure":"mPE","D": 4, "tau": 4,"type_null":"shuffle", "title": fr"mPE (notes,shuffle): $m=5,\ \tau=1$"},
+    {"measure":"mPE_alpha","D": 5, "tau": 1,"type_null":"shuffle", "title": fr"mPE (notes,shuffle): $m=5,\ \tau=1$"},
+    {"measure":"mPE_interval","D": 5, "tau": 1,"type_null":"shuffle", "title": fr"mPE (intervals,shuffle): $m=5,\ \tau=1$"},
+    {"measure":"mPE","D": 5, "tau": 1,"type_null":"iaaft", "title": fr"mPE (notes,iaaft): $m=5,\ \tau=1$"},
     # {"measure":"mPE_interval","D": 5, "tau": 1,"type_null":"iaaft", "title": fr"mPE (intervals,iaaft): $m=5,\ \tau=1$"},
 ] 
 
@@ -305,6 +306,8 @@ def pe_stats_for_series(
     if "PE" in measure:
         if "interval" in measure:
             pe_obs = ml.modified_permutation_entropy(np.diff(x), m=D, tau=tau,norm=fafaeg)
+        elif "alpha" in measure:
+            pe_obs = ml.permutation_entropy(ml.angulos_alpha(x, None), m=D, tau=tau,norm=fafaeg)
         else:
             pe_obs = ml.modified_permutation_entropy(x, m=D, tau=tau, norm=fafaeg)
     elif "H_tau" in measure:
@@ -347,6 +350,8 @@ def pe_stats_for_series(
                 x_surr = rng.permutation(np.diff(x))
             else:
                 x_surr = rng.permutation(x)
+            if "alpha" in measure:
+                x_surr = ml.angulos_alpha(x_surr, None)
             if "PE" in measure:
                 pe_surr = ml.modified_permutation_entropy(x_surr, m=D, tau=tau, norm=fafaeg)
             elif "Cd" in measure:
@@ -369,6 +374,8 @@ def pe_stats_for_series(
         else:
             x_surr = ml.iaaft(x,n_surrogates)
         for k in range(n_surrogates):
+            if "alpha" in measure:
+                x_surr = ml.angulos_alpha(x_surr, False)
             if "PE" in measure: 
                 pe_surr = ml.modified_permutation_entropy(x_surr[k,:], m=D, tau=tau, norm=fafaeg)
             elif "gamma" in measure:

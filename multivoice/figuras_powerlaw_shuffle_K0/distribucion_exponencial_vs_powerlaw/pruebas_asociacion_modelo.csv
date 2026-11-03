@@ -1,0 +1,4 @@
+variable,n,n_categories,chi2,dof,p_value,cramers_v,min_expected_count,n_expected_cells_lt5,note
+composer,464,8,13.163001543209877,7,0.06823508779881163,0.16842962271715145,1.103448275862069,5,Exploratoria; las voces dentro de un movimiento no son independientes. Hay celdas con frecuencia esperada < 5.
+period,464,5,12.622235082304531,4,0.01327700880796052,0.16493360133639914,1.103448275862069,2,Exploratoria; las voces dentro de un movimiento no son independientes. Hay celdas con frecuencia esperada < 5.
+voice,464,4,8.324074074074073,3,0.03976801620641078,0.13393959390267993,8.0,0,Exploratoria; las voces dentro de un movimiento no son independientes.

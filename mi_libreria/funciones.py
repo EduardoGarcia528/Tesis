@@ -48,6 +48,8 @@ def obtener_fases_fourier(seriex, seriey=None, tau=1):
 
         x1 = seriex[tau:]
         y1 = seriex[:-tau]
+        # x1 = seriex
+        # y1 = np.roll(seriex, -tau)  # Desplazamiento circular
 
     else:
         seriey = np.asarray(seriey, dtype=np.float64)
@@ -101,7 +103,7 @@ def construir_vectores_geodesicos(puntos):
         P_i = (f1[i], f2[i])
 
     vectores[i] representa:
-        v_{i+1} = P_{i+1} - P_i
+        v_{i+1} = P_{i+1} - 2*P_i
 
     usando la diferencia angular mínima en cada coordenada.
     """
@@ -206,7 +208,7 @@ def indice_J(seriex, seriey=None, tau=1):
     if len(angulos) == 0:
         J = np.nan
     else:
-        e = np.exp(1j * angulos)
+        e = np.exp(1j * angulos) 
         J = 1.0 - np.abs(np.mean(e))
     return J
 
