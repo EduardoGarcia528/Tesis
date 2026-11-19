@@ -1,0 +1,7 @@
+﻿method,categoria,n,n_compositores
+complexity,indeterminado,254,16
+complexity,monoescala_compatible,292,16
+complexity,multiescala,590,16
+hybrid,indeterminado,315,20
+hybrid,monoescala_compatible,337,18
+hybrid,multiescala,776,19

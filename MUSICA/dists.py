@@ -34,7 +34,7 @@ TOP_MARGIN = 0.90
 # =========================================================
 MEASURE = "mPE"
 TYPE_NULL = "shuffle"
-N_SURROGATES = 200
+N_SURROGATES = 400
 RANDOM_STATE = 12345
 ALTERNATIVE = "less"   # 'two-sided', 'greater', 'less'
 NORMALIZE = True
@@ -70,12 +70,15 @@ PANEL_CONFIGS = [
     # {"measure":"Cd_rank","D": 4, "tau": 2,"type_null":"shuffle", "title": r"$_m C_4^{(R)}(\mu=2)$ (notes,shuffle)"},
     # {"measure":"Cd_rank","D": 5, "tau": 2,"type_null":"shuffle", "title": r"$_m C_5^{(R)}(\mu=2)$ (notes,shuffle)"},
     # {"measure":"mPE_median","D": 5, "tau": 1,"type_null":"shuffle", "title": fr"mPE (notes,shuffle): $m=5,\ \tau=1$"},
-    {"measure":"mPE_interval","D": 5, "tau": 1,"type_null":"shuffle", "title": fr"mPE (intervals,shuffle): $m=5,\ \tau=1$"},
+    # {"measure":"mPE_interval","D": 5, "tau": 1,"type_null":"shuffle", "title": fr"mPE (intervals,shuffle): $m=5,\ \tau=1$"},
     # {"measure":"mPE_intervalabs","D": 5, "tau": 1,"type_null":"shuffle", "title": fr"mPE (absintervals,shuffle): $m=5,\ \tau=1$"},
-    {"measure":"mPE","D": 5, "tau": 1,"type_null":"iaaft", "title": fr"mPE (notes,iaaft): $m=5,\ \tau=1$"},
-    {"measure":"Cd_decay","D": 7, "tau": 2,"type_null":"shuffle", "title": r"$C_d = Ae^{-\lambda d}, \lambda$ (absintervals,shuffle)"},
-    {"measure":"Cd_interval_decay","D": 7, "tau": 2,"type_null":"shuffle", "title": r"$C_d = Ae^{-\lambda d}, \lambda$ (intervals,shuffle)"},
-    {"measure":"mPE_interval","D": 5, "tau": 1,"type_null":"iaaft", "title": fr"mPE (intervals,iaaft): $m=5,\ \tau=1$"},
+    {"measure":"mPE","D": 7, "tau": 5,"type_null":"shuffle", "title": fr"mPE (notes,shuffle): $m=3,\ \tau=1$"},
+    {"measure":"mPE","D": 7, "tau": 6,"type_null":"shuffle", "title": fr"mPE (notes,shuffle): $m=3,\ \tau=2$"},
+    {"measure":"mPE","D": 7, "tau": 7,"type_null":"shuffle", "title": fr"mPE (notes,shuffle): $m=3,\ \tau=3$"},
+    {"measure":"mPE","D": 7, "tau": 8,"type_null":"shuffle", "title": fr"mPE (notes,shuffle): $m=3,\ \tau=4$"},
+    # {"measure":"Cd_decay","D": 7, "tau": 2,"type_null":"shuffle", "title": r"$C_d = Ae^{-\lambda d}, \lambda$ (absintervals,shuffle)"},
+    # {"measure":"Cd_interval_decay","D": 7, "tau": 2,"type_null":"shuffle", "title": r"$C_d = Ae^{-\lambda d}, \lambda$ (intervals,shuffle)"},
+    # {"measure":"mPE_interval","D": 5, "tau": 1,"type_null":"iaaft", "title": fr"mPE (intervals,iaaft): $m=5,\ \tau=1$"},
     # {"measure":"mPE_intervalabs","D": 5, "tau": 1,"type_null":"iaaft", "title": fr"mPE (absintervals,iaaft): $m=5,\ \tau=1$"},
     # {"measure":"beta","D": 5, "tau": 1,"type_null":"iaaft", "title": fr"beta (notes,iaaft)"},
 ] 

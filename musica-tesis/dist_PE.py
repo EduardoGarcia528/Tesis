@@ -61,10 +61,13 @@ PANEL_CONFIGS = [
     # {"measure":"Cd_rank","D": 3, "tau": 2,"type_null":"shuffle", "title": r"$_m C_3^{(R)}(\mu=2)$ (notes,shuffle)"},
     # {"measure":"Cd_rank","D": 4, "tau": 2,"type_null":"shuffle", "title": r"$_m C_4^{(R)}(\mu=2)$ (notes,shuffle)"},
     # {"measure":"Cd_rank","D": 5, "tau": 2,"type_null":"shuffle", "title": r"$_m C_5^{(R)}(\mu=2)$ (notes,shuffle)"},
-    {"measure":"mPE","D": 4, "tau": 4,"type_null":"shuffle", "title": fr"mPE (notes,shuffle): $m=5,\ \tau=1$"},
-    {"measure":"mPE_alpha","D": 5, "tau": 1,"type_null":"shuffle", "title": fr"mPE (notes,shuffle): $m=5,\ \tau=1$"},
-    {"measure":"mPE_interval","D": 5, "tau": 1,"type_null":"shuffle", "title": fr"mPE (intervals,shuffle): $m=5,\ \tau=1$"},
-    {"measure":"mPE","D": 5, "tau": 1,"type_null":"iaaft", "title": fr"mPE (notes,iaaft): $m=5,\ \tau=1$"},
+    {"measure":"mPE","D": 6, "tau": 5,"type_null":"shuffle", "title": fr"mPE (notes,shuffle): $m=6,\ \tau=2$"},
+    {"measure":"mPE","D": 6, "tau": 6,"type_null":"shuffle", "title": fr"mPE (notes,shuffle): $m=6,\ \tau=3$"},
+    {"measure":"mPE","D": 6, "tau": 7,"type_null":"shuffle", "title": fr"mPE (notes,shuffle): $m=6,\ \tau=4$"},
+    {"measure":"mPE","D": 6, "tau": 8,"type_null":"shuffle", "title": fr"mPE (notes,shuffle): $m=7,\ \tau=1$"},
+    # {"measure":"mPE_alpha","D": 5, "tau": 1,"type_null":"shuffle", "title": fr"mPE (notes,shuffle): $m=5,\ \tau=1$"},
+    # {"measure":"mPE_interval","D": 5, "tau": 1,"type_null":"shuffle", "title": fr"mPE (intervals,shuffle): $m=5,\ \tau=1$"},
+    # {"measure":"mPE","D": 5, "tau": 1,"type_null":"iaaft", "title": fr"mPE (notes,iaaft): $m=5,\ \tau=1$"},
     # {"measure":"mPE_interval","D": 5, "tau": 1,"type_null":"iaaft", "title": fr"mPE (intervals,iaaft): $m=5,\ \tau=1$"},
 ] 
 
@@ -473,7 +476,6 @@ def compute_panel_dataframe(
         series_names = sorted(composers[composer].keys(), key=natural_key)
 
         for sname in series_names:
-            print(sname)
             x = np.asarray(composers[composer][sname], dtype=float)
 
             if seed_base is None:

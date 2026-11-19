@@ -41,7 +41,7 @@ Y0 = np.array([1.0, 0.0, 0.0, -1.0, 0.5, 0.0], dtype=np.float64)
 # Ruido observacional.
 # sigma_i = RUIDO_RELATIVO * std(x_i limpio), para cada epsilon.
 # RUIDO_RELATIVO = 0 desactiva el ruido.
-M_RUIDO = 100
+M_RUIDO = 1
 RUIDO_RELATIVO = 0.01
 TIPO_RUIDO = "gaussiano"   # "gaussiano" o "uniforme"
 SEED_RUIDO = 2026
@@ -64,8 +64,8 @@ ETIQUETAS_SERIES = (
     r"$x_1(t)$",
     r"$x_2(t)$",
     r"$x_1(t)+x_2(t)$",
-    r"$x_1(t)-x_2(t)$",
-    # r"Bivariante $x_1(t),x_2(t)$",
+    # r"$x_1(t)-x_2(t)$",
+    r"Bivariante $x_1(t),x_2(t)$",
 )
 
 
@@ -300,8 +300,10 @@ def cuatro_series(x1, x2):
 def calcular_J_limpio(x1, x2):
     series = cuatro_series(x1, x2)
     
-    result = np.array([ml.circular_varianza(ml.angulos_alpha_embedding_bifases(s)[0]) for s in series], dtype=float)
-    # result[-1] = ml.indice_J(x1,x2,tau=1)
+    result = np.array([ml.indice_J(s, tau=1) for s in series], dtype=float)
+    # result = np.array([ml.circular_varianza(ml.angulos_alpha_embedding_bifases(s)[0]) for s in series], dtype=float)
+
+    result[-1] = ml.indice_J(x1,x2,tau=1)
     return result
 
 

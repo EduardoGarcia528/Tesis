@@ -46,7 +46,7 @@ from scipy import stats
 CACHE_DIR = "cache_pe_score"
 OUT_DIR = "analisis_invariancia_escala_mPE"
 
-M_VALUES = [3, 4, 5]
+M_VALUES = [3, 4, 5, 6, 7]
 TAU_VALUES = [1, 2, 3, 4]
 
 # Tu script original devuelve -z. Mantener True reproduce esa convención.
