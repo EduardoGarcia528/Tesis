@@ -71,7 +71,6 @@ def obtener_fases_fourier(seriex, seriey=None, tau=1):
     if len(x1) % 2 == 0:
         f1 = f1[:-1]
         f2 = f2[:-1]
-
     return f1, f2
 
 
